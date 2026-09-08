@@ -1,0 +1,1062 @@
+<title>RegulaDoc AI — Demo interativa</title>
+<style>
+  :root{
+    --bg:#f5f6f8;
+    --surface:#ffffff;
+    --surface-2:#eef0f3;
+    --border:#dfe3e8;
+    --text:#161b22;
+    --text-muted:#5b6472;
+    --text-faint:#8b93a1;
+    --primary:#0b5d66;
+    --primary-dark:#083f46;
+    --primary-tint:#e3f0ef;
+    --accent:#b5722e;
+    --accent-tint:#f6e9dc;
+    --success:#1e7a49;
+    --success-tint:#e3f4ea;
+    --critica:#b23b30;
+    --critica-tint:#fbe7e4;
+    --alta:#c07423;
+    --alta-tint:#faedd9;
+    --media:#a68a14;
+    --media-tint:#f7f1d8;
+    --baixa:#2f6fb0;
+    --baixa-tint:#e4eef8;
+    --info:#6b7280;
+    --info-tint:#eceef1;
+    --shadow: 0 1px 2px rgba(20,24,31,.04), 0 8px 24px -12px rgba(20,24,31,.12);
+    --radius: 10px;
+    --font-ui: -apple-system, "Segoe UI", "Inter", "Helvetica Neue", Arial, sans-serif;
+    --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  }
+  :root[data-theme="dark"]{
+    --bg:#10141a;
+    --surface:#161c24;
+    --surface-2:#1d242e;
+    --border:#2b333f;
+    --text:#e7eaee;
+    --text-muted:#9aa4b2;
+    --text-faint:#6b7484;
+    --primary:#3fb6ac;
+    --primary-dark:#2c8e86;
+    --primary-tint:#132726;
+    --accent:#d99a55;
+    --accent-tint:#2a2115;
+    --success:#4cbd82;
+    --success-tint:#132a1d;
+    --critica:#e2685a;
+    --critica-tint:#2c1613;
+    --alta:#e0a24e;
+    --alta-tint:#2b2013;
+    --media:#d8c157;
+    --media-tint:#282611;
+    --baixa:#6ba3dd;
+    --baixa-tint:#141f2b;
+    --info:#9aa4b2;
+    --info-tint:#1d242e;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.5);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#10141a;
+      --surface:#161c24;
+      --surface-2:#1d242e;
+      --border:#2b333f;
+      --text:#e7eaee;
+      --text-muted:#9aa4b2;
+      --text-faint:#6b7484;
+      --primary:#3fb6ac;
+      --primary-dark:#2c8e86;
+      --primary-tint:#132726;
+      --accent:#d99a55;
+      --accent-tint:#2a2115;
+      --success:#4cbd82;
+      --success-tint:#132a1d;
+      --critica:#e2685a;
+      --critica-tint:#2c1613;
+      --alta:#e0a24e;
+      --alta-tint:#2b2013;
+      --media:#d8c157;
+      --media-tint:#282611;
+      --baixa:#6ba3dd;
+      --baixa-tint:#141f2b;
+      --info:#9aa4b2;
+      --info-tint:#1d242e;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.5);
+    }
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    font-family:var(--font-ui);
+    background:var(--bg);
+    color:var(--text);
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  button{font-family:inherit;}
+  ::selection{background:var(--primary);color:#fff;}
+
+  /* ---------- Demo ribbon ---------- */
+  .ribbon{
+    background:linear-gradient(90deg, var(--primary-dark), var(--primary));
+    color:#fff;
+    font-size:12.5px;
+    padding:7px 16px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    text-align:center;
+    letter-spacing:.01em;
+  }
+  .ribbon b{font-weight:700;}
+
+  /* ---------- Login ---------- */
+  #view-login{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:32px 16px;
+    background:
+      radial-gradient(1200px 600px at 15% -10%, var(--primary-tint), transparent),
+      var(--bg);
+  }
+  .login-card{
+    width:100%;
+    max-width:380px;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:32px 28px;
+  }
+  .login-brand{display:flex;align-items:center;gap:10px;margin-bottom:22px;}
+  .login-brand .mark{
+    width:34px;height:34px;border-radius:8px;
+    background:var(--primary);color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    font-weight:700;font-size:15px;flex-shrink:0;
+  }
+  .login-brand .name{font-weight:700;font-size:16px;letter-spacing:-.01em;}
+  .login-brand .name span{color:var(--primary);}
+  .login-card h1{font-size:19px;margin:0 0 4px;letter-spacing:-.01em;}
+  .login-card p.sub{color:var(--text-muted);font-size:13.5px;margin:0 0 22px;}
+  .field{margin-bottom:14px;}
+  .field label{display:block;font-size:12.5px;font-weight:600;color:var(--text-muted);margin-bottom:5px;}
+  .field input, .field select{
+    width:100%;padding:9px 11px;border-radius:7px;border:1px solid var(--border);
+    background:var(--bg);color:var(--text);font-size:14px;
+  }
+  .field input:focus, .field select:focus, button:focus-visible{
+    outline:2px solid var(--primary);outline-offset:1px;
+  }
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:6px;
+    padding:9px 15px;border-radius:7px;border:1px solid transparent;
+    font-size:13.5px;font-weight:600;cursor:pointer;transition:filter .15s, transform .05s;
+    white-space:nowrap;
+  }
+  .btn:active{transform:translateY(1px);}
+  .btn-primary{background:var(--primary);color:#fff;}
+  .btn-primary:hover{filter:brightness(1.08);}
+  .btn-outline{background:var(--surface);border-color:var(--border);color:var(--text);}
+  .btn-outline:hover{background:var(--surface-2);}
+  .btn-ghost{background:transparent;color:var(--text-muted);}
+  .btn-ghost:hover{background:var(--surface-2);color:var(--text);}
+  .btn-accent{background:var(--accent);color:#fff;}
+  .btn-accent:hover{filter:brightness(1.08);}
+  .btn-block{width:100%;}
+  .btn-sm{padding:6px 10px;font-size:12.5px;}
+  .btn[disabled]{opacity:.5;cursor:not-allowed;}
+  .login-demo-users{margin-top:18px;border-top:1px dashed var(--border);padding-top:16px;}
+  .login-demo-users p{font-size:11.5px;color:var(--text-faint);margin:0 0 8px;text-transform:uppercase;letter-spacing:.06em;font-weight:700;}
+  .demo-user-row{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:7px 9px;border-radius:6px;font-size:12.5px;cursor:pointer;border:1px solid transparent;
+  }
+  .demo-user-row:hover{background:var(--surface-2);border-color:var(--border);}
+  .demo-user-row .role{color:var(--text-faint);font-size:11px;}
+
+  /* ---------- App shell ---------- */
+  #view-app{display:none;height:100vh;}
+  .shell{display:flex;height:100%;}
+  .sidebar{
+    width:230px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);
+    display:flex;flex-direction:column;
+  }
+  .sidebar-brand{display:flex;align-items:center;gap:9px;padding:16px 16px 14px;border-bottom:1px solid var(--border);}
+  .sidebar-brand .mark{width:28px;height:28px;border-radius:7px;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;}
+  .sidebar-brand .name{font-weight:700;font-size:14px;letter-spacing:-.01em;}
+  .sidebar-brand .name span{color:var(--primary);}
+  .sidebar-nav{flex:1;padding:12px 10px;overflow-y:auto;}
+  .nav-item{
+    display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:7px;
+    font-size:13.5px;color:var(--text-muted);cursor:pointer;margin-bottom:2px;font-weight:500;
+    border:none;background:transparent;width:100%;text-align:left;
+  }
+  .nav-item .ic{width:16px;text-align:center;flex-shrink:0;font-size:14px;}
+  .nav-item:hover{background:var(--surface-2);color:var(--text);}
+  .nav-item.active{background:var(--primary-tint);color:var(--primary-dark);font-weight:700;}
+  :root[data-theme="dark"] .nav-item.active{color:var(--primary);}
+  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .nav-item.active{color:var(--primary);}}
+  .nav-section-label{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--text-faint);font-weight:700;padding:14px 10px 6px;}
+  .sidebar-foot{padding:12px;border-top:1px solid var(--border);}
+  .user-chip{display:flex;align-items:center;gap:9px;padding:6px;border-radius:8px;cursor:pointer;border:none;background:transparent;width:100%;text-align:left;}
+  .user-chip:hover{background:var(--surface-2);}
+  .avatar{width:28px;height:28px;border-radius:50%;background:var(--accent-tint);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;flex-shrink:0;}
+  .user-chip .u-name{font-size:12.5px;font-weight:600;line-height:1.2;}
+  .user-chip .u-role{font-size:11px;color:var(--text-faint);}
+
+  .main{flex:1;display:flex;flex-direction:column;min-width:0;overflow:hidden;}
+  .topbar{
+    height:54px;flex-shrink:0;border-bottom:1px solid var(--border);background:var(--surface);
+    display:flex;align-items:center;justify-content:space-between;padding:0 20px;
+  }
+  .topbar .crumb{font-size:13px;color:var(--text-muted);display:flex;align-items:center;gap:6px;}
+  .topbar .crumb b{color:var(--text);font-weight:600;}
+  .topbar-actions{display:flex;align-items:center;gap:10px;}
+  .mode-toggle{display:flex;align-items:center;gap:7px;font-size:11.5px;color:var(--text-muted);padding:5px 10px;border:1px solid var(--border);border-radius:20px;background:var(--surface-2);cursor:pointer;}
+  .switch{position:relative;width:30px;height:17px;border-radius:20px;background:var(--border);cursor:pointer;flex-shrink:0;transition:background .15s;}
+  .switch.on{background:var(--primary);}
+  .switch .knob{position:absolute;top:2px;left:2px;width:13px;height:13px;border-radius:50%;background:#fff;transition:left .15s;box-shadow:0 1px 2px rgba(0,0,0,.3);}
+  .switch.on .knob{left:15px;}
+
+  .content{flex:1;overflow-y:auto;padding:22px 26px 60px;}
+  .page-head{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:18px;gap:12px;flex-wrap:wrap;}
+  .page-head h1{font-size:20px;margin:0 0 3px;letter-spacing:-.01em;}
+  .page-head p{margin:0;color:var(--text-muted);font-size:13px;}
+
+  /* ---------- Cards / grid ---------- */
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);}
+  .card-head{padding:13px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px;}
+  .card-head h3{margin:0;font-size:13px;font-weight:700;}
+  .card-body{padding:16px;}
+  .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px;}
+  @media (max-width:900px){.kpi-grid{grid-template-columns:repeat(2,1fr);}}
+  .kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:15px 16px;}
+  .kpi .label{font-size:11.5px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.05em;font-weight:700;margin-bottom:8px;}
+  .kpi .value{font-size:25px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.02em;}
+  .kpi .delta{font-size:11.5px;margin-top:4px;color:var(--text-muted);}
+  .kpi .delta.up{color:var(--success);}
+  .kpi .delta.warn{color:var(--critica);}
+
+  .grid-2{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;align-items:start;}
+  @media (max-width:980px){.grid-2{grid-template-columns:1fr;}}
+
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--text-faint);font-weight:700;padding:0 12px 8px;border-bottom:1px solid var(--border);}
+  td{padding:11px 12px;border-bottom:1px solid var(--border);vertical-align:middle;}
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr.clickable{cursor:pointer;}
+  tbody tr.clickable:hover{background:var(--surface-2);}
+  .mono{font-family:var(--font-mono);font-variant-numeric:tabular-nums;}
+
+  .badge{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.01em;white-space:nowrap;}
+  .badge::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0;}
+  .badge-critica{background:var(--critica-tint);color:var(--critica);}
+  .badge-alta{background:var(--alta-tint);color:var(--alta);}
+  .badge-media{background:var(--media-tint);color:var(--media);}
+  .badge-baixa{background:var(--baixa-tint);color:var(--baixa);}
+  .badge-informativa{background:var(--info-tint);color:var(--info);}
+  .badge-success{background:var(--success-tint);color:var(--success);}
+  .badge-neutral{background:var(--surface-2);color:var(--text-muted);}
+  .badge-primary{background:var(--primary-tint);color:var(--primary-dark);}
+  :root[data-theme="dark"] .badge-primary{color:var(--primary);}
+  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .badge-primary{color:var(--primary);}}
+
+  .empty{padding:40px 20px;text-align:center;color:var(--text-faint);}
+  .empty .ic{font-size:26px;margin-bottom:8px;}
+  .empty p{font-size:13px;margin:0;}
+
+  .list-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);}
+  .list-row:last-child{border-bottom:none;}
+  .list-row .t{font-size:13px;font-weight:600;}
+  .list-row .s{font-size:11.5px;color:var(--text-faint);}
+
+  /* ---------- Tabs ---------- */
+  .tabs{display:flex;gap:3px;border-bottom:1px solid var(--border);margin-bottom:18px;overflow-x:auto;}
+  .tab{padding:9px 14px;font-size:13px;font-weight:600;color:var(--text-muted);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;white-space:nowrap;}
+  .tab:hover{color:var(--text);}
+  .tab.active{color:var(--primary-dark);border-bottom-color:var(--primary);}
+  :root[data-theme="dark"] .tab.active{color:var(--primary);}
+  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .tab.active{color:var(--primary);}}
+
+  /* ---------- Dossier header ---------- */
+  .dossier-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:18px;flex-wrap:wrap;}
+  .dossier-head h1{font-size:20px;margin:0 0 5px;font-family:var(--font-mono);letter-spacing:-.01em;}
+  .dossier-meta{display:flex;gap:14px;flex-wrap:wrap;color:var(--text-muted);font-size:12.5px;}
+  .dossier-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+  .score-ring{position:relative;width:56px;height:56px;flex-shrink:0;}
+  .score-ring svg{transform:rotate(-90deg);}
+  .score-ring .num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;font-variant-numeric:tabular-nums;}
+
+  /* ---------- Dropzone ---------- */
+  .dropzone{
+    border:2px dashed var(--border);border-radius:var(--radius);padding:34px 20px;text-align:center;
+    cursor:pointer;transition:background .15s,border-color .15s;
+  }
+  .dropzone:hover, .dropzone.drag{background:var(--primary-tint);border-color:var(--primary);}
+  .dropzone .ic{font-size:26px;margin-bottom:8px;}
+  .dropzone p{margin:2px 0;font-size:13px;}
+  .dropzone .hint{color:var(--text-faint);font-size:11.5px;}
+
+  .proc-row{display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--text-muted);margin-top:10px;}
+  .spinner{width:13px;height:13px;border-radius:50%;border:2px solid var(--border);border-top-color:var(--primary);animation:spin .7s linear infinite;flex-shrink:0;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .bar{flex:1;height:5px;border-radius:3px;background:var(--surface-2);overflow:hidden;}
+  .bar > div{height:100%;background:var(--primary);width:0%;transition:width .3s linear;}
+
+  /* ---------- Alert card ---------- */
+  .alert-card{border:1px solid var(--border);border-radius:9px;padding:13px 14px;margin-bottom:10px;position:relative;padding-left:16px;}
+  .alert-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;border-radius:9px 0 0 9px;}
+  .alert-card.sev-critica::before{background:var(--critica);}
+  .alert-card.sev-alta::before{background:var(--alta);}
+  .alert-card.sev-media::before{background:var(--media);}
+  .alert-card.sev-baixa::before{background:var(--baixa);}
+  .alert-card.sev-informativa::before{background:var(--info);}
+  .alert-card .top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px;flex-wrap:wrap;}
+  .alert-card .rule{font-family:var(--font-mono);font-size:11px;color:var(--text-faint);}
+  .alert-card h4{margin:0 0 4px;font-size:13.5px;}
+  .alert-card p{margin:0;font-size:12.5px;color:var(--text-muted);line-height:1.5;}
+  .alert-card .evid{margin-top:8px;background:var(--surface-2);border-radius:6px;padding:8px 10px;font-size:11.5px;font-family:var(--font-mono);color:var(--text-muted);}
+  .alert-card .actions{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;}
+  .alert-card.resolved{opacity:.55;}
+  .alert-card .resolved-tag{font-size:11px;color:var(--success);font-weight:700;}
+
+  /* ---------- Report ---------- */
+  .report-box{max-width:640px;}
+  .report-score{display:flex;align-items:center;gap:20px;padding:20px;background:var(--surface-2);border-radius:var(--radius);margin-bottom:18px;}
+  .report-score .big{font-size:42px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.02em;}
+  .report-score .classif{font-size:14px;font-weight:700;margin-bottom:3px;}
+  .report-score .classif-sub{font-size:12px;color:var(--text-muted);}
+  .report-section{margin-bottom:16px;}
+  .report-section h4{font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--text-faint);margin:0 0 8px;}
+  .report-section p{font-size:13.5px;line-height:1.65;margin:0;color:var(--text);}
+
+  /* ---------- Monitor ---------- */
+  .source-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);gap:12px;flex-wrap:wrap;}
+  .source-row:last-child{border-bottom:none;}
+  .source-row .name{font-weight:600;font-size:13.5px;}
+  .source-row .url{font-size:11.5px;color:var(--text-faint);font-family:var(--font-mono);}
+  .auto-banner{display:flex;align-items:center;gap:8px;background:var(--primary-tint);color:var(--primary-dark);padding:9px 13px;border-radius:8px;font-size:12.5px;margin-bottom:14px;}
+  :root[data-theme="dark"] .auto-banner{color:var(--primary);}
+  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .auto-banner{color:var(--primary);}}
+
+  /* ---------- Toasts ---------- */
+  #toasts{position:fixed;top:16px;right:16px;z-index:999;display:flex;flex-direction:column;gap:8px;max-width:320px;}
+  .toast{
+    background:var(--surface);border:1px solid var(--border);box-shadow:var(--shadow);
+    border-radius:9px;padding:11px 14px;font-size:12.5px;display:flex;gap:9px;align-items:flex-start;
+    animation:toastin .2s ease;
+  }
+  .toast .ic{flex-shrink:0;font-size:14px;margin-top:1px;}
+  .toast.success .ic{color:var(--success);}
+  .toast.info .ic{color:var(--primary);}
+  @keyframes toastin{from{opacity:0;transform:translateX(12px);}to{opacity:1;transform:translateX(0);}}
+
+  ::-webkit-scrollbar{width:9px;height:9px;}
+  ::-webkit-scrollbar-thumb{background:var(--border);border-radius:20px;}
+  ::-webkit-scrollbar-track{background:transparent;}
+
+  @media (max-width:760px){
+    .sidebar{position:fixed;left:0;top:0;bottom:0;z-index:50;transform:translateX(-100%);transition:transform .2s;}
+    .sidebar.open{transform:translateX(0);box-shadow:var(--shadow);}
+    .kpi-grid{grid-template-columns:1fr 1fr;}
+    .content{padding:16px;}
+  }
+
+  noscript{display:block;padding:40px;text-align:center;font-size:14px;color:var(--text);background:var(--bg);}
+</style>
+
+<noscript>Esta demo precisa de JavaScript habilitado no navegador para funcionar.</noscript>
+
+<div id="toasts"></div>
+
+<!-- ===================== LOGIN ===================== -->
+<div id="view-login">
+  <div class="login-card">
+    <div class="login-brand">
+      <div class="mark">R</div>
+      <div class="name">Regula<span>Doc</span> AI</div>
+    </div>
+    <h1>Entrar</h1>
+    <p class="sub">Demo interativa — dados fictícios, nada é enviado a um servidor real.</p>
+    <div class="field">
+      <label for="login-email">E-mail</label>
+      <input id="login-email" type="email" value="analista@demo.com" />
+    </div>
+    <div class="field">
+      <label for="login-pass">Senha</label>
+      <input id="login-pass" type="password" value="demo1234" />
+    </div>
+    <button type="button" class="btn btn-primary btn-block" data-action="login">Entrar</button>
+    <div class="login-demo-users">
+      <p>Trocar de usuário demo</p>
+      <button type="button" class="demo-user-row" data-action="pick-user" data-name="Ana Beatriz Ferreira" data-role="Analista Regulatório" style="width:100%;">
+        <span>Ana Beatriz Ferreira</span><span class="role">Analista</span>
+      </button>
+      <button type="button" class="demo-user-row" data-action="pick-user" data-name="Marcos Vinícius Prado" data-role="Gestor da Comissária" style="width:100%;">
+        <span>Marcos Vinícius Prado</span><span class="role">Gestor</span>
+      </button>
+      <button type="button" class="demo-user-row" data-action="pick-user" data-name="Camila dos Santos" data-role="Admin SaaS" style="width:100%;">
+        <span>Camila dos Santos</span><span class="role">Admin</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== APP ===================== -->
+<div id="view-app">
+  <div class="ribbon">🍷 <b>Demo interativa</b> — dados fictícios, simula o RegulaDoc AI real sem back-end. Nenhuma informação é enviada ou salva.</div>
+  <div class="shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand"><div class="mark">R</div><div class="name">Regula<span>Doc</span> AI</div></div>
+      <nav class="sidebar-nav">
+        <button type="button" class="nav-item active" data-page="dashboard" data-action="go-page" data-target="dashboard"><span class="ic">▦</span> Dashboard</button>
+        <button type="button" class="nav-item" data-page="dossiers" data-action="go-page" data-target="dossiers"><span class="ic">🗂</span> Dossiês</button>
+        <div class="nav-section-label">Regulatório</div>
+        <button type="button" class="nav-item" data-page="monitor" data-action="go-page" data-target="monitor"><span class="ic">📡</span> Monitor regulatório</button>
+        <button type="button" class="nav-item" data-page="rules" data-action="go-page" data-target="rules"><span class="ic">⚖</span> Regras de validação</button>
+        <div class="nav-section-label">Organização</div>
+        <button type="button" class="nav-item" data-page="security" data-action="go-page" data-target="security"><span class="ic">🔒</span> Segurança</button>
+        <button type="button" class="nav-item" data-page="settings" data-action="go-page" data-target="settings"><span class="ic">⚙</span> Configurações</button>
+      </nav>
+      <div class="sidebar-foot">
+        <button type="button" class="user-chip" data-action="logout" title="Sair">
+          <div class="avatar" id="user-avatar">AF</div>
+          <div>
+            <div class="u-name" id="user-name">Ana Beatriz Ferreira</div>
+            <div class="u-role" id="user-role">Analista Regulatório</div>
+          </div>
+        </button>
+      </div>
+    </aside>
+
+    <div class="main">
+      <div class="topbar">
+        <div class="crumb" id="topbar-crumb"><b>Dashboard</b></div>
+        <div class="topbar-actions">
+          <button type="button" class="mode-toggle" data-action="toggle-ocr" style="border:1px solid var(--border);">
+            <span id="mode-label">OCR real (Gemini)</span>
+            <span class="switch on" id="ocr-switch"><span class="knob"></span></span>
+          </button>
+          <button type="button" class="btn btn-outline btn-sm" data-action="toggle-theme" id="theme-btn">🌗 Tema</button>
+        </div>
+      </div>
+      <div class="content" id="content"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ======================================================================
+   ESTADO (tudo em memória — recarregar a página reseta a demo)
+   ====================================================================== */
+var state = {
+  user: { name: "Ana Beatriz Ferreira", role: "Analista Regulatório" },
+  ocrReal: true,
+  page: "dashboard",
+  activeDossierId: "d2",
+  dossierTab: "documentos",
+  dossiers: [
+    { id:"d1", num:"IMP-2026-0001", brand:"Tapada do Fidalgo", country:"Portugal", status:"aprovado", score:100, updated:"há 2 dias", docs:[
+        {id:"doc1", name:"invoice-comercial.pdf", type:"Fatura Comercial", status:"concluida", conf:0.97, uploadedBy:"Ana Beatriz Ferreira"},
+        {id:"doc2", name:"certificado-origem.pdf", type:"Certificado de Origem", status:"concluida", conf:0.95, uploadedBy:"Ana Beatriz Ferreira"},
+        {id:"doc3", name:"laudo-analise.pdf", type:"Laudo de Análise (Anexo IX)", status:"concluida", conf:0.93, uploadedBy:"Ana Beatriz Ferreira"}
+      ], alerts:[], report:{ generated:true, summary:"Dossiê aprovado sem pendências. Toda a documentação obrigatória foi apresentada e nenhuma divergência foi detectada entre os campos extraídos e os dados declarados.", classif:"Apto" } },
+    { id:"d2", num:"IMP-2026-0002", brand:"Quinta das Carvalhas", country:"Portugal", status:"em_revisao", score:58, updated:"há 3 horas", docs:[
+        {id:"doc4", name:"invoice-comercial.pdf", type:"Fatura Comercial", status:"concluida", conf:0.94, uploadedBy:"Ana Beatriz Ferreira"}
+      ], alerts:[
+        { id:"a1", rule:"RULE-002", severity:"critica", title:"Erro caixa × garrafa no volume declarado", desc:"900 caixas × 6 garrafas × 0,75 L = 4.050 L, mas o documento declara 675 L — divergência de 3.375 L (83% a menor).", evid:"declarado: 675 L · calculado: 4.050 L", status:"pendente" },
+        { id:"a2", rule:"RULE-004", severity:"alta", title:"Divergência de marca comercial", desc:"Marca no dossiê é \"Quinta das Carvalhas\", mas a fatura apresenta apenas \"Carvalhas\".", evid:"dossiê: \"Quinta das Carvalhas\" · documento: \"Carvalhas\"", status:"pendente" },
+        { id:"a3", rule:"RULE-013", severity:"alta", title:"Documento obrigatório ausente", desc:"Laudo de Análise (Anexo IX) é obrigatório para esta categoria e não foi enviado.", evid:"documentos enviados: 1/3 obrigatórios", status:"pendente" }
+      ], report:{ generated:false, summary:"", classif:"" } },
+    { id:"d3", num:"IMP-2026-0003", brand:"Herdade do Esporão", country:"Portugal", status:"documentos_pendentes", score:0, updated:"há 5 dias", docs:[], alerts:[], report:{ generated:false, summary:"", classif:"" } }
+  ],
+  sources:[
+    { id:"s1", name:"MAPA — Ministério da Agricultura", url:"gov.br/agricultura", freq:"Diária", status:"ativa", lastChecked:"há 22h" },
+    { id:"s2", name:"DOU — Imprensa Nacional", url:"in.gov.br", freq:"Diária", status:"ativa", lastChecked:"há 26h" },
+    { id:"s3", name:"Receita Federal", url:"gov.br/receitafederal", freq:"Semanal", status:"ativa", lastChecked:"há 4 dias" },
+    { id:"s4", name:"ANVISA", url:"gov.br/anvisa", freq:"Semanal", status:"pausada", lastChecked:"há 12 dias" }
+  ],
+  monitorChecked:false
+};
+
+var ALERT_POOL = [
+  { rule:"RULE-002", severity:"critica", title:"Erro caixa × garrafa no volume declarado", desc:"O volume total calculado a partir de caixas × unidades × capacidade não confere com o valor declarado no documento.", evid:"declarado: 675 L · calculado: 4.050 L" },
+  { rule:"RULE-004", severity:"alta", title:"Divergência de marca comercial", desc:"A marca informada no dossiê não corresponde exatamente à marca constante na fatura comercial.", evid:"dossiê: \"Quinta das Carvalhas\" · documento: \"Carvalhas\"" },
+  { rule:"RULE-011", severity:"media", title:"Inconsistência no número de lote", desc:"O número de lote varia entre o certificado de origem e o laudo de análise.", evid:"certificado: LVT25260101 · laudo: LVT25260102" },
+  { rule:"RULE-013", severity:"alta", title:"Documento obrigatório ausente", desc:"Laudo de Análise (Anexo IX) é obrigatório para esta categoria e não foi enviado.", evid:"documentos enviados: 1/3 obrigatórios" },
+  { rule:"RULE-015", severity:"informativa", title:"Safra não confirmada em todos os documentos", desc:"A safra consta na fatura, mas não é mencionada no certificado de origem — não bloqueante.", evid:"fatura: safra 2025 · certificado: não informado" },
+  { rule:"RULE-007", severity:"baixa", title:"Indicação geográfica com grafia divergente", desc:"Pequena diferença de grafia na indicação geográfica entre documentos (acentuação).", evid:"\"Regional Alentejano\" vs \"Regional Alentejo\"" }
+];
+
+var SEVERITY_LABEL = { critica:"Crítica", alta:"Alta", media:"Média", baixa:"Baixa", informativa:"Informativa" };
+var STATUS_LABEL = {
+  aprovado:"Aprovado", aprovado_com_ressalvas:"Aprovado c/ ressalvas", em_revisao:"Em revisão",
+  documentos_pendentes:"Documentos pendentes", reprovado:"Reprovado", processando:"Processando"
+};
+var STATUS_BADGE = {
+  aprovado:"success", aprovado_com_ressalvas:"baixa", em_revisao:"alta",
+  documentos_pendentes:"neutral", reprovado:"critica", processando:"media"
+};
+
+function el(sel){ return document.querySelector(sel); }
+function esc(s){
+  return String(s).replace(/[&<>"']/g, function(c){
+    return { "&":"&amp;", "<":"&lt;", ">":"&gt;", "\"":"&quot;", "'":"&#39;" }[c];
+  });
+}
+function findDossier(id){
+  for (var i=0;i<state.dossiers.length;i++) if (state.dossiers[i].id===id) return state.dossiers[i];
+  return null;
+}
+function currentDossier(){ return findDossier(state.activeDossierId); }
+
+/* ======================================================================
+   LOGIN
+   ====================================================================== */
+function pickUser(name, role){
+  state.user = { name: name, role: role };
+  var emailInput = el('#login-email');
+  if (emailInput) emailInput.value = name.toLowerCase().split(' ')[0] + "@demo.com";
+}
+function doLogin(){
+  el('#user-name').textContent = state.user.name;
+  el('#user-role').textContent = state.user.role;
+  el('#user-avatar').textContent = state.user.name.split(' ').map(function(w){ return w[0]; }).slice(0,2).join('').toUpperCase();
+  el('#view-login').style.display = 'none';
+  el('#view-app').style.display = 'block';
+  toast('success', 'Bem-vindo(a), ' + state.user.name.split(' ')[0] + '.');
+  goPage('dashboard');
+}
+function doLogout(){
+  el('#view-login').style.display = 'flex';
+  el('#view-app').style.display = 'none';
+}
+
+/* ======================================================================
+   TEMA / MODO OCR
+   ====================================================================== */
+function toggleTheme(){
+  var r = document.documentElement;
+  var cur = r.getAttribute('data-theme');
+  var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  var effectiveDark = cur ? cur === 'dark' : prefersDark;
+  r.setAttribute('data-theme', effectiveDark ? 'light' : 'dark');
+}
+
+function toggleOcr(){
+  state.ocrReal = !state.ocrReal;
+  el('#ocr-switch').classList.toggle('on', state.ocrReal);
+  el('#mode-label').textContent = state.ocrReal ? "OCR real (Gemini)" : "Modo simulado";
+  toast('info', state.ocrReal
+    ? "OCR real ativado — próximas extrações desta demo vão se descrever como leitura Gemini."
+    : "Modo simulado ativado — extrações passam a usar apenas os dados já cadastrados no dossiê.");
+}
+
+/* ======================================================================
+   TOASTS
+   ====================================================================== */
+function toast(kind, msg){
+  var box = document.createElement('div');
+  box.className = 'toast ' + kind;
+  box.innerHTML = '<span class="ic">' + (kind==='success'?'✓':'ℹ') + '</span><span>' + esc(msg) + '</span>';
+  el('#toasts').appendChild(box);
+  setTimeout(function(){
+    box.style.transition='opacity .25s';
+    box.style.opacity='0';
+    setTimeout(function(){ box.remove(); },250);
+  }, 3800);
+}
+
+/* ======================================================================
+   NAVEGAÇÃO
+   ====================================================================== */
+function goPage(page){
+  state.page = page;
+  var items = document.querySelectorAll('.nav-item');
+  for (var i=0;i<items.length;i++) items[i].classList.toggle('active', items[i].dataset.page===page);
+  var titles = { dashboard:"Dashboard", dossiers:"Dossiês", monitor:"Monitor regulatório", rules:"Regras de validação", security:"Segurança", settings:"Configurações" };
+  el('#topbar-crumb').innerHTML = '<b>' + (titles[page]||'') + '</b>';
+  if (window.innerWidth <= 760) { var sb = el('#sidebar'); if (sb) sb.classList.remove('open'); }
+  render();
+}
+
+function openDossier(id, tab){
+  state.page = 'dossier-detail';
+  state.activeDossierId = id;
+  state.dossierTab = tab || 'documentos';
+  var items = document.querySelectorAll('.nav-item');
+  for (var i=0;i<items.length;i++) items[i].classList.toggle('active', items[i].dataset.page==='dossiers');
+  var d = findDossier(id);
+  el('#topbar-crumb').innerHTML = '<span>Dossiês</span> › <b>' + esc(d.num) + '</b>';
+  render();
+}
+
+function render(){
+  var c = el('#content');
+  if (state.page === 'dashboard') c.innerHTML = renderDashboard();
+  else if (state.page === 'dossiers') c.innerHTML = renderDossierList();
+  else if (state.page === 'dossier-detail') c.innerHTML = renderDossierDetail();
+  else if (state.page === 'monitor') c.innerHTML = renderMonitor();
+  else if (state.page === 'rules') c.innerHTML = renderRules();
+  else if (state.page === 'security') c.innerHTML = renderSecurity();
+  else if (state.page === 'settings') c.innerHTML = renderSettings();
+}
+
+/* ======================================================================
+   DASHBOARD
+   ====================================================================== */
+function renderDashboard(){
+  var total = state.dossiers.length;
+  var avgScore = Math.round(state.dossiers.reduce(function(s,d){ return s+d.score; },0)/total);
+  var criticos = state.dossiers.reduce(function(s,d){ return s+d.alerts.filter(function(a){ return a.severity==='critica' && a.status==='pendente'; }).length; },0);
+  var pendentesArr = state.dossiers.filter(function(d){ return d.status==='documentos_pendentes'||d.status==='em_revisao'; });
+
+  var rows = state.dossiers.map(function(d){
+    return '<tr class="clickable" data-action="open-dossier" data-id="'+d.id+'">'+
+      '<td class="mono">'+esc(d.num)+'</td>'+
+      '<td>'+esc(d.brand)+'</td>'+
+      '<td><span class="badge badge-'+STATUS_BADGE[d.status]+'">'+STATUS_LABEL[d.status]+'</span></td>'+
+      '<td class="mono">'+d.score+'</td>'+
+      '<td style="color:var(--text-faint)">'+d.updated+'</td>'+
+    '</tr>';
+  }).join('');
+
+  var pendingList = pendentesArr.map(function(d){
+    return '<div class="list-row">'+
+      '<div><div class="t">'+esc(d.num)+'</div><div class="s">'+esc(d.brand)+' · '+STATUS_LABEL[d.status]+'</div></div>'+
+      '<button type="button" class="btn btn-outline btn-sm" data-action="open-dossier" data-id="'+d.id+'">Abrir</button>'+
+    '</div>';
+  }).join('') || '<div class="empty"><div class="ic">✅</div><p>Nenhuma tarefa pendente.</p></div>';
+
+  return ''+
+    '<div class="page-head"><div><h1>Bem-vindo(a), '+esc(state.user.name.split(' ')[0])+'</h1><p>Visão geral dos dossiês de importação da sua organização.</p></div></div>'+
+    '<div class="kpi-grid">'+
+      '<div class="kpi"><div class="label">Total de dossiês</div><div class="value">'+total+'</div><div class="delta">3 novos este mês</div></div>'+
+      '<div class="kpi"><div class="label">Score médio</div><div class="value">'+avgScore+'</div><div class="delta up">▲ 4 pts vs. mês anterior</div></div>'+
+      '<div class="kpi"><div class="label">Alertas críticos</div><div class="value">'+criticos+'</div><div class="delta '+(criticos?'warn':'')+'">'+(criticos? 'requer atenção imediata':'nenhum no momento')+'</div></div>'+
+      '<div class="kpi"><div class="label">Pendências</div><div class="value">'+pendentesArr.length+'</div><div class="delta">aguardando ação do analista</div></div>'+
+    '</div>'+
+    '<div class="grid-2">'+
+      '<div class="card">'+
+        '<div class="card-head"><h3>Dossiês recentes</h3><button type="button" class="btn btn-outline btn-sm" data-action="go-page" data-target="dossiers">Ver todos</button></div>'+
+        '<div class="card-body" style="padding:0 16px 8px;">'+
+          '<table><thead><tr><th>Nº interno</th><th>Marca</th><th>Status</th><th>Score</th><th>Atualizado</th></tr></thead><tbody>'+rows+'</tbody></table>'+
+        '</div>'+
+      '</div>'+
+      '<div style="display:flex;flex-direction:column;gap:16px;">'+
+        '<div class="card"><div class="card-head"><h3>Tarefas pendentes</h3></div><div class="card-body">'+pendingList+'</div></div>'+
+        '<div class="card"><div class="card-head"><h3>Publicações regulatórias novas</h3></div><div class="card-body">'+
+          '<div class="list-row"><div><div class="t">Portaria MAPA nº 412/2026</div><div class="s">Atualiza limites de rotulagem para vinhos importados</div></div><span class="badge badge-media">Impacto médio</span></div>'+
+          '<div class="list-row"><div><div class="t">IN Receita Federal 2.198/2026</div><div class="s">Novo procedimento de conferência aduaneira</div></div><span class="badge badge-baixa">Impacto baixo</span></div>'+
+        '</div></div>'+
+      '</div>'+
+    '</div>';
+}
+
+/* ======================================================================
+   LISTA DE DOSSIÊS
+   ====================================================================== */
+function renderDossierList(){
+  var rows = state.dossiers.map(function(d){
+    return '<tr class="clickable" data-action="open-dossier" data-id="'+d.id+'">'+
+      '<td class="mono">'+esc(d.num)+'</td>'+
+      '<td>'+esc(d.brand)+'</td>'+
+      '<td>'+esc(d.country)+'</td>'+
+      '<td><span class="badge badge-'+STATUS_BADGE[d.status]+'">'+STATUS_LABEL[d.status]+'</span></td>'+
+      '<td class="mono">'+d.score+'</td>'+
+      '<td>'+d.docs.length+'</td>'+
+      '<td style="color:var(--text-faint)">'+d.updated+'</td>'+
+    '</tr>';
+  }).join('');
+  return ''+
+    '<div class="page-head"><div><h1>Dossiês</h1><p>Todos os processos de importação cadastrados.</p></div>'+
+      '<button type="button" class="btn btn-primary" data-action="demo-note" data-msg="Em uma demo real isso abriria o formulário de novo dossiê.">+ Novo dossiê</button>'+
+    '</div>'+
+    '<div class="card"><div class="card-body" style="padding:4px 16px;">'+
+      '<table><thead><tr><th>Nº interno</th><th>Marca</th><th>País</th><th>Status</th><th>Score</th><th>Docs</th><th>Atualizado</th></tr></thead><tbody>'+rows+'</tbody></table>'+
+    '</div></div>';
+}
+
+/* ======================================================================
+   DETALHE DO DOSSIÊ
+   ====================================================================== */
+function renderDossierDetail(){
+  var d = currentDossier();
+  var tabs = [['documentos','Documentos'],['alertas','Alertas'+(d.alerts.length? ' ('+d.alerts.length+')':'')],['relatorio','Relatório'],['auditoria','Auditoria']];
+  var tabBtns = tabs.map(function(t){
+    return '<button type="button" class="tab '+(state.dossierTab===t[0]?'active':'')+'" data-action="switch-tab" data-tab="'+t[0]+'">'+t[1]+'</button>';
+  }).join('');
+
+  return ''+
+    '<div class="dossier-head">'+
+      '<div>'+
+        '<h1>'+esc(d.num)+'</h1>'+
+        '<div class="dossier-meta">'+
+          '<span>🍇 '+esc(d.brand)+'</span><span>🌍 '+esc(d.country)+'</span>'+
+          '<span><span class="badge badge-'+STATUS_BADGE[d.status]+'">'+STATUS_LABEL[d.status]+'</span></span>'+
+        '</div>'+
+      '</div>'+
+      '<div class="dossier-actions">'+
+        scoreRing(d.score)+
+        '<button type="button" class="btn btn-outline" data-action="run-validation" data-id="'+d.id+'">'+(d.report.generated || d.alerts.length ? 'Revalidar' : 'Executar validação')+'</button>'+
+        '<button type="button" class="btn btn-primary" data-action="generate-report" data-id="'+d.id+'">'+(d.report.generated ? 'Regerar parecer' : 'Gerar parecer')+'</button>'+
+      '</div>'+
+    '</div>'+
+    '<div class="tabs">'+tabBtns+'</div>'+
+    '<div id="dossier-tabpanel">'+renderDossierTab(d)+'</div>';
+}
+
+function scoreRing(score){
+  var color = score>=80?'var(--success)':score>=50?'var(--alta)':'var(--critica)';
+  var r=24, circ=2*Math.PI*r, off = circ - (score/100)*circ;
+  return '<div class="score-ring" title="Score de conformidade">'+
+    '<svg width="56" height="56"><circle cx="28" cy="28" r="'+r+'" fill="none" stroke="var(--surface-2)" stroke-width="5"/>'+
+    '<circle cx="28" cy="28" r="'+r+'" fill="none" stroke="'+color+'" stroke-width="5" stroke-linecap="round" stroke-dasharray="'+circ+'" stroke-dashoffset="'+off+'"/></svg>'+
+    '<div class="num">'+score+'</div></div>';
+}
+
+function switchDossierTab(tab){
+  state.dossierTab = tab;
+  render();
+}
+
+function renderDossierTab(d){
+  if (state.dossierTab === 'documentos') return renderDocumentosTab(d);
+  if (state.dossierTab === 'alertas') return renderAlertasTab(d);
+  if (state.dossierTab === 'relatorio') return renderRelatorioTab(d);
+  return renderAuditoriaTab(d);
+}
+
+/* ---- Documentos ---- */
+function renderDocumentosTab(d){
+  var rows = d.docs.map(function(doc){
+    return '<tr>'+
+      '<td><b>'+esc(doc.name)+'</b></td>'+
+      '<td style="color:var(--text-faint)">'+esc(doc.type)+'</td>'+
+      '<td><span class="badge '+(doc.status==='concluida'?'badge-success':doc.status==='processando'?'badge-media':'badge-neutral')+'">'+(doc.status==='concluida'?'Concluída':doc.status==='processando'?'Processando…':'Pendente')+'</span></td>'+
+      '<td class="mono">'+(doc.conf?Math.round(doc.conf*100)+'%':'—')+'</td>'+
+      '<td style="color:var(--text-faint)">'+esc(doc.uploadedBy)+'</td>'+
+    '</tr>';
+  }).join('');
+
+  return ''+
+    '<div class="card" style="margin-bottom:16px;">'+
+      '<div class="card-head"><h3>Enviar documentos</h3></div>'+
+      '<div class="card-body">'+
+        '<div class="field" style="max-width:320px;">'+
+          '<label for="upload-doc-type">Tipo do documento a enviar</label>'+
+          '<select id="upload-doc-type">'+
+            '<option>Fatura Comercial</option>'+
+            '<option>Certificado de Origem</option>'+
+            '<option>Laudo de Análise (Anexo IX)</option>'+
+            '<option>Rótulo</option>'+
+            '<option>Outro</option>'+
+          '</select>'+
+        '</div>'+
+        '<div class="dropzone" id="dropzone" data-action="simulate-upload" data-id="'+d.id+'">'+
+          '<div class="ic">☁️</div>'+
+          '<p><b>Clique para simular o envio</b> de um PDF</p>'+
+          '<p class="hint">Extração'+(state.ocrReal? ' via Google Gemini' : ' simulada')+' e validação rodam automaticamente após o envio</p>'+
+        '</div>'+
+        '<div id="upload-progress"></div>'+
+      '</div>'+
+    '</div>'+
+    '<div class="card">'+
+      '<div class="card-head"><h3>Documentos do dossiê ('+d.docs.length+')</h3></div>'+
+      '<div class="card-body" style="padding:4px 16px 12px;">'+
+        (d.docs.length===0 ? '<div class="empty"><div class="ic">📄</div><p>Nenhum documento enviado ainda.</p></div>' :
+          '<table><thead><tr><th>Arquivo</th><th>Tipo</th><th>Extração</th><th>Confiança</th><th>Enviado por</th></tr></thead><tbody>'+rows+'</tbody></table>'+
+           '<p style="font-size:11.5px;color:var(--text-faint);margin-top:10px;">'+(state.ocrReal? 'OCR real ativo: campos extraídos por leitura do arquivo via Google Gemini.' : 'Modo simulado: campos extraídos automaticamente a partir dos dados do dossiê.')+'</p>')+
+      '</div>'+
+    '</div>';
+}
+
+function simulateUpload(dossierId){
+  var d = findDossier(dossierId);
+  var types = ["Fatura Comercial","Certificado de Origem","Laudo de Análise (Anexo IX)","Rótulo"];
+  var typeSel = el('#upload-doc-type');
+  var type = typeSel ? typeSel.value : types[d.docs.length % types.length];
+  var names = { "Fatura Comercial":"invoice-comercial.pdf", "Certificado de Origem":"certificado-origem.pdf", "Laudo de Análise (Anexo IX)":"laudo-analise.pdf", "Rótulo":"rotulo-frente.jpg", "Outro":"documento-anexo.pdf" };
+  var name = names[type] || "documento.pdf";
+
+  var zone = el('#dropzone');
+  if (!zone) return;
+  zone.style.pointerEvents = 'none';
+  zone.classList.add('drag');
+  var prog = el('#upload-progress');
+  prog.innerHTML = '<div class="proc-row"><div class="spinner"></div><span>Enviando '+esc(name)+'…</span><div class="bar"><div id="bar-fill"></div></div></div>';
+  var pct = 0;
+  var fill = el('#bar-fill');
+  var timer = setInterval(function(){
+    pct += 18;
+    fill.style.width = Math.min(pct,100)+'%';
+    if (pct >= 100){
+      clearInterval(timer);
+      finishUpload(dossierId, name, type);
+    }
+  }, 160);
+}
+
+function finishUpload(dossierId, name, type){
+  var d = findDossier(dossierId);
+  var doc = { id:'doc'+Date.now(), name:name, type:type, status:'processando', conf:null, uploadedBy: state.user.name };
+  d.docs.push(doc);
+  render();
+  toast('info', name + ' enviado. Extraindo campos' + (state.ocrReal?' via Gemini':'') + '…');
+  setTimeout(function(){
+    doc.status = 'concluida';
+    doc.conf = 0.88 + Math.random()*0.11;
+    if (state.dossierTab === 'documentos') render();
+    toast('success', 'Extração concluída (' + Math.round(doc.conf*100) + '% de confiança). Rodando validação automática…');
+    setTimeout(function(){ runValidation(dossierId, true); }, 700);
+  }, 1300);
+}
+
+/* ---- Validação / Alertas ---- */
+function runValidation(dossierId, silent){
+  var d = findDossier(dossierId);
+  if (d.alerts.length === 0){
+    var required = ["Certificado de Origem","Laudo de Análise (Anexo IX)","Fatura Comercial"];
+    var missing = required.filter(function(t){ return !d.docs.some(function(doc){ return doc.type===t; }); });
+    if (missing.length){
+      d.alerts.push({ id:'a'+Date.now(), rule:"RULE-013", severity: missing.length>1?"alta":"media", title:"Documento(s) obrigatório(s) ausente(s)", desc:"Ainda faltam: "+missing.join(', ')+".", evid:"documentos enviados: "+d.docs.length, status:"pendente" });
+    }
+  }
+  recomputeScore(d);
+  toast('success', (silent ? 'Validação automática concluída' : 'Validação concluída') + ' — Score: ' + d.score + '.');
+  render();
+}
+
+function recomputeScore(d){
+  var weights = { critica:30, alta:15, media:7, baixa:3, informativa:0 };
+  var score = 100;
+  d.alerts.filter(function(a){ return a.status==='pendente'; }).forEach(function(a){ score -= (weights[a.severity]||0); });
+  d.score = Math.max(0, score);
+  var hasBlocking = d.alerts.some(function(a){ return a.status==='pendente' && (a.severity==='critica'||a.severity==='alta'); });
+  d.status = hasBlocking ? 'em_revisao' : (d.score===100 ? 'aprovado' : d.score>=70 ? 'aprovado_com_ressalvas' : 'em_revisao');
+}
+
+function renderAlertasTab(d){
+  if (d.alerts.length===0) return ''+
+    '<div class="card"><div class="card-body">'+
+      '<div class="empty"><div class="ic">✅</div><p>Nenhum alerta gerado ainda. Envie documentos ou clique em "Gerar variações de alertas" para simular um cenário com achados.</p></div>'+
+      '<div style="text-align:center;margin-top:10px;"><button type="button" class="btn btn-accent" data-action="generate-alerts" data-id="'+d.id+'">🎲 Gerar variações de alertas</button></div>'+
+    '</div></div>';
+
+  var cards = d.alerts.map(function(a){
+    var actions = a.status==='pendente' ? (
+      '<div class="actions">'+
+        '<button type="button" class="btn btn-outline btn-sm" data-action="review-alert" data-dossier="'+d.id+'" data-alert="'+a.id+'" data-decision="confirmado">Confirmar</button>'+
+        '<button type="button" class="btn btn-outline btn-sm" data-action="review-alert" data-dossier="'+d.id+'" data-alert="'+a.id+'" data-decision="falso_positivo">Falso positivo</button>'+
+        '<button type="button" class="btn btn-primary btn-sm" data-action="review-alert" data-dossier="'+d.id+'" data-alert="'+a.id+'" data-decision="resolvido">Marcar como resolvido</button>'+
+      '</div>'
+    ) : ('<div class="resolved-tag">✓ '+(a.status==='falso_positivo'?'Marcado como falso positivo':a.status==='confirmado'?'Confirmado pelo analista':'Resolvido')+'</div>');
+
+    return '<div class="alert-card sev-'+a.severity+' '+(a.status!=='pendente'?'resolved':'')+'">'+
+      '<div class="top"><span class="rule">'+a.rule+'</span><span class="badge badge-'+a.severity+'">'+SEVERITY_LABEL[a.severity]+'</span></div>'+
+      '<h4>'+esc(a.title)+'</h4>'+
+      '<p>'+esc(a.desc)+'</p>'+
+      '<div class="evid">'+esc(a.evid)+'</div>'+
+      actions+
+    '</div>';
+  }).join('');
+
+  return ''+
+    '<div style="display:flex;justify-content:flex-end;margin-bottom:12px;">'+
+      '<button type="button" class="btn btn-accent btn-sm" data-action="generate-alerts" data-id="'+d.id+'">🎲 Gerar variações de alertas</button>'+
+    '</div>'+
+    cards;
+}
+
+function reviewAlert(dossierId, alertId, decision){
+  var d = findDossier(dossierId);
+  var a = null;
+  for (var i=0;i<d.alerts.length;i++) if (d.alerts[i].id===alertId) { a = d.alerts[i]; break; }
+  if (!a) return;
+  a.status = decision;
+  recomputeScore(d);
+  toast('success', 'Alerta atualizado. Score recalculado: ' + d.score + '.');
+  render();
+}
+
+function generateAlertVariations(dossierId){
+  var d = findDossier(dossierId);
+  var shuffled = ALERT_POOL.slice().sort(function(){ return Math.random()-0.5; }).slice(0, 4 + Math.floor(Math.random()*2));
+  d.alerts = shuffled.map(function(a,i){
+    var copy = {};
+    for (var k in a) copy[k] = a[k];
+    copy.id = 'a'+Date.now()+i;
+    copy.status = 'pendente';
+    copy.title = '[Simulação] ' + a.title;
+    return copy;
+  });
+  recomputeScore(d);
+  toast('success', d.alerts.length + ' alerta(s) de simulação gerado(s) com severidades variadas.');
+  render();
+}
+
+/* ---- Relatório ---- */
+function generateReport(dossierId){
+  var d = findDossier(dossierId);
+  var critAberto = d.alerts.some(function(a){ return a.status==='pendente' && a.severity==='critica'; });
+  var classif = d.score===100 ? "Apto" : d.score>=70 ? "Apto com ressalvas" : critAberto ? "Não recomendado" : "Pendente de revisão";
+  var pendentesCount = d.alerts.filter(function(a){ return a.status==='pendente'; }).length;
+  d.report.generated = true;
+  d.report.summary = d.alerts.length===0
+    ? "Dossiê "+d.num+" ("+d.brand+") foi validado sem nenhuma divergência entre os campos extraídos e os dados declarados. Toda a documentação obrigatória está presente e íntegra. Recomenda-se aprovação."
+    : "Dossiê "+d.num+" ("+d.brand+") apresentou "+d.alerts.length+" alerta(s) durante a validação automática, dos quais "+pendentesCount+" seguem pendentes de revisão. Score atual: "+d.score+"/100. Recomenda-se revisão humana dos pontos assinalados antes de qualquer decisão final de liberação.";
+  d.report.classif = classif;
+  state.dossierTab = 'relatorio';
+  toast('success', 'Parecer de conformidade gerado.');
+  render();
+}
+
+function renderRelatorioTab(d){
+  if (!d.report.generated) return ''+
+    '<div class="card"><div class="card-body">'+
+      '<div class="empty"><div class="ic">📋</div><p>Nenhum parecer gerado ainda para este dossiê.</p></div>'+
+      '<div style="text-align:center;margin-top:10px;"><button type="button" class="btn btn-primary" data-action="generate-report" data-id="'+d.id+'">Gerar parecer</button></div>'+
+    '</div></div>';
+  var color = d.score>=80?'var(--success)':d.score>=50?'var(--alta)':'var(--critica)';
+  var pendentesCount = d.alerts.filter(function(a){ return a.status==='pendente'; }).length;
+  return ''+
+    '<div class="report-box card"><div class="card-body">'+
+      '<div class="report-score">'+
+        '<div class="big" style="color:'+color+'">'+d.score+'</div>'+
+        '<div><div class="classif">'+d.report.classif+'</div><div class="classif-sub">Parecer de Conformidade Documental</div></div>'+
+      '</div>'+
+      '<div class="report-section"><h4>Resumo executivo</h4><p>'+esc(d.report.summary)+'</p></div>'+
+      '<div class="report-section"><h4>Alertas considerados</h4><p>'+d.alerts.length+' alerta(s) no total, '+pendentesCount+' pendente(s) de revisão.</p></div>'+
+      '<button type="button" class="btn btn-outline" data-action="print">🖨 Exportar / Imprimir PDF</button>'+
+    '</div></div>';
+}
+
+/* ---- Auditoria ---- */
+function renderAuditoriaTab(d){
+  var events = [{ t:"Dossiê criado", by: state.user.name, when:"há 3 dias" }];
+  d.docs.forEach(function(doc){ events.push({ t:"Documento enviado: "+doc.name, by: doc.uploadedBy, when:"—" }); });
+  if (d.alerts.length) events.push({ t:"Validação executada — "+d.alerts.length+" alerta(s) gerado(s)", by:"Sistema (motor de regras)", when:"—" });
+  if (d.report.generated) events.push({ t:"Parecer de conformidade gerado", by:"Sistema (automático)", when:"—" });
+  return '<div class="card"><div class="card-body">'+
+    events.map(function(e){
+      return '<div class="list-row"><div><div class="t">'+esc(e.t)+'</div><div class="s">por '+esc(e.by)+'</div></div><span class="s">'+e.when+'</span></div>';
+    }).join('')+
+  '</div></div>';
+}
+
+/* ======================================================================
+   MONITOR REGULATÓRIO
+   ====================================================================== */
+function renderMonitor(){
+  var rows = state.sources.map(function(s){
+    return '<div class="source-row">'+
+      '<div><div class="name">'+esc(s.name)+'</div><div class="url">'+esc(s.url)+' · verificação '+s.freq.toLowerCase()+'</div></div>'+
+      '<div style="display:flex;align-items:center;gap:10px;">'+
+        '<span style="font-size:11.5px;color:var(--text-faint);">último check: '+s.lastChecked+'</span>'+
+        '<span class="badge '+(s.status==='ativa'?'badge-success':'badge-neutral')+'">'+(s.status==='ativa'?'Ativa':'Pausada')+'</span>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+
+  return ''+
+    '<div class="page-head"><div><h1>Monitor regulatório</h1><p>Fontes oficiais acompanhadas automaticamente.</p></div>'+
+      '<button type="button" class="btn btn-primary btn-sm" data-action="simulate-check">🔄 Verificar agora</button>'+
+    '</div>'+
+    (state.monitorChecked ? '<div class="auto-banner">✓ Verificação automática concluída ao abrir esta página — 1 nova publicação encontrada.</div>' : '')+
+    '<div class="grid-2">'+
+      '<div class="card"><div class="card-head"><h3>Fontes cadastradas</h3></div><div class="card-body">'+rows+'</div></div>'+
+      '<div class="card"><div class="card-head"><h3>Publicações recentes</h3></div><div class="card-body" id="pub-list">'+
+        '<div class="list-row"><div><div class="t">Portaria MAPA nº 412/2026</div><div class="s">Rotulagem — impacto médio</div></div><button type="button" class="btn btn-outline btn-sm" data-action="demo-note" data-msg="Converteria esta publicação em uma nova regra de validação.">Converter em regra</button></div>'+
+      '</div></div>'+
+    '</div>';
+}
+function simulateCheck(){
+  toast('info', 'Verificando fontes regulatórias…');
+  setTimeout(function(){
+    state.monitorChecked = true;
+    var list = el('#pub-list');
+    if (list) list.insertAdjacentHTML('afterbegin', '<div class="list-row"><div><div class="t">IN Receita Federal 2.201/2026</div><div class="s">Conferência aduaneira — impacto baixo</div></div><button type="button" class="btn btn-outline btn-sm" data-action="demo-note" data-msg="Converteria esta publicação em uma nova regra de validação.">Converter em regra</button></div>');
+    toast('success', '1 nova publicação encontrada.');
+    if (state.page === 'monitor') render();
+  }, 1000);
+}
+
+/* ======================================================================
+   REGRAS / SEGURANÇA / CONFIGURAÇÕES (visão simplificada)
+   ====================================================================== */
+function renderRules(){
+  var rules = [
+    ["RULE-001","Consistência de lote entre documentos","Ativa"],
+    ["RULE-002","Erro caixa × garrafa no volume declarado","Ativa"],
+    ["RULE-004","Divergência de marca comercial","Ativa"],
+    ["RULE-013","Documento obrigatório ausente","Ativa"],
+    ["RULE-015","Consistência de safra entre documentos","Ativa"]
+  ];
+  var rows = rules.map(function(r){
+    return '<tr><td class="mono">'+r[0]+'</td><td>'+r[1]+'</td><td><span class="badge badge-success">'+r[2]+'</span></td>'+
+    '<td style="text-align:right;"><button type="button" class="btn btn-outline btn-sm" data-action="demo-note" data-msg="Abriria o editor de versão desta regra.">Ver</button></td></tr>';
+  }).join('');
+  return '<div class="page-head"><div><h1>Regras de validação</h1><p>15 regras versionadas compõem o motor de conformidade (exibindo 5 na demo).</p></div></div>'+
+    '<div class="card"><div class="card-body" style="padding:4px 16px;"><table><thead><tr><th>Código</th><th>Descrição</th><th>Status</th><th></th></tr></thead><tbody>'+rows+'</tbody></table></div></div>';
+}
+function renderSecurity(){
+  return '<div class="page-head"><div><h1>Segurança e governança</h1><p>Como o RegulaDoc AI protege os dados da sua organização.</p></div></div>'+
+    '<div class="grid-2">'+
+      '<div class="card"><div class="card-head"><h3>Isolamento multi-tenant</h3></div><div class="card-body"><p style="font-size:13px;color:var(--text-muted);line-height:1.6;">Toda consulta ao banco passa por uma checagem de organização na camada de aplicação ("RLS aplicativa") antes de chegar ao banco de dados.</p></div></div>'+
+      '<div class="card"><div class="card-head"><h3>Supervisão humana obrigatória</h3></div><div class="card-body"><p style="font-size:13px;color:var(--text-muted);line-height:1.6;">Nenhuma aprovação final ocorre sem revisão de um analista — o sistema apenas recomenda.</p></div></div>'+
+    '</div>';
+}
+function renderSettings(){
+  return '<div class="page-head"><div><h1>Configurações</h1><p>Dados da organização e preferências.</p></div></div>'+
+    '<div class="card"><div class="card-body">'+
+      '<div class="field"><label for="org-name">Nome da organização</label><input id="org-name" value="Comissária Brasil Demo" /></div>'+
+      '<div class="field"><label for="org-plan">Plano</label><input id="org-plan" value="Professional (demo)" disabled /></div>'+
+      '<button type="button" class="btn btn-primary" data-action="save-settings">Salvar</button>'+
+    '</div></div>';
+}
+
+/* ======================================================================
+   DELEGAÇÃO DE EVENTOS (um único listener cobre botões estáticos e
+   os gerados dinamicamente via innerHTML)
+   ====================================================================== */
+document.addEventListener('click', function(e){
+  var t = e.target.closest('[data-action]');
+  if (!t) return;
+  var action = t.dataset.action;
+  switch(action){
+    case 'login': doLogin(); break;
+    case 'logout': doLogout(); break;
+    case 'pick-user': pickUser(t.dataset.name, t.dataset.role); break;
+    case 'toggle-theme': toggleTheme(); break;
+    case 'toggle-ocr': toggleOcr(); break;
+    case 'go-page': goPage(t.dataset.target); break;
+    case 'open-dossier': openDossier(t.dataset.id); break;
+    case 'switch-tab': switchDossierTab(t.dataset.tab); break;
+    case 'run-validation': runValidation(t.dataset.id, false); break;
+    case 'generate-report': generateReport(t.dataset.id); break;
+    case 'simulate-upload': simulateUpload(t.dataset.id); break;
+    case 'generate-alerts': generateAlertVariations(t.dataset.id); break;
+    case 'review-alert': reviewAlert(t.dataset.dossier, t.dataset.alert, t.dataset.decision); break;
+    case 'simulate-check': simulateCheck(); break;
+    case 'print': window.print(); break;
+    case 'save-settings': toast('success','Configurações salvas (simulado).'); break;
+    case 'demo-note': toast('info', t.dataset.msg || ''); break;
+  }
+});
+
+document.addEventListener('keydown', function(e){
+  if (e.key === 'Escape') { var sb = el('#sidebar'); if (sb) sb.classList.remove('open'); }
+});
+
+})();
+</script>

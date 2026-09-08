@@ -1,0 +1,145 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 210 20% 98%;
+    --foreground: 215 28% 12%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 215 28% 12%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 28% 12%;
+
+    --primary: 201 70% 20%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 210 25% 94%;
+    --secondary-foreground: 215 28% 18%;
+
+    --muted: 210 20% 95%;
+    --muted-foreground: 215 15% 45%;
+
+    --accent: 199 60% 92%;
+    --accent-foreground: 201 70% 18%;
+
+    --destructive: 0 72% 45%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214 20% 89%;
+    --input: 214 20% 89%;
+    --ring: 201 70% 30%;
+
+    --radius: 0.6rem;
+
+    /* Severity / status scale, used across alerts, badges and charts */
+    --severity-critical: 0 72% 45%;
+    --severity-high: 24 88% 48%;
+    --severity-medium: 38 92% 50%;
+    --severity-low: 205 70% 48%;
+    --severity-info: 215 15% 55%;
+
+    --status-success: 152 60% 32%;
+    --status-warning: 38 92% 45%;
+    --status-danger: 0 72% 45%;
+    --status-neutral: 215 15% 45%;
+
+    --chart-1: 201 70% 30%;
+    --chart-2: 152 55% 38%;
+    --chart-3: 38 92% 50%;
+    --chart-4: 0 72% 50%;
+    --chart-5: 262 45% 55%;
+
+    --sidebar-background: 215 32% 11%;
+    --sidebar-foreground: 210 25% 88%;
+    --sidebar-muted: 215 20% 65%;
+    --sidebar-accent: 201 60% 22%;
+    --sidebar-border: 215 28% 18%;
+  }
+
+  .dark {
+    --background: 215 32% 9%;
+    --foreground: 210 25% 92%;
+
+    --card: 215 28% 12%;
+    --card-foreground: 210 25% 92%;
+
+    --popover: 215 28% 12%;
+    --popover-foreground: 210 25% 92%;
+
+    --primary: 199 70% 55%;
+    --primary-foreground: 215 32% 9%;
+
+    --secondary: 215 24% 18%;
+    --secondary-foreground: 210 25% 92%;
+
+    --muted: 215 24% 16%;
+    --muted-foreground: 215 15% 65%;
+
+    --accent: 201 40% 22%;
+    --accent-foreground: 199 70% 85%;
+
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 215 24% 20%;
+    --input: 215 24% 20%;
+    --ring: 199 70% 55%;
+
+    --severity-critical: 0 70% 58%;
+    --severity-high: 24 85% 58%;
+    --severity-medium: 38 88% 58%;
+    --severity-low: 205 75% 62%;
+    --severity-info: 215 15% 65%;
+
+    --status-success: 152 50% 45%;
+    --status-warning: 38 85% 55%;
+    --status-danger: 0 70% 58%;
+    --status-neutral: 215 15% 60%;
+
+    --chart-1: 199 70% 55%;
+    --chart-2: 152 50% 45%;
+    --chart-3: 38 88% 58%;
+    --chart-4: 0 70% 58%;
+    --chart-5: 262 55% 68%;
+
+    --sidebar-background: 215 34% 7%;
+    --sidebar-foreground: 210 25% 88%;
+    --sidebar-muted: 215 15% 60%;
+    --sidebar-accent: 199 60% 22%;
+    --sidebar-border: 215 28% 15%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings:
+      "cv02",
+      "cv03",
+      "cv04",
+      "cv11";
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  .scrollbar-thin {
+    scrollbar-width: thin;
+  }
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: white !important;
+  }
+}

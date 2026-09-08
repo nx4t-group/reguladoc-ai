@@ -1,0 +1,345 @@
+// RegulaDoc AI — schema de dados
+// SQLite não suporta o tipo `enum` do Prisma: campos categóricos (status, severidade,
+// papel, tipo de documento, etc.) são modelados como String e validados via Zod na
+// camada de aplicação (ver src/lib/constants.ts). Isso também facilita a futura
+// migração para Postgres/Supabase mantendo os mesmos valores.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Organização / usuários / multi-tenant
+// ---------------------------------------------------------------------------
+
+model Organization {
+  id            String   @id @default(cuid())
+  name          String
+  cnpj          String?
+  plan          String   @default("starter") // starter | professional | enterprise
+  retentionDays Int      @default(1825)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  members           OrganizationMember[]
+  dossiers          Dossier[]
+  documents         Document[]
+  extractedFields   ExtractedField[]
+  validationRules   ValidationRule[]
+  validationRuns    ValidationRun[]
+  validationAlerts  ValidationAlert[]
+  regulatorySources RegulatorySource[]
+  regulatoryItems   RegulatoryItem[]
+  auditEvents       AuditEvent[]
+  reports           Report[]
+}
+
+model Profile {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  avatarUrl    String?
+  createdAt    DateTime @default(now())
+
+  memberships       OrganizationMember[]
+  documentsUploaded Document[]           @relation("DocumentUploadedBy")
+  dossiersCreated   Dossier[]            @relation("DossierCreatedBy")
+  dossiersAssigned  Dossier[]            @relation("DossierAssignedTo")
+  auditEvents       AuditEvent[]
+  validationRuns    ValidationRun[]
+  reportsGenerated  Report[]             @relation("ReportGeneratedBy")
+  reportsApproved   Report[]             @relation("ReportApprovedBy")
+  alertsConfirmed   ValidationAlert[]    @relation("AlertConfirmedBy")
+  alertsReviewed    ValidationAlert[]    @relation("AlertReviewedBy")
+}
+
+model OrganizationMember {
+  id             String   @id @default(cuid())
+  organizationId String
+  userId         String
+  role           String // admin | gestor | analista
+  status         String   @default("active") // active | invited | suspended
+  createdAt      DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+  user         Profile      @relation(fields: [userId], references: [id])
+
+  @@unique([organizationId, userId])
+  @@index([organizationId])
+}
+
+// ---------------------------------------------------------------------------
+// Dossiês de importação
+// ---------------------------------------------------------------------------
+
+model Dossier {
+  id                     String    @id @default(cuid())
+  organizationId         String
+  internalNumber         String
+  importerName           String
+  exporterName           String?
+  producerName           String?
+  countryOrigin          String?
+  productCategory        String    @default("vinho")
+  productName            String
+  brand                  String
+  vintage                String?
+  geographicalIndication String?
+  batchNumber            String?
+  packageType            String?
+  packageCount           Int?
+  unitsPerPackage        Int?
+  unitCapacityLiters     Float?
+  informedVolumeLiters   Float?
+  calculatedVolumeLiters Float?
+  status                 String    @default("rascunho")
+  complianceScore        Int?
+  assignedToId           String?
+  createdById            String
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+  deletedAt              DateTime?
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+  assignedTo   Profile?     @relation("DossierAssignedTo", fields: [assignedToId], references: [id])
+  createdBy    Profile      @relation("DossierCreatedBy", fields: [createdById], references: [id])
+
+  documents       Document[]
+  extractedFields ExtractedField[]
+  validationRuns  ValidationRun[]
+  alerts          ValidationAlert[]
+  auditEvents     AuditEvent[]
+  reports         Report[]
+
+  @@index([organizationId])
+  @@index([status])
+}
+
+model Document {
+  id               String   @id @default(cuid())
+  organizationId   String
+  dossierId        String
+  documentType     String // anexo_ix | certificado_origem | laudo_analise | cii | invoice | packing_list | rotulo | complementar | outro
+  filename         String
+  filePath         String
+  mimeType         String
+  size             Int
+  checksum         String
+  uploadStatus     String   @default("enviado") // enviado | processando | erro
+  extractionStatus String   @default("pendente") // pendente | processando | concluida | erro
+  confidenceScore  Float?
+  uploadedById     String
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+  dossier      Dossier      @relation(fields: [dossierId], references: [id])
+  uploadedBy   Profile      @relation("DocumentUploadedBy", fields: [uploadedById], references: [id])
+
+  extractedFields ExtractedField[]
+
+  @@index([dossierId])
+  @@index([organizationId])
+}
+
+model ExtractedField {
+  id              String   @id @default(cuid())
+  organizationId  String
+  dossierId       String
+  documentId      String
+  fieldKey        String
+  fieldLabel      String
+  fieldValue      String
+  normalizedValue String?
+  confidence      Float
+  pageNumber      Int?
+  boundingBox     String?
+  sourceText      String?
+  createdAt       DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+  dossier      Dossier      @relation(fields: [dossierId], references: [id])
+  document     Document     @relation(fields: [documentId], references: [id])
+
+  @@index([documentId])
+  @@index([dossierId])
+}
+
+// ---------------------------------------------------------------------------
+// Motor de regras
+// ---------------------------------------------------------------------------
+
+model ValidationRule {
+  id              String    @id @default(cuid())
+  organizationId  String? // null = regra global
+  code            String // RULE-001 .. RULE-015
+  name            String
+  description     String
+  category        String // lote | marca | denominacao | indicacao_geografica | produtor | volume | laboratorio | documentacao | governanca
+  severity        String // critica | alta | media | baixa | informativa
+  sourceType      String // normativa | interna
+  sourceReference String?
+  version         Int       @default(1)
+  effectiveFrom   DateTime  @default(now())
+  effectiveTo     DateTime?
+  status          String    @default("ativa") // ativa | inativa | rascunho
+  errorMessage    String
+  suggestion      String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  organization Organization?     @relation(fields: [organizationId], references: [id])
+  alerts       ValidationAlert[]
+
+  @@unique([code, version, organizationId])
+  @@index([code])
+}
+
+model ValidationRun {
+  id                   String    @id @default(cuid())
+  organizationId       String
+  dossierId            String
+  status               String    @default("concluida") // executando | concluida | erro
+  score                Int?
+  rulesVersionSnapshot String // json: [{ code, version }]
+  startedAt            DateTime  @default(now())
+  completedAt          DateTime?
+  createdById          String
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+  dossier      Dossier      @relation(fields: [dossierId], references: [id])
+  createdBy    Profile      @relation(fields: [createdById], references: [id])
+  alerts       ValidationAlert[]
+
+  @@index([dossierId])
+}
+
+model ValidationAlert {
+  id               String   @id @default(cuid())
+  organizationId   String
+  dossierId        String
+  validationRunId  String
+  ruleId           String
+  severity         String // critica | alta | media | baixa | informativa
+  status           String   @default("aberto") // aberto | confirmado | rejeitado | falso_positivo | resolvido
+  title            String
+  message          String
+  recommendation   String?
+  evidence         String? // json
+  confirmedById    String?
+  reviewedById     String?
+  reviewComment    String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  organization  Organization  @relation(fields: [organizationId], references: [id])
+  dossier       Dossier       @relation(fields: [dossierId], references: [id])
+  validationRun ValidationRun @relation(fields: [validationRunId], references: [id])
+  rule          ValidationRule @relation(fields: [ruleId], references: [id])
+  confirmedBy   Profile?      @relation("AlertConfirmedBy", fields: [confirmedById], references: [id])
+  reviewedBy    Profile?      @relation("AlertReviewedBy", fields: [reviewedById], references: [id])
+
+  @@index([dossierId])
+  @@index([severity])
+  @@index([status])
+}
+
+// ---------------------------------------------------------------------------
+// Monitor regulatório
+// ---------------------------------------------------------------------------
+
+model RegulatorySource {
+  id             String    @id @default(cuid())
+  organizationId String? // null = fonte global
+  name           String
+  url            String
+  authority      String
+  sourceType     String // oficial | manual
+  checkFrequency String    @default("diaria") // diaria | semanal | manual
+  lastCheckedAt  DateTime?
+  status         String    @default("ativa") // ativa | inativa
+  createdAt      DateTime  @default(now())
+
+  organization Organization?    @relation(fields: [organizationId], references: [id])
+  items        RegulatoryItem[]
+}
+
+model RegulatoryItem {
+  id              String   @id @default(cuid())
+  organizationId  String?
+  sourceId        String
+  title           String
+  authority       String
+  publicationType String // lei | decreto | instrucao_normativa | resolucao | portaria | noticia | manual | outro
+  url             String
+  publishedAt     DateTime
+  capturedAt      DateTime @default(now())
+  status          String   @default("novo") // novo | em_analise | aprovado | rejeitado | convertido_em_regra
+  summary         String?
+  aiImpact        String?
+  reviewerId      String?
+  linkedRuleId    String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  organization Organization?    @relation(fields: [organizationId], references: [id])
+  source       RegulatorySource @relation(fields: [sourceId], references: [id])
+
+  @@index([sourceId])
+  @@index([status])
+}
+
+// ---------------------------------------------------------------------------
+// Auditoria e relatórios
+// ---------------------------------------------------------------------------
+
+model AuditEvent {
+  id             String   @id @default(cuid())
+  organizationId String
+  dossierId      String?
+  userId         String?
+  action         String
+  entityType     String
+  entityId       String
+  beforeJson     String?
+  afterJson      String?
+  metadataJson   String?
+  ipAddress      String?
+  userAgent      String?
+  createdAt      DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+  dossier      Dossier?     @relation(fields: [dossierId], references: [id])
+  user         Profile?     @relation(fields: [userId], references: [id])
+
+  @@index([organizationId])
+  @@index([dossierId])
+  @@index([createdAt])
+}
+
+model Report {
+  id              String    @id @default(cuid())
+  organizationId  String
+  dossierId       String
+  validationRunId String?
+  status          String    @default("rascunho") // rascunho | emitido | aprovado
+  title           String
+  summary         String
+  generatedById   String
+  approvedById    String?
+  generatedAt     DateTime  @default(now())
+  approvedAt      DateTime?
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+  dossier      Dossier      @relation(fields: [dossierId], references: [id])
+  generatedBy  Profile      @relation("ReportGeneratedBy", fields: [generatedById], references: [id])
+  approvedBy   Profile?     @relation("ReportApprovedBy", fields: [approvedById], references: [id])
+
+  @@index([dossierId])
+}
