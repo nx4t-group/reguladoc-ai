@@ -118,24 +118,48 @@ export const RULE_DEFINITIONS: RuleDefinition[] = [
   },
   {
     code: "RULE-003",
-    name: "Presença do número do laudo",
-    description: "O número do laudo deve estar presente no Anexo IX e no documento de análise.",
+    name: "Presença e consistência do número do laudo",
+    description: "O número do laudo deve estar presente e coincidir entre o Anexo IX e o documento de análise emitido pelo laboratório.",
     category: "laboratorio",
     severity: "alta",
     sourceType: "interna",
-    errorMessage: "Número do laudo ausente no Anexo IX e/ou no laudo de análise.",
-    suggestion: "Solicitar o número do laudo ao laboratório ou complementar o Anexo IX.",
+    errorMessage: "Número do laudo ausente ou divergente entre Anexo IX e laudo de análise.",
+    suggestion: "Verificar se o laudo anexado corresponde ao número informado no Anexo IX ou solicitar correção ao exportador.",
     evaluate: ({ documents }) => {
       const result = validateLabReportPresence(documents);
-      if (result.present) return [];
-      return [
-        {
-          title: "Número do laudo ausente",
-          message: `O número do laudo não foi encontrado em: ${result.missingFrom.map((d) => DOCUMENT_TYPE_LABELS[d]).join(", ")}.`,
-          recommendation: "Complementar o documento com o número do laudo antes do registro.",
-          evidence: { missingFrom: result.missingFrom },
-        },
-      ];
+      if (!result.present) {
+        return [
+          {
+            title: "Número do laudo ausente",
+            message: `O número do laudo não foi encontrado em: ${result.missingFrom.map((d) => DOCUMENT_TYPE_LABELS[d]).join(", ")}.`,
+            recommendation: "Complementar o documento com o número do laudo antes do registro.",
+            evidence: { missingFrom: result.missingFrom },
+          },
+        ];
+      }
+
+      // Comparação de consistência entre documentos que informam numero_laudo
+      const laudoDocs = documents.filter((d) => d.fields.numero_laudo?.trim());
+      if (laudoDocs.length >= 2) {
+        const [first, ...rest] = laudoDocs;
+        const findings: RuleFinding[] = [];
+        for (const doc of rest) {
+          if (!compareNormalized(first.fields.numero_laudo, doc.fields.numero_laudo)) {
+            findings.push({
+              title: "Número de relatório/laudo divergente",
+              message: `O número do laudo em ${DOCUMENT_TYPE_LABELS[first.documentType]} ("${first.fields.numero_laudo}") diverge de ${DOCUMENT_TYPE_LABELS[doc.documentType]} ("${doc.fields.numero_laudo}").`,
+              recommendation: "Confirmar qual é o laudo correto e solicitar a correção dos documentos divergentes.",
+              evidence: {
+                expected: { documentType: first.documentType, value: first.fields.numero_laudo },
+                divergent: { documentType: doc.documentType, value: doc.fields.numero_laudo },
+              },
+            });
+          }
+        }
+        if (findings.length > 0) return findings;
+      }
+
+      return [];
     },
   },
   {

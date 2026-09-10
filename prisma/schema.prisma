@@ -100,7 +100,7 @@ model Dossier {
   unitCapacityLiters     Float?
   informedVolumeLiters   Float?
   calculatedVolumeLiters Float?
-  status                 String    @default("rascunho")
+  status                 String    @default("DRAFT")
   complianceScore        Int?
   assignedToId           String?
   createdById            String
@@ -112,6 +112,7 @@ model Dossier {
   assignedTo   Profile?     @relation("DossierAssignedTo", fields: [assignedToId], references: [id])
   createdBy    Profile      @relation("DossierCreatedBy", fields: [createdById], references: [id])
 
+  items           DossierItem[]
   documents       Document[]
   extractedFields ExtractedField[]
   validationRuns  ValidationRun[]
@@ -123,16 +124,43 @@ model Dossier {
   @@index([status])
 }
 
+model DossierItem {
+  id                     String   @id @default(cuid())
+  organizationId         String
+  dossierId              String
+  itemNumber             Int      @default(1)
+  productName            String
+  brand                  String
+  vintage                String?
+  geographicalIndication String?
+  batchNumber            String?
+  packageType            String?
+  packageCount           Int?
+  unitsPerPackage        Int?
+  unitCapacityLiters     Float?
+  totalVolumeLiters      Float?
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+
+  dossier         Dossier          @relation(fields: [dossierId], references: [id], onDelete: Cascade)
+  documents       Document[]
+  extractedFields ExtractedField[]
+
+  @@index([dossierId])
+}
+
 model Document {
   id               String   @id @default(cuid())
   organizationId   String
   dossierId        String
+  itemId           String?
   documentType     String // anexo_ix | certificado_origem | laudo_analise | cii | invoice | packing_list | rotulo | complementar | outro
   filename         String
   filePath         String
   mimeType         String
   size             Int
   checksum         String
+  currentVersion   Int      @default(1)
   uploadStatus     String   @default("enviado") // enviado | processando | erro
   extractionStatus String   @default("pendente") // pendente | processando | concluida | erro
   confidenceScore  Float?
@@ -142,18 +170,40 @@ model Document {
 
   organization Organization @relation(fields: [organizationId], references: [id])
   dossier      Dossier      @relation(fields: [dossierId], references: [id])
+  item         DossierItem? @relation(fields: [itemId], references: [id])
   uploadedBy   Profile      @relation("DocumentUploadedBy", fields: [uploadedById], references: [id])
 
+  versions        DocumentVersion[]
   extractedFields ExtractedField[]
 
   @@index([dossierId])
+  @@index([itemId])
   @@index([organizationId])
+}
+
+model DocumentVersion {
+  id            String    @id @default(cuid())
+  documentId    String
+  versionNumber Int
+  filename      String
+  filePath      String
+  size          Int
+  checksum      String
+  isCurrent     Boolean   @default(true)
+  supersededAt  DateTime?
+  uploadedById  String?
+  createdAt     DateTime  @default(now())
+
+  document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@index([documentId])
 }
 
 model ExtractedField {
   id              String   @id @default(cuid())
   organizationId  String
   dossierId       String
+  itemId          String?
   documentId      String
   fieldKey        String
   fieldLabel      String
@@ -163,14 +213,18 @@ model ExtractedField {
   pageNumber      Int?
   boundingBox     String?
   sourceText      String?
+  extractor       String   @default("gemini")
+  extractorVer    String   @default("1.0")
   createdAt       DateTime @default(now())
 
   organization Organization @relation(fields: [organizationId], references: [id])
   dossier      Dossier      @relation(fields: [dossierId], references: [id])
+  item         DossierItem? @relation(fields: [itemId], references: [id])
   document     Document     @relation(fields: [documentId], references: [id])
 
   @@index([documentId])
   @@index([dossierId])
+  @@index([itemId])
 }
 
 // ---------------------------------------------------------------------------
@@ -207,6 +261,7 @@ model ValidationRun {
   id                   String    @id @default(cuid())
   organizationId       String
   dossierId            String
+  snapshotId           String?
   status               String    @default("concluida") // executando | concluida | erro
   score                Int?
   rulesVersionSnapshot String // json: [{ code, version }]
@@ -214,10 +269,11 @@ model ValidationRun {
   completedAt          DateTime?
   createdById          String
 
-  organization Organization @relation(fields: [organizationId], references: [id])
-  dossier      Dossier      @relation(fields: [dossierId], references: [id])
-  createdBy    Profile      @relation(fields: [createdById], references: [id])
-  alerts       ValidationAlert[]
+  organization       Organization        @relation(fields: [organizationId], references: [id])
+  dossier            Dossier             @relation(fields: [dossierId], references: [id])
+  regulatorySnapshot RegulatorySnapshot? @relation(fields: [snapshotId], references: [id])
+  createdBy          Profile             @relation(fields: [createdById], references: [id])
+  alerts             ValidationAlert[]
 
   @@index([dossierId])
 }
@@ -240,16 +296,44 @@ model ValidationAlert {
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
-  organization  Organization  @relation(fields: [organizationId], references: [id])
-  dossier       Dossier       @relation(fields: [dossierId], references: [id])
-  validationRun ValidationRun @relation(fields: [validationRunId], references: [id])
-  rule          ValidationRule @relation(fields: [ruleId], references: [id])
-  confirmedBy   Profile?      @relation("AlertConfirmedBy", fields: [confirmedById], references: [id])
-  reviewedBy    Profile?      @relation("AlertReviewedBy", fields: [reviewedById], references: [id])
+  organization  Organization    @relation(fields: [organizationId], references: [id])
+  dossier       Dossier         @relation(fields: [dossierId], references: [id])
+  validationRun ValidationRun   @relation(fields: [validationRunId], references: [id])
+  rule          ValidationRule  @relation(fields: [ruleId], references: [id])
+  confirmedBy   Profile?        @relation("AlertConfirmedBy", fields: [confirmedById], references: [id])
+  reviewedBy    Profile?        @relation("AlertReviewedBy", fields: [reviewedById], references: [id])
+  actions       FindingAction[]
 
   @@index([dossierId])
   @@index([severity])
   @@index([status])
+}
+
+model FindingAction {
+  id          String   @id @default(cuid())
+  alertId     String
+  userId      String
+  actionType  String // CONFIRMAR | FALSO_POSITIVO | AGUARDANDO_DOCUMENTO | DOCUMENTO_SUBSTITUIDO | JUSTIFICATIVA_TECNICA | ESCALAR_GESTOR
+  reason      String
+  previousStatus String?
+  newStatus      String
+  createdAt   DateTime @default(now())
+
+  alert ValidationAlert @relation(fields: [alertId], references: [id], onDelete: Cascade)
+
+  @@index([alertId])
+}
+
+model RegulatorySnapshot {
+  id             String   @id @default(cuid())
+  organizationId String?
+  code           String   @unique
+  name           String
+  description    String?
+  rulesData      String // json com regras ativas, versões e fontes normativas imutáveis
+  createdAt      DateTime @default(now())
+
+  validationRuns ValidationRun[]
 }
 
 // ---------------------------------------------------------------------------

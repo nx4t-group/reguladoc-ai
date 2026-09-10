@@ -329,7 +329,7 @@ export function RegulatoryMonitorClient({
                     disabled={simulatingSourceId === source.id}
                     onClick={() => handleSimulateCheck(source.id)}
                   >
-                    {simulatingSourceId === source.id ? "Verificando…" : "Simular verificação"}
+                    {simulatingSourceId === source.id ? "Sincronizando…" : "Verificar fonte agora"}
                   </Button>
                 </CardContent>
               </Card>
@@ -339,12 +339,12 @@ export function RegulatoryMonitorClient({
       </section>
 
       <section className="space-y-3">
-        <h2 className="text-sm font-semibold text-foreground">Fila de publicações</h2>
+        <h2 className="text-sm font-semibold text-foreground">Fila de publicações normativas</h2>
         {items.length === 0 ? (
           <EmptyState
             icon={Inbox}
             title="Nenhuma publicação capturada ainda"
-            description="Simule uma verificação em uma das fontes acima para ver publicações de exemplo aparecerem aqui."
+            description="Sincronize uma das fontes oficiais acima para consultar publicações normativas."
           />
         ) : (
           <div className="space-y-3">

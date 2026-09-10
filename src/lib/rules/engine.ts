@@ -8,6 +8,8 @@ export interface EngineInput {
   documents: DocumentFieldSet[];
   /** Regras ativas a executar; por padrão, todas as regras do catálogo. */
   rules?: RuleDefinition[];
+  /** Se true, o dossiê ainda está recebendo documentação fracionada. RULE-013 não gera inconformidade nesse estado. */
+  isAwaitingDocuments?: boolean;
 }
 
 export interface EngineFinding extends RuleFinding {
@@ -27,6 +29,10 @@ export function runRuleEngine(input: EngineInput): EngineResult {
 
   const findings: EngineFinding[] = [];
   for (const rule of rules) {
+    if (input.isAwaitingDocuments && rule.code === "RULE-013") {
+      // Documento ausente é pendência de envio, não inconformidade crítica enquanto aguarda documentos
+      continue;
+    }
     const results = rule.evaluate({
       dossier: input.dossier,
       documents: input.documents,

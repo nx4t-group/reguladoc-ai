@@ -78,12 +78,12 @@ export function HeaderActions({
           disabled={complianceScore == null || pending !== null}
           onClick={() => run("report", () => generateReport(dossierId))}
         >
-          <FileBarChart className="h-4 w-4" /> {hasReport ? "Regerar parecer" : "Gerar parecer"}
+          <FileBarChart className="h-4 w-4" /> {hasReport ? "Regerar Relatório" : "Emitir Relatório de Conferência"}
         </Button>
 
         {!isFinal && (
           <Button variant="outline" size="sm" disabled={pending !== null} onClick={() => run("correction", () => requestCorrection(dossierId))}>
-            <Undo2 className="h-4 w-4" /> Solicitar correção
+            <Undo2 className="h-4 w-4" /> Solicitar correção documental
           </Button>
         )}
 
@@ -92,14 +92,14 @@ export function HeaderActions({
             <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button variant="outline" size="sm" className="border-status-warning/40 text-status-warning hover:bg-status-warning/10" disabled={pending !== null}>
-                <CheckCircle2 className="h-4 w-4" /> Aprovar com ressalvas
+                <CheckCircle2 className="h-4 w-4" /> Liberar com ressalvas
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Aprovar com ressalvas?</AlertDialogTitle>
+                <AlertDialogTitle>Liberar com ressalvas documentais?</AlertDialogTitle>
                 <AlertDialogDescription>
-                  O dossiê será marcado como aprovado com ressalvas. Esta decisão fica registrada na trilha de auditoria com seu usuário como revisor (RULE-014).
+                  O dossiê será registrado como conferido com ressalvas técnicas. Esta recomendação operacional fica registrada na trilha de auditoria com seu usuário como revisor qualificado (RULE-014).
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
@@ -107,7 +107,7 @@ export function HeaderActions({
                 <AlertDialogAction
                   onClick={() => run("approve-with-caveats", () => decideDossier({ dossierId, decision: "aprovado_com_ressalvas" }))}
                 >
-                  Confirmar
+                  Confirmar decisão
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
@@ -116,20 +116,20 @@ export function HeaderActions({
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button size="sm" disabled={pending !== null}>
-                <ThumbsUp className="h-4 w-4" /> Aprovar
+                <ThumbsUp className="h-4 w-4" /> Liberar Pré-Embarque
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Aprovar dossiê?</AlertDialogTitle>
+                <AlertDialogTitle>Recomendar liberação pré-embarque?</AlertDialogTitle>
                 <AlertDialogDescription>
-                  Confirma a aprovação final deste dossiê como revisor humano? Alertas críticos em aberto impedem a aprovação.
+                  Confirma a conclusão da conferência documental sem bloqueios impeditivos? Inconformidades críticas ou altas em aberto impedem a liberação.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancelar</AlertDialogCancel>
                 <AlertDialogAction onClick={() => run("approve", () => decideDossier({ dossierId, decision: "aprovado" }))}>
-                  Confirmar aprovação
+                  Confirmar liberação
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
@@ -138,18 +138,20 @@ export function HeaderActions({
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button variant="destructive" size="sm" disabled={pending !== null}>
-                <ThumbsDown className="h-4 w-4" /> Reprovar
+                <ThumbsDown className="h-4 w-4" /> Bloquear Liberação
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Reprovar dossiê?</AlertDialogTitle>
-                <AlertDialogDescription>Esta decisão fica registrada na trilha de auditoria e pode ser revertida apenas criando uma nova revisão.</AlertDialogDescription>
+                <AlertDialogTitle>Bloquear liberação pré-embarque?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  O dossiê será marcado como bloqueado por inconformidades documentais. Esta decisão fica registrada na trilha de auditoria imutável.
+                </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancelar</AlertDialogCancel>
                 <AlertDialogAction onClick={() => run("reject", () => decideDossier({ dossierId, decision: "reprovado" }))}>
-                  Confirmar reprovação
+                  Confirmar bloqueio
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>

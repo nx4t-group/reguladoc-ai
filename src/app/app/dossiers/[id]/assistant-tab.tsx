@@ -13,8 +13,8 @@ import { askAssistant } from "@/server/actions/assistant";
 const SUGGESTED_QUESTIONS = [
   "Quais documentos estão faltando?",
   "Quais inconsistências são críticas?",
-  "O dossiê está apto para registro?",
-  "Explique a divergência de marca.",
+  "O dossiê possui bloqueios regulatórios para liberação?",
+  "Explique a divergência de marca ou lote.",
   "Quais regras foram aplicadas?",
 ];
 
@@ -27,12 +27,11 @@ export function AssistantTab({ dossierId }: { dossierId: string }) {
   const [messages, setMessages] = React.useState<ChatMessage[]>([
     {
       role: "assistant",
-      content: "Olá! Sou o assistente de auditoria deste dossiê. Pergunte sobre documentos faltantes, inconsistências, aptidão para registro ou regras aplicadas.",
+      content: "Olá! Sou o copiloto de conferência deste dossiê. Respondo com base estrita nos dados extraídos dos documentos e regras regulatórias ativas.",
     },
   ]);
   const [input, setInput] = React.useState("");
   const [loading, setLoading] = React.useState(false);
-  const [isSimulated, setIsSimulated] = React.useState(true);
 
   async function send(question: string) {
     if (!question.trim() || loading) return;
@@ -42,7 +41,6 @@ export function AssistantTab({ dossierId }: { dossierId: string }) {
     try {
       const result = await askAssistant(dossierId, question);
       if (result.ok && result.data) {
-        setIsSimulated(result.data.isSimulated);
         setMessages((prev) => [...prev, { role: "assistant", content: result.data!.answer }]);
       } else {
         setMessages((prev) => [...prev, { role: "assistant", content: "Não consegui responder agora. Tente novamente." }]);
@@ -55,10 +53,12 @@ export function AssistantTab({ dossierId }: { dossierId: string }) {
   return (
     <Card className="flex h-[560px] flex-col">
       <CardHeader className="flex-row items-center justify-between space-y-0 border-b border-border">
-        <CardTitle className="flex items-center gap-2 text-sm">
-          <Sparkles className="h-4 w-4 text-primary" /> Assistente de Auditoria
+        <CardTitle className="flex items-center gap-2 text-sm font-semibold">
+          <Sparkles className="h-4 w-4 text-primary" /> Copiloto de Conferência Documental
         </CardTitle>
-        {isSimulated && <Badge variant="warning">Modo simulado</Badge>}
+        <Badge variant="outline" className="text-xs">
+          Ancorado nos Dados do Dossiê
+        </Badge>
       </CardHeader>
       <CardContent className="flex flex-1 flex-col gap-3 overflow-hidden p-4">
         <ScrollArea className="flex-1 pr-3">

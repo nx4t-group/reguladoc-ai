@@ -5,8 +5,9 @@ import { z } from "zod";
 
 import { AUDIT_ACTIONS, logAuditEvent } from "@/lib/audit";
 import { ALERT_STATUSES, ALERT_SEVERITIES, type AlertSeverity } from "@/lib/constants";
-import { scoreDossier } from "@/lib/rules/calculations";
+import { assertCapability } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
+import { scoreDossier } from "@/lib/rules/calculations";
 import { requireTenant } from "@/lib/tenant";
 import type { ActionResult } from "./dossiers";
 
@@ -37,10 +38,24 @@ export async function reviewAlert(input: ReviewAlertInput): Promise<ActionResult
   const tenant = await requireTenant();
   const parsed = reviewAlertSchema.parse(input);
 
+  // RBAC por capability
+  if (parsed.severity) {
+    assertCapability(tenant.role, "FINDING_RECLASSIFY");
+  } else {
+    assertCapability(tenant.role, "FINDING_RESOLVE");
+  }
+
+  // Justificativa obrigatória para resoluções ou falsos positivos
+  if (["falso_positivo", "resolvido"].includes(parsed.status)) {
+    if (!parsed.reviewComment || parsed.reviewComment.trim().length < 5) {
+      return { ok: false, error: "Justificativa técnica obrigatória (mínimo de 5 caracteres) para resolver ou marcar como falso positivo." };
+    }
+  }
+
   const alert = await prisma.validationAlert.findFirst({
     where: { id: parsed.alertId, organizationId: tenant.organizationId },
   });
-  if (!alert) return { ok: false, error: "Alerta não encontrado." };
+  if (!alert) return { ok: false, error: "Inconformidade não encontrada." };
 
   await prisma.validationAlert.update({
     where: { id: parsed.alertId },
@@ -50,6 +65,18 @@ export async function reviewAlert(input: ReviewAlertInput): Promise<ActionResult
       reviewComment: parsed.reviewComment ?? alert.reviewComment,
       reviewedById: tenant.userId,
       confirmedById: parsed.status === "confirmado" ? tenant.userId : alert.confirmedById,
+    },
+  });
+
+  // Registra no histórico de ações de finding
+  await prisma.findingAction.create({
+    data: {
+      alertId: parsed.alertId,
+      userId: tenant.userId,
+      actionType: parsed.status === "falso_positivo" ? "FALSO_POSITIVO" : parsed.status === "confirmado" ? "CONFIRMAR" : "JUSTIFICATIVA_TECNICA",
+      reason: parsed.reviewComment || "Status atualizado pelo analista/gestor",
+      previousStatus: alert.status,
+      newStatus: parsed.status,
     },
   });
 
@@ -74,12 +101,108 @@ export async function reviewAlert(input: ReviewAlertInput): Promise<ActionResult
   return { ok: true, data: { score } };
 }
 
-export async function requestComplementaryDocument(alertId: string): Promise<ActionResult> {
+const recordFindingActionSchema = z.object({
+  alertId: z.string(),
+  actionType: z.enum([
+    "CONFIRMAR",
+    "FALSO_POSITIVO",
+    "AGUARDANDO_DOCUMENTO",
+    "DOCUMENTO_SUBSTITUIDO",
+    "JUSTIFICATIVA_TECNICA",
+    "ESCALAR_GESTOR",
+  ]),
+  reason: z.string().min(5, "A justificativa técnica deve ter pelo menos 5 caracteres"),
+});
+
+export type RecordFindingActionInput = z.infer<typeof recordFindingActionSchema>;
+
+export async function recordFindingAction(input: RecordFindingActionInput): Promise<ActionResult<{ score: number }>> {
   const tenant = await requireTenant();
+  assertCapability(tenant.role, "FINDING_RESOLVE");
+
+  const parsed = recordFindingActionSchema.parse(input);
+
+  const alert = await prisma.validationAlert.findFirst({
+    where: { id: parsed.alertId, organizationId: tenant.organizationId },
+  });
+  if (!alert) return { ok: false, error: "Inconformidade não encontrada." };
+
+  let newStatus = alert.status;
+  if (parsed.actionType === "CONFIRMAR") newStatus = "confirmado";
+  else if (parsed.actionType === "FALSO_POSITIVO") newStatus = "falso_positivo";
+  else if (parsed.actionType === "JUSTIFICATIVA_TECNICA" || parsed.actionType === "DOCUMENTO_SUBSTITUIDO") newStatus = "resolvido";
+  else if (parsed.actionType === "AGUARDANDO_DOCUMENTO") newStatus = "aberto";
+
+  // Se a ação for aguardar documento complementar, move o dossiê para documentos_pendentes
+  if (parsed.actionType === "AGUARDANDO_DOCUMENTO") {
+    await prisma.dossier.update({
+      where: { id: alert.dossierId },
+      data: { status: "documentos_pendentes" },
+    });
+  }
+
+  await prisma.findingAction.create({
+    data: {
+      alertId: alert.id,
+      userId: tenant.userId,
+      actionType: parsed.actionType,
+      reason: parsed.reason,
+      previousStatus: alert.status,
+      newStatus,
+    },
+  });
+
+  await prisma.validationAlert.update({
+    where: { id: alert.id },
+    data: {
+      status: newStatus,
+      reviewedById: tenant.userId,
+      reviewComment: parsed.reason,
+    },
+  });
+
+  await logAuditEvent({
+    organizationId: tenant.organizationId,
+    userId: tenant.userId,
+    dossierId: alert.dossierId,
+    action: AUDIT_ACTIONS.ALERT_REVIEWED,
+    entityType: "validation_alert",
+    entityId: alert.id,
+    after: { actionType: parsed.actionType, newStatus, reason: parsed.reason },
+  });
+
+  const score = await recomputeDossierScore(alert.dossierId, tenant.organizationId);
+
+  revalidatePath(`/app/dossiers/${alert.dossierId}`);
+  revalidatePath(`/app/dossiers/${alert.dossierId}/review`);
+  revalidatePath("/app/dossiers");
+  revalidatePath("/app");
+
+  return { ok: true, data: { score } };
+}
+
+export async function requestComplementaryDocument(alertId: string, reason?: string): Promise<ActionResult> {
+  const tenant = await requireTenant();
+  assertCapability(tenant.role, "FINDING_RESOLVE");
+
   const alert = await prisma.validationAlert.findFirst({ where: { id: alertId, organizationId: tenant.organizationId } });
-  if (!alert) return { ok: false, error: "Alerta não encontrado." };
+  if (!alert) return { ok: false, error: "Inconformidade não encontrada." };
 
   await prisma.dossier.update({ where: { id: alert.dossierId }, data: { status: "documentos_pendentes" } });
+
+  const justification = reason || `Documento complementar solicitado referente à inconformidade "${alert.title}"`;
+
+  await prisma.findingAction.create({
+    data: {
+      alertId: alert.id,
+      userId: tenant.userId,
+      actionType: "AGUARDANDO_DOCUMENTO",
+      reason: justification,
+      previousStatus: alert.status,
+      newStatus: "aberto",
+    },
+  });
+
   await logAuditEvent({
     organizationId: tenant.organizationId,
     userId: tenant.userId,
@@ -87,134 +210,10 @@ export async function requestComplementaryDocument(alertId: string): Promise<Act
     action: AUDIT_ACTIONS.DOSSIER_STATUS_CHANGED,
     entityType: "dossier",
     entityId: alert.dossierId,
-    after: { status: "documentos_pendentes", reason: `Documento complementar solicitado para alerta "${alert.title}"` },
+    after: { status: "documentos_pendentes", reason: justification },
   });
 
   revalidatePath(`/app/dossiers/${alert.dossierId}`);
   return { ok: true };
 }
 
-export async function generateAlertVariations(dossierId: string): Promise<ActionResult> {
-  const tenant = await requireTenant();
-  const dossier = await prisma.dossier.findFirst({ where: { id: dossierId, organizationId: tenant.organizationId } });
-  if (!dossier) return { ok: false, error: "Dossiê não encontrado." };
-
-  // Encontra ou cria uma ValidationRun para associar os alertas
-  let lastRun = await prisma.validationRun.findFirst({
-    where: { dossierId, organizationId: tenant.organizationId },
-    orderBy: { startedAt: "desc" },
-  });
-
-  if (!lastRun) {
-    lastRun = await prisma.validationRun.create({
-      data: {
-        organizationId: tenant.organizationId,
-        dossierId,
-        status: "concluida",
-        score: 100,
-        rulesVersionSnapshot: "[]",
-        completedAt: new Date(),
-        createdById: tenant.userId,
-      },
-    });
-  }
-
-  // Busca regras ativas ou globais
-  const rules = await prisma.validationRule.findMany({
-    where: { OR: [{ organizationId: tenant.organizationId }, { organizationId: null }], status: "ativa" },
-  });
-
-  const variations = [
-    {
-      severity: "critica",
-      title: "[Simulação] Inconsistência Crítica de Lote",
-      message: "O número do lote diverge de forma grave entre o Certificado de Origem e a Invoice de importação.",
-      recommendation: "Solicitar correção formal dos documentos de importação junto ao exportador.",
-      ruleCode: "RULE-002",
-    },
-    {
-      severity: "alta",
-      title: "[Simulação] Divergência de Marca Identificada",
-      message: "A marca descrita na Invoice é 'Gran Tapada' enquanto o Rótulo menciona apenas 'Tapada'.",
-      recommendation: "Verificar se a safra compensa a divergência textual ou corrigir grafia na Invoice.",
-      ruleCode: "RULE-004",
-    },
-    {
-      severity: "media",
-      title: "[Simulação] Parâmetro de Acreditação em Ressalva",
-      message: "O laudo de análise informa que o teor alcoólico foi medido sob metodologia fora do escopo do laboratório.",
-      recommendation: "Revisar metodologia e atestar se está de acordo com as normas complementares.",
-      ruleCode: "RULE-011",
-    },
-    {
-      severity: "baixa",
-      title: "[Simulação] Documentação Acessória Desatualizada",
-      message: "A declaração de conformidade da embalagem foi emitida há mais de 365 dias.",
-      recommendation: "Recomenda-se solicitar nova versão da declaração atualizada pelo produtor.",
-      ruleCode: "RULE-013",
-    },
-    {
-      severity: "informativa",
-      title: "[Simulação] Análise de Rastreabilidade Concluída",
-      message: "Fluxo de rastreabilidade de volume executado sem ressalvas complementares de pesagem.",
-      recommendation: "Nenhuma ação necessária.",
-      ruleCode: "RULE-015",
-    },
-  ];
-
-  for (const item of variations) {
-    const matchedRule = rules.find((r) => r.code === item.ruleCode);
-    if (!matchedRule) continue;
-
-    // Remove alerta idêntico pré-existente para evitar duplicados
-    await prisma.validationAlert.deleteMany({
-      where: {
-        dossierId,
-        organizationId: tenant.organizationId,
-        title: item.title,
-      }
-    });
-
-    await prisma.validationAlert.create({
-      data: {
-        organizationId: tenant.organizationId,
-        dossierId,
-        validationRunId: lastRun.id,
-        ruleId: matchedRule.id,
-        severity: item.severity,
-        status: "aberto",
-        title: item.title,
-        message: item.message,
-        recommendation: item.recommendation,
-      },
-    });
-
-    await logAuditEvent({
-      organizationId: tenant.organizationId,
-      userId: tenant.userId,
-      dossierId,
-      action: AUDIT_ACTIONS.ALERT_GENERATED,
-      entityType: "validation_alert",
-      entityId: "simulated-alert",
-      after: { severity: item.severity, rule: item.ruleCode, simulated: true },
-    });
-  }
-
-  // Recalcula o score
-  await recomputeDossierScore(dossierId, tenant.organizationId);
-
-  // Atualiza status do dossiê para em revisão se necessário
-  if (!["aprovado", "aprovado_com_ressalvas", "reprovado", "arquivado"].includes(dossier.status)) {
-    await prisma.dossier.update({
-      where: { id: dossierId },
-      data: { status: "em_revisao" },
-    });
-  }
-
-  revalidatePath(`/app/dossiers/${dossierId}`);
-  revalidatePath(`/app/dossiers/${dossierId}/review`);
-  revalidatePath("/app/dossiers");
-  revalidatePath("/app");
-
-  return { ok: true };
-}

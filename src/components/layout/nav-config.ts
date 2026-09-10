@@ -2,10 +2,9 @@ import {
   LayoutDashboard,
   FileStack,
   ShieldCheck,
-  Radar,
+  Scale,
   FileBarChart,
   Settings,
-  Lock,
   Users,
   type LucideIcon,
 } from "lucide-react";
@@ -22,10 +21,10 @@ export interface NavItem {
 export const NAV_ITEMS: NavItem[] = [
   { href: "/app", label: "Dashboard", icon: LayoutDashboard },
   { href: "/app/dossiers", label: "Dossiês", icon: FileStack },
-  { href: "/app/rules", label: "Regras", icon: ShieldCheck },
-  { href: "/app/regulatory-monitor", label: "Monitor Regulatório", icon: Radar },
-  { href: "/app/reports", label: "Relatórios", icon: FileBarChart },
-  { href: "/app/settings", label: "Configurações", icon: Settings },
-  { href: "/app/security", label: "Segurança", icon: Lock },
-  { href: "/app/admin", label: "Admin", icon: Users, roles: ["admin"] },
+  { href: "/app/regulatory-monitor", label: "Governança Regulatória", icon: Scale, roles: ["admin", "gestor"] },
+  { href: "/app/rules", label: "Motor de Regras", icon: ShieldCheck, roles: ["admin", "gestor"] },
+  { href: "/app/reports", label: "Relatórios & Pareceres", icon: FileBarChart, roles: ["admin", "gestor"] },
+  { href: "/app/settings", label: "Configurações", icon: Settings, roles: ["admin", "gestor"] },
+  { href: "/app/admin", label: "Administração", icon: Users, roles: ["admin"] },
 ];
+

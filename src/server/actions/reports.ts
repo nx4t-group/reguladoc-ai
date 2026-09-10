@@ -4,9 +4,10 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 import { AUDIT_ACTIONS, logAuditEvent } from "@/lib/audit";
-import { scoreClassification } from "@/lib/constants";
+import { MANDATORY_LEGAL_DISCLAIMER, scoreClassification } from "@/lib/constants";
+import { assertCapability } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
-import { requireRole, requireTenant } from "@/lib/tenant";
+import { requireTenant } from "@/lib/tenant";
 import type { ActionResult } from "./dossiers";
 
 export async function generateReport(dossierId: string): Promise<ActionResult<{ id: string }>> {
@@ -14,7 +15,7 @@ export async function generateReport(dossierId: string): Promise<ActionResult<{ 
   const dossier = await prisma.dossier.findFirst({ where: { id: dossierId, organizationId: tenant.organizationId } });
   if (!dossier) return { ok: false, error: "Dossiê não encontrado." };
   if (dossier.complianceScore == null) {
-    return { ok: false, error: "Execute a validação antes de gerar o parecer." };
+    return { ok: false, error: "Execute a validação antes de gerar o relatório." };
   }
 
   const lastRun = await prisma.validationRun.findFirst({ where: { dossierId }, orderBy: { startedAt: "desc" } });
@@ -26,8 +27,8 @@ export async function generateReport(dossierId: string): Promise<ActionResult<{ 
       dossierId,
       validationRunId: lastRun?.id,
       status: "emitido",
-      title: `Parecer de conformidade — ${dossier.internalNumber}`,
-      summary: `Score de conformidade: ${dossier.complianceScore}/100 (${classification.label}). Documento gerado a partir da validação automática, sujeito a revisão humana obrigatória antes da aprovação final.`,
+      title: `Relatório de Conferência Documental Pré-Embarque — ${dossier.internalNumber}`,
+      summary: `Score de conferência documental: ${dossier.complianceScore}/100 (${classification.label}). ${MANDATORY_LEGAL_DISCLAIMER}`,
       generatedById: tenant.userId,
     },
   });
@@ -54,18 +55,29 @@ const approveSchema = z.object({
 });
 
 export async function decideDossier(input: z.infer<typeof approveSchema>): Promise<ActionResult> {
-  // RULE-014: aprovação final exige papel de revisor humano (gestor/admin), nunca só a IA.
-  const tenant = await requireRole(["admin", "gestor"]);
+  const tenant = await requireTenant();
+  // RULE-014: decisão final de liberação exige permissão de revisor humano qualificado (gestor/admin)
+  assertCapability(tenant.role, "DOSSIER_APPROVE");
+
   const { dossierId, decision, comment } = approveSchema.parse(input);
 
   const dossier = await prisma.dossier.findFirst({ where: { id: dossierId, organizationId: tenant.organizationId } });
   if (!dossier) return { ok: false, error: "Dossiê não encontrado." };
 
-  const openCritical = await prisma.validationAlert.count({
-    where: { dossierId, severity: "critica", status: { in: ["aberto", "confirmado"] } },
+  // Bloqueio rigoroso: Não permite liberação se houver inconformidades críticas ou de alta severidade não resolvidas
+  const openCriticalOrHigh = await prisma.validationAlert.count({
+    where: {
+      dossierId,
+      severity: { in: ["critica", "alta"] },
+      status: { in: ["aberto", "confirmado"] },
+    },
   });
-  if (decision !== "reprovado" && openCritical > 0) {
-    return { ok: false, error: "Existem alertas críticos em aberto. Revise-os antes de aprovar o dossiê." };
+
+  if (decision !== "reprovado" && openCriticalOrHigh > 0) {
+    return {
+      ok: false,
+      error: `Existem ${openCriticalOrHigh} inconformidade(s) crítica(s) ou de alta severidade em aberto. Todas devem ser resolvidas ou justificadas tecnicamente antes da liberação pré-embarque.`,
+    };
   }
 
   await prisma.dossier.update({ where: { id: dossierId }, data: { status: decision } });
@@ -95,3 +107,4 @@ export async function decideDossier(input: z.infer<typeof approveSchema>): Promi
   revalidatePath("/app");
   return { ok: true };
 }
+

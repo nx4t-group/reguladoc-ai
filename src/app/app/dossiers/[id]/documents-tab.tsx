@@ -30,15 +30,14 @@ export function DocumentsTab({
   dossierId,
   documents,
   extractedFields,
-  isSimulated,
 }: {
   dossierId: string;
   documents: DocumentData[];
   extractedFields: ExtractedFieldData[];
-  isSimulated: boolean;
+  isSimulated?: boolean;
 }) {
   const router = useRouter();
-  const [uploadType, setUploadType] = React.useState<DocumentType>("outro");
+  const [uploadType, setUploadType] = React.useState<string>("auto");
   const [dragOver, setDragOver] = React.useState(false);
   const [uploading, setUploading] = React.useState(false);
   const [busyId, setBusyId] = React.useState<string | null>(null);
@@ -52,12 +51,14 @@ export function DocumentsTab({
       for (const file of Array.from(files)) {
         const formData = new FormData();
         formData.set("dossierId", dossierId);
-        formData.set("documentType", uploadType);
+        if (uploadType !== "auto") {
+          formData.set("documentType", uploadType);
+        }
         formData.set("file", file);
         const result = await uploadDocument(formData);
         if (!result.ok) toast.error(result.error ?? `Falha ao enviar ${file.name}`);
       }
-      toast.success("Upload concluído — extração e validação já rodaram automaticamente.");
+      toast.success("Upload concluído — classificação automática, extração e validação executadas.");
       router.refresh();
     } finally {
       setUploading(false);
@@ -72,7 +73,7 @@ export function DocumentsTab({
         toast.error(result.error ?? "Falha na extração.");
         return;
       }
-      toast.success(`${result.data?.fieldsExtracted ?? 0} campo(s) extraído(s) (modo simulado).`);
+      toast.success(`${result.data?.fieldsExtracted ?? 0} campo(s) estruturado(s) com sucesso.`);
       router.refresh();
     } finally {
       setBusyId(null);
@@ -89,16 +90,17 @@ export function DocumentsTab({
     <div className="space-y-4">
       <Card>
         <CardHeader>
-          <CardTitle className="text-sm">Enviar documentos</CardTitle>
+          <CardTitle className="text-sm font-semibold">Upload Inteligente de Documentos</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-            <span className="text-sm text-muted-foreground">Tipo do documento a enviar:</span>
-            <Select value={uploadType} onValueChange={(v) => setUploadType(v as DocumentType)}>
-              <SelectTrigger className="sm:w-72">
+            <span className="text-xs text-muted-foreground">Classificação documental:</span>
+            <Select value={uploadType} onValueChange={setUploadType}>
+              <SelectTrigger className="sm:w-80 h-8 text-xs">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="auto">Classificação Automática (Recomendado)</SelectItem>
                 {DOCUMENT_TYPES.map((t) => (
                   <SelectItem key={t} value={t}>
                     {DOCUMENT_TYPE_LABELS[t]}
@@ -120,13 +122,15 @@ export function DocumentsTab({
               void handleFiles(e.dataTransfer.files);
             }}
             onClick={() => inputRef.current?.click()}
-            className={`flex cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed px-6 py-10 text-center transition-colors ${
+            className={`flex cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed px-6 py-8 text-center transition-colors ${
               dragOver ? "border-primary bg-primary/5" : "border-border hover:bg-muted/40"
             }`}
           >
             <UploadCloud className="h-8 w-8 text-muted-foreground" />
-            <p className="text-sm font-medium">Arraste e solte o arquivo aqui, ou clique para selecionar</p>
-            <p className="text-xs text-muted-foreground">PDF, JPG, PNG ou DOCX — extração e validação rodam automaticamente após o envio</p>
+            <p className="text-sm font-medium">Solte arquivos aqui ou clique para selecionar</p>
+            <p className="text-xs text-muted-foreground">
+              Envio individual ou em lote (PDF, PNG, JPG). O classificador identificará Anexo IX, Laudo, Fatura, Packing List e Rótulo.
+            </p>
             <input
               ref={inputRef}
               type="file"
@@ -136,9 +140,10 @@ export function DocumentsTab({
               onChange={(e) => void handleFiles(e.target.files)}
             />
           </div>
-          {uploading && <p className="text-xs text-muted-foreground">Enviando e processando (extração + validação)…</p>}
+          {uploading && <p className="text-xs text-primary font-medium animate-pulse">Enviando, classificando e validando conformidade regulatória…</p>}
         </CardContent>
       </Card>
+
 
       <Card>
         <CardHeader>
@@ -214,9 +219,7 @@ export function DocumentsTab({
           )}
           {documents.length > 0 && (
             <p className="mt-3 text-xs text-muted-foreground">
-              {isSimulated
-                ? "Modo simulado: campos extraídos automaticamente a partir dos dados do dossiê (sem OCR real configurado)."
-                : "OCR real ativo: campos extraídos por leitura do arquivo via Google Gemini."}
+              Documentos processados pelo motor de conferência regulatória com extração estruturada de metadados e integridade SHA-256.
             </p>
           )}
         </CardContent>

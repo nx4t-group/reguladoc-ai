@@ -38,8 +38,8 @@ export default async function RegulatoryMonitorPage() {
   return (
     <div>
       <PageHeader
-        title="Monitor Regulatório"
-        description="Publicações regulatórias sobre importação de bebidas não são centralizadas: o MAPA/Defesa Agropecuária é o principal canal, mas Instruções Normativas, Resoluções e Portarias podem aparecer primeiro no Diário Oficial ou em outras fontes."
+        title="Governança Regulatória"
+        description="Gestão ativa de fontes normativas oficiais (MAPA, DOU, SISCOMEX, ANVISA), conectores de acompanhamento legislativo e conversão assistida de publicações em regras determinísticas com rastreabilidade imutável."
       />
       <RegulatoryMonitorClient sources={sources} items={sortedItems} currentUserId={tenant.userId} />
     </div>

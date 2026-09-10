@@ -3,6 +3,17 @@
 // (zod) quanto para rótulos/cores na UI.
 
 export const DOSSIER_STATUSES = [
+  "DRAFT",
+  "AWAITING_DOCUMENTS",
+  "PROCESSING",
+  "READY_FOR_REVIEW",
+  "IN_REVIEW",
+  "BLOCKED",
+  "READY_FOR_APPROVAL",
+  "APPROVED",
+  "REJECTED",
+  "ARCHIVED",
+  // Retrocompatibilidade temporária com registros legados
   "rascunho",
   "documentos_pendentes",
   "processando",
@@ -15,17 +26,39 @@ export const DOSSIER_STATUSES = [
 export type DossierStatus = (typeof DOSSIER_STATUSES)[number];
 
 export const DOSSIER_STATUS_LABELS: Record<DossierStatus, string> = {
+  DRAFT: "Rascunho",
+  AWAITING_DOCUMENTS: "Aguardando Documentação",
+  PROCESSING: "Processando",
+  READY_FOR_REVIEW: "Pronto para Revisão",
+  IN_REVIEW: "Em Revisão",
+  BLOCKED: "Bloqueado para Decisão",
+  READY_FOR_APPROVAL: "Recomendado p/ Liberação",
+  APPROVED: "Conferência Concluída (Sem Bloqueios)",
+  REJECTED: "Não Recomendado",
+  ARCHIVED: "Arquivado",
+  // Legados
   rascunho: "Rascunho",
-  documentos_pendentes: "Documentos pendentes",
+  documentos_pendentes: "Aguardando Documentação",
   processando: "Processando",
-  em_revisao: "Em revisão",
-  aprovado: "Aprovado",
-  aprovado_com_ressalvas: "Aprovado com ressalvas",
-  reprovado: "Reprovado",
+  em_revisao: "Em Revisão",
+  aprovado: "Conferência Concluída",
+  aprovado_com_ressalvas: "Ressalvas Registradas",
+  reprovado: "Não Recomendado",
   arquivado: "Arquivado",
 };
 
 export const DOSSIER_STATUS_BADGE: Record<DossierStatus, "neutral" | "info" | "warning" | "success" | "destructive"> = {
+  DRAFT: "neutral",
+  AWAITING_DOCUMENTS: "warning",
+  PROCESSING: "info",
+  READY_FOR_REVIEW: "info",
+  IN_REVIEW: "info",
+  BLOCKED: "destructive",
+  READY_FOR_APPROVAL: "success",
+  APPROVED: "success",
+  REJECTED: "destructive",
+  ARCHIVED: "neutral",
+  // Legados
   rascunho: "neutral",
   documentos_pendentes: "warning",
   processando: "info",
@@ -198,13 +231,17 @@ export const PLAN_LABELS: Record<Plan, string> = {
   enterprise: "Enterprise",
 };
 
-/** Classificação do score de conformidade (seção 7.7 do escopo). */
+export const MANDATORY_LEGAL_DISCLAIMER =
+  "Este sistema é uma ferramenta de apoio à decisão operacional e conferência documental pré-embarque. Não substitui os órgãos reguladores oficiais (MAPA, Receita Federal, ANVISA) nem constitui ato administrativo formal de deferimento.";
+
+/** Classificação do score de conformidade alinhada ao propósito de apoio à decisão pré-embarque. */
 export function scoreClassification(score: number): {
   label: string;
   tone: "success" | "warning" | "destructive" | "neutral";
 } {
-  if (score >= 90) return { label: "Apto", tone: "success" };
-  if (score >= 75) return { label: "Apto com ressalvas", tone: "warning" };
-  if (score >= 50) return { label: "Pendente", tone: "warning" };
-  return { label: "Não recomendado para registro", tone: "destructive" };
+  if (score >= 90) return { label: "Sem bloqueios documentais detectados", tone: "success" };
+  if (score >= 75) return { label: "Ressalvas documentais a revisar", tone: "warning" };
+  if (score >= 50) return { label: "Revisão humana necessária", tone: "warning" };
+  return { label: "Bloqueado para decisão — Inconformidades detectadas", tone: "destructive" };
 }
+
