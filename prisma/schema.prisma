@@ -1,15 +1,17 @@
 // RegulaDoc AI — schema de dados
-// SQLite não suporta o tipo `enum` do Prisma: campos categóricos (status, severidade,
-// papel, tipo de documento, etc.) são modelados como String e validados via Zod na
-// camada de aplicação (ver src/lib/constants.ts). Isso também facilita a futura
-// migração para Postgres/Supabase mantendo os mesmos valores.
+// Campos categóricos (status, severidade, papel, tipo de documento, etc.) são
+// modelados como String e validados via Zod na camada de aplicação
+// (ver src/lib/constants.ts), permitindo usar PostgreSQL sem `enum` nativo e
+// mantendo flexibilidade para evoluir os valores sem migrations de DDL.
+// Produção: PostgreSQL via Supabase. Desenvolvimento local: pode usar SQLite
+// trocando provider abaixo e DATABASE_URL no .env.
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
