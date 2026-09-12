@@ -1,5 +1,12 @@
 import type { Role } from "./constants";
 
+// Enum for explicit role usage throughout the app
+export enum UserRole {
+  ADMIN = "admin",
+  GESTOR = "gestor",
+  ANALISTA = "analista",
+}
+
 export const CAPABILITIES = [
   "DOSSIER_CREATE",
   "DOSSIER_EDIT",
