@@ -41,7 +41,7 @@ export async function addManualRegulatorySource(
     after: { name: source.name, url: source.url, authority: source.authority },
   });
 
-  revalidatePath("/app/regulatory-monitor");
+  revalidatePath("/painel/regulatory-monitor");
   return { success: true, sourceId: source.id };
 }
 
@@ -160,7 +160,7 @@ export async function simulateSourceCheck(
     after: { lastCheckedAt: now, newItemId },
   });
 
-  revalidatePath("/app/regulatory-monitor");
+  revalidatePath("/painel/regulatory-monitor");
   return { success: true, newItemCreated: foundNewItem, itemId: newItemId };
 }
 
@@ -191,7 +191,7 @@ export async function updateRegulatoryItemStatus(
     after: { status: updated.status, reviewerId },
   });
 
-  revalidatePath("/app/regulatory-monitor");
+  revalidatePath("/painel/regulatory-monitor");
   return { success: true };
 }
 
@@ -249,7 +249,7 @@ export async function convertRegulatoryItemToRule(
     after: { linkedRuleId: newRule.id, ruleCode: newRule.code },
   });
 
-  revalidatePath("/app/rules");
-  revalidatePath("/app/regulatory-monitor");
+  revalidatePath("/painel/rules");
+  revalidatePath("/painel/regulatory-monitor");
   return { success: true, ruleId: newRule.id };
 }

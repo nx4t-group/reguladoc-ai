@@ -44,7 +44,7 @@ export async function requireTenant(): Promise<TenantContext> {
 export async function requireRole(allowed: Role[]): Promise<TenantContext> {
   const tenant = await requireTenant();
   if (!allowed.includes(tenant.role)) {
-    redirect("/app");
+    redirect("/painel");
   }
   return tenant;
 }

@@ -65,7 +65,7 @@ const columns: ColumnDef<DossierRow>[] = [
       </Button>
     ),
     cell: ({ row }) => (
-      <Link href={`/app/dossiers/${row.original.id}`} className="font-semibold text-primary hover:underline">
+      <Link href={`/painel/dossiers/${row.original.id}`} className="font-semibold text-primary hover:underline">
         {row.original.internalNumber}
       </Link>
     ),
@@ -154,7 +154,7 @@ const columns: ColumnDef<DossierRow>[] = [
       return (
         <div className="text-right">
           <Button size="sm" variant={hasBlockers ? "default" : "outline"} className="h-7 text-xs px-2.5" asChild>
-            <Link href={`/app/dossiers/${row.original.id}`}>
+            <Link href={`/painel/dossiers/${row.original.id}`}>
               {label} <ArrowRight className="ml-1 h-3 w-3" />
             </Link>
           </Button>
@@ -361,7 +361,7 @@ export function DossiersTable({ data }: { data: DossierRow[] }) {
                 <div className="flex items-start justify-between">
                   <div>
                     <CardTitle className="text-base font-semibold text-primary">
-                      <Link href={`/app/dossiers/${d.id}`} className="hover:underline">
+                      <Link href={`/painel/dossiers/${d.id}`} className="hover:underline">
                         {d.internalNumber}
                       </Link>
                     </CardTitle>
@@ -398,7 +398,7 @@ export function DossiersTable({ data }: { data: DossierRow[] }) {
                   {format(new Date(d.updatedAt), "dd/MM/yyyy", { locale: ptBR })}
                 </span>
                 <Button size="sm" variant="outline" className="h-7 text-xs" asChild>
-                  <Link href={`/app/dossiers/${d.id}`}>
+                  <Link href={`/painel/dossiers/${d.id}`}>
                     Abrir dossiê <ArrowRight className="ml-1 h-3 w-3" />
                   </Link>
                 </Button>

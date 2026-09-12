@@ -241,13 +241,13 @@ export async function runDossierValidation(dossierId: string): Promise<ActionRes
       entityId: report.id,
       after: { score: engineResult.score, classification: classification.label, automatic: true },
     });
-    revalidatePath("/app/reports");
+    revalidatePath("/painel/reports");
   }
 
-  revalidatePath(`/app/dossiers/${dossierId}`);
-  revalidatePath(`/app/dossiers/${dossierId}/review`);
-  revalidatePath("/app/dossiers");
-  revalidatePath("/app");
+  revalidatePath(`/painel/dossiers/${dossierId}`);
+  revalidatePath(`/painel/dossiers/${dossierId}/review`);
+  revalidatePath("/painel/dossiers");
+  revalidatePath("/painel");
 
   return { ok: true, data: { score: engineResult.score, findings: engineResult.findings.length } };
 }

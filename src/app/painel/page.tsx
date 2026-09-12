@@ -154,7 +154,7 @@ export default async function DashboardPage() {
               </Badge>
             )}
             <Button asChild>
-              <Link href="/app/dossiers/new">Novo dossiê</Link>
+              <Link href="/painel/dossiers/new">Novo dossiê</Link>
             </Button>
           </div>
         }
@@ -220,7 +220,7 @@ export default async function DashboardPage() {
             </CardDescription>
           </div>
           <Button variant="ghost" size="sm" asChild>
-            <Link href="/app/dossiers" className="gap-1 text-xs">
+            <Link href="/painel/dossiers" className="gap-1 text-xs">
               Ver todos ({totalDossiers}) <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           </Button>
@@ -257,7 +257,7 @@ export default async function DashboardPage() {
 
                     let actionText = "Revisar findings";
                     let actionVariant: "default" | "outline" | "secondary" | "ghost" = "default";
-                    const actionHref = `/app/dossiers/${d.id}`;
+                    const actionHref = `/painel/dossiers/${d.id}`;
 
                     if (isAwaitingDocs) {
                       actionText = "Anexar documentos";
@@ -276,7 +276,7 @@ export default async function DashboardPage() {
                     return (
                       <TableRow key={d.id} className="hover:bg-muted/30">
                         <TableCell className="font-semibold">
-                          <Link href={`/app/dossiers/${d.id}`} className="text-foreground hover:text-primary hover:underline">
+                          <Link href={`/painel/dossiers/${d.id}`} className="text-foreground hover:text-primary hover:underline">
                             {d.internalNumber}
                           </Link>
                         </TableCell>

@@ -200,7 +200,7 @@ export function ReviewClient({
         <div className="flex flex-col gap-3 rounded-lg border border-border bg-card p-4 shadow-sm lg:flex-row lg:items-center lg:justify-between">
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="icon" asChild className="h-8 w-8">
-              <Link href={`/app/dossiers/${dossier.id}`}>
+              <Link href={`/painel/dossiers/${dossier.id}`}>
                 <ArrowLeft className="h-4 w-4" />
               </Link>
             </Button>

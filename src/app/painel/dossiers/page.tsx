@@ -41,7 +41,7 @@ export default async function DossiersPage() {
         description="Todos os processos de importação em análise pela sua organização."
         actions={
           <Button asChild>
-            <Link href="/app/dossiers/new">
+            <Link href="/painel/dossiers/new">
               <Plus className="h-4 w-4" /> Novo dossiê
             </Link>
           </Button>

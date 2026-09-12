@@ -42,7 +42,7 @@ export function Sidebar({ role, planLabel }: { role: Role; planLabel: string }) 
             )}
             <div className="space-y-0.5">
               {section.items.map((item) => {
-                const isActive = item.href === "/app" ? pathname === "/app" : pathname.startsWith(item.href);
+                const isActive = item.href === "/painel" ? pathname === "/painel" : pathname.startsWith(item.href);
                 const Icon = item.icon;
                 return (
                   <Link

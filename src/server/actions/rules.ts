@@ -41,7 +41,7 @@ export async function toggleRuleStatus(ruleId: string): Promise<ActionResult<{ s
     metadata: { code: rule.code, version: rule.version },
   });
 
-  revalidatePath("/app/rules");
+  revalidatePath("/painel/rules");
   return { success: true, status: updated.status };
 }
 
@@ -102,7 +102,7 @@ export async function createRuleVersion(input: CreateRuleVersionInput): Promise<
     after: { code: newRule.code, version: newRule.version, status: newRule.status },
   });
 
-  revalidatePath("/app/rules");
+  revalidatePath("/painel/rules");
   return { success: true, ruleId: newRule.id };
 }
 

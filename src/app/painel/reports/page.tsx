@@ -50,7 +50,7 @@ export default async function ReportsPage() {
                 return (
                   <TableRow key={report.id}>
                     <TableCell>
-                      <Link href={`/app/dossiers/${report.dossier.id}`} className="font-medium hover:underline">
+                      <Link href={`/painel/dossiers/${report.dossier.id}`} className="font-medium hover:underline">
                         {report.title}
                       </Link>
                     </TableCell>

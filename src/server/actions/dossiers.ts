@@ -91,15 +91,15 @@ export async function createDossier(input: CreateDossierInput): Promise<ActionRe
     after: { internalNumber: dossier.internalNumber, brand: dossier.brand },
   });
 
-  revalidatePath("/app/dossiers");
-  revalidatePath("/app");
+  revalidatePath("/painel/dossiers");
+  revalidatePath("/painel");
   return { ok: true, data: { id: dossier.id } };
 }
 
 export async function createDossierAndRedirect(input: CreateDossierInput) {
   const result = await createDossier(input);
   if (result.ok && result.data) {
-    redirect(`/app/dossiers/${result.data.id}`);
+    redirect(`/painel/dossiers/${result.data.id}`);
   }
   return result;
 }
@@ -125,7 +125,7 @@ export async function assignDossier(input: z.infer<typeof assignSchema>): Promis
     after: { assignedToId },
   });
 
-  revalidatePath(`/app/dossiers/${dossierId}`);
+  revalidatePath(`/painel/dossiers/${dossierId}`);
   return { ok: true };
 }
 
@@ -146,7 +146,7 @@ export async function requestCorrection(dossierId: string): Promise<ActionResult
     after: { status: "documentos_pendentes", reason: "Correção solicitada ao importador/despachante" },
   });
 
-  revalidatePath(`/app/dossiers/${dossierId}`);
+  revalidatePath(`/painel/dossiers/${dossierId}`);
   return { ok: true };
 }
 
@@ -167,9 +167,9 @@ export async function startFinalReview(dossierId: string): Promise<ActionResult>
     after: { status: "READY_FOR_REVIEW", reason: "Documentação completa — conferência final iniciada" },
   });
 
-  revalidatePath(`/app/dossiers/${dossierId}`);
-  revalidatePath("/app/dossiers");
-  revalidatePath("/app");
+  revalidatePath(`/painel/dossiers/${dossierId}`);
+  revalidatePath("/painel/dossiers");
+  revalidatePath("/painel");
   return { ok: true };
 }
 
@@ -190,8 +190,8 @@ export async function archiveDossier(dossierId: string): Promise<ActionResult> {
     after: { status: "arquivado" },
   });
 
-  revalidatePath(`/app/dossiers/${dossierId}`);
-  revalidatePath("/app/dossiers");
+  revalidatePath(`/painel/dossiers/${dossierId}`);
+  revalidatePath("/painel/dossiers");
   return { ok: true };
 }
 

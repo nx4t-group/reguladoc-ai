@@ -43,8 +43,8 @@ export async function generateReport(dossierId: string): Promise<ActionResult<{ 
     after: { score: dossier.complianceScore, classification: classification.label },
   });
 
-  revalidatePath(`/app/dossiers/${dossierId}`);
-  revalidatePath("/app/reports");
+  revalidatePath(`/painel/dossiers/${dossierId}`);
+  revalidatePath("/painel/reports");
   return { ok: true, data: { id: report.id } };
 }
 
@@ -101,10 +101,10 @@ export async function decideDossier(input: z.infer<typeof approveSchema>): Promi
     after: { status: decision, comment, reviewedBy: tenant.userId },
   });
 
-  revalidatePath(`/app/dossiers/${dossierId}`);
-  revalidatePath("/app/dossiers");
-  revalidatePath("/app/reports");
-  revalidatePath("/app");
+  revalidatePath(`/painel/dossiers/${dossierId}`);
+  revalidatePath("/painel/dossiers");
+  revalidatePath("/painel/reports");
+  revalidatePath("/painel");
   return { ok: true };
 }
 

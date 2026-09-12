@@ -109,7 +109,7 @@ export function Topbar({
             results.map((r) => (
               <Link
                 key={r.id}
-                href={`/app/dossiers/${r.id}`}
+                href={`/painel/dossiers/${r.id}`}
                 onClick={() => setOpen(false)}
                 className="block rounded-sm px-3 py-2 text-sm hover:bg-accent"
               >
@@ -138,7 +138,7 @@ export function Topbar({
               <p className="px-2 py-3 text-sm text-muted-foreground">Nenhum alerta crítico em aberto.</p>
             )}
             {notifications.map((n) => (
-              <DropdownMenuItem key={n.id} onClick={() => router.push(`/app/dossiers/${n.dossierId}/review`)}>
+              <DropdownMenuItem key={n.id} onClick={() => router.push(`/painel/dossiers/${n.dossierId}/review`)}>
                 <div className="flex w-full items-start justify-between gap-2">
                   <div>
                     <p className="text-sm font-medium leading-snug">{n.title}</p>
@@ -171,7 +171,7 @@ export function Topbar({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-              <Link href="/app/settings">
+              <Link href="/painel/settings">
                 <Settings className="mr-2 h-4 w-4" /> Configurações
               </Link>
             </DropdownMenuItem>

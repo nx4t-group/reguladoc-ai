@@ -93,10 +93,10 @@ export async function reviewAlert(input: ReviewAlertInput): Promise<ActionResult
 
   const score = await recomputeDossierScore(alert.dossierId, tenant.organizationId);
 
-  revalidatePath(`/app/dossiers/${alert.dossierId}`);
-  revalidatePath(`/app/dossiers/${alert.dossierId}/review`);
-  revalidatePath("/app/dossiers");
-  revalidatePath("/app");
+  revalidatePath(`/painel/dossiers/${alert.dossierId}`);
+  revalidatePath(`/painel/dossiers/${alert.dossierId}/review`);
+  revalidatePath("/painel/dossiers");
+  revalidatePath("/painel");
 
   return { ok: true, data: { score } };
 }
@@ -173,10 +173,10 @@ export async function recordFindingAction(input: RecordFindingActionInput): Prom
 
   const score = await recomputeDossierScore(alert.dossierId, tenant.organizationId);
 
-  revalidatePath(`/app/dossiers/${alert.dossierId}`);
-  revalidatePath(`/app/dossiers/${alert.dossierId}/review`);
-  revalidatePath("/app/dossiers");
-  revalidatePath("/app");
+  revalidatePath(`/painel/dossiers/${alert.dossierId}`);
+  revalidatePath(`/painel/dossiers/${alert.dossierId}/review`);
+  revalidatePath("/painel/dossiers");
+  revalidatePath("/painel");
 
   return { ok: true, data: { score } };
 }
@@ -185,12 +185,26 @@ export async function requestComplementaryDocument(alertId: string, reason?: str
   const tenant = await requireTenant();
   assertCapability(tenant.role, "FINDING_RESOLVE");
 
-  const alert = await prisma.validationAlert.findFirst({ where: { id: alertId, organizationId: tenant.organizationId } });
+  const alert = await prisma.validationAlert.findFirst({
+    where: { id: alertId, organizationId: tenant.organizationId },
+  });
   if (!alert) return { ok: false, error: "Inconformidade não encontrada." };
 
-  await prisma.dossier.update({ where: { id: alert.dossierId }, data: { status: "documentos_pendentes" } });
+  const justification = reason || "Solicitação de novo documento ou versão retificada para sanar pendência regulatória";
 
-  const justification = reason || `Documento complementar solicitado referente à inconformidade "${alert.title}"`;
+  await prisma.dossier.update({
+    where: { id: alert.dossierId },
+    data: { status: "documentos_pendentes" },
+  });
+
+  await prisma.validationAlert.update({
+    where: { id: alert.id },
+    data: {
+      status: "aberto",
+      reviewComment: `Aguardando novo documento: ${justification}`,
+      reviewedById: tenant.userId,
+    },
+  });
 
   await prisma.findingAction.create({
     data: {
@@ -213,7 +227,6 @@ export async function requestComplementaryDocument(alertId: string, reason?: str
     after: { status: "documentos_pendentes", reason: justification },
   });
 
-  revalidatePath(`/app/dossiers/${alert.dossierId}`);
+  revalidatePath(`/painel/dossiers/${alert.dossierId}`);
   return { ok: true };
 }
-

@@ -39,7 +39,7 @@ export function DossierDetail({
       <div className="no-print space-y-3 rounded-lg border border-border bg-card p-5 shadow-sm">
         <div className="flex items-center justify-between">
           <Link
-            href="/app/dossiers"
+            href="/painel/dossiers"
             className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
             <ArrowLeft className="h-3.5 w-3.5" /> Voltar para lista de dossiês

@@ -34,7 +34,7 @@ export async function updateMemberRole(memberId: string, role: Role): Promise<Ac
     after: { role: updated.role },
   });
 
-  revalidatePath("/app/admin");
+  revalidatePath("/painel/admin");
   return { success: true };
 }
 
@@ -66,6 +66,6 @@ export async function updateMemberStatus(
     after: { status: updated.status },
   });
 
-  revalidatePath("/app/admin");
+  revalidatePath("/painel/admin");
   return { success: true };
 }

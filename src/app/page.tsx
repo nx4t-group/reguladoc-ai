@@ -4,5 +4,5 @@ import { getCurrentSession } from "@/lib/tenant";
 
 export default async function RootPage() {
   const session = await getCurrentSession();
-  redirect(session?.user ? "/app" : "/login");
+  redirect(session?.user ? "/painel" : "/login");
 }

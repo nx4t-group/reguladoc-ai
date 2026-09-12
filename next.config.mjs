@@ -19,6 +19,20 @@ const nextConfig = {
   experimental: {
     serverComponentsExternalPackages: ["@prisma/client", "prisma"],
   },
+  async redirects() {
+    return [
+      {
+        source: "/app",
+        destination: "/painel",
+        permanent: true,
+      },
+      {
+        source: "/app/:path*",
+        destination: "/painel/:path*",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

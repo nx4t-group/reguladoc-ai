@@ -39,7 +39,7 @@ export function AlertsTab({ dossierId, alerts }: { dossierId: string; alerts: Al
             </SelectContent>
           </Select>
           <Button size="sm" asChild>
-            <Link href={`/app/dossiers/${dossierId}/review`}>Abrir Workspace de Decisão</Link>
+            <Link href={`/painel/dossiers/${dossierId}/review`}>Abrir Workspace de Decisão</Link>
           </Button>
         </div>
       </CardHeader>

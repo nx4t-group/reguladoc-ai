@@ -181,7 +181,7 @@ export async function uploadDocument(formData: FormData): Promise<ActionResult<{
     console.error("Falha na automação pós-upload:", err);
   }
 
-  revalidatePath(`/app/dossiers/${dossierId}`);
+  revalidatePath(`/painel/dossiers/${dossierId}`);
   return { ok: true, data: { id: finalDocId } };
 }
 
@@ -212,7 +212,7 @@ export async function changeDocumentType(documentId: string, documentType: Docum
     console.error("Erro na re-extração pós-mudança de tipo:", err);
   }
 
-  revalidatePath(`/app/dossiers/${document.dossierId}`);
+  revalidatePath(`/painel/dossiers/${document.dossierId}`);
   return { ok: true };
 }
 
@@ -312,7 +312,7 @@ export async function extractDocumentFields(documentId: string): Promise<ActionR
     after: { fieldsExtracted: extracted.length },
   });
 
-  revalidatePath(`/app/dossiers/${document.dossierId}`);
+  revalidatePath(`/painel/dossiers/${document.dossierId}`);
   return { ok: true, data: { fieldsExtracted: extracted.length } };
 }
 

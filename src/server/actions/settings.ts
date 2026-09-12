@@ -44,6 +44,6 @@ export async function updateOrganizationSettings(
     after: { name: updated.name, cnpj: updated.cnpj, retentionDays: updated.retentionDays },
   });
 
-  revalidatePath("/app/settings");
+  revalidatePath("/painel/settings");
   return { success: true };
 }

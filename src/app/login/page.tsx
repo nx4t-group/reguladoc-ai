@@ -53,7 +53,7 @@ export default function LoginPage() {
     // de volta para /login por causa de uma corrida com o cookie recém-emitido),
     // depois faz uma navegação completa para garantir que o cookie seja enviado.
     await waitForSession();
-    window.location.assign("/app");
+    window.location.assign("/painel");
   }
 
   return (

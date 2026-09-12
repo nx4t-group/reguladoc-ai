@@ -141,7 +141,7 @@ export default async function SecurityPage() {
             <p className="text-xs text-muted-foreground">eventos de auditoria registrados até o momento</p>
           </div>
           <Button variant="outline" asChild>
-            <Link href="/app/dossiers">Ver auditoria por dossiê</Link>
+            <Link href="/painel/dossiers">Ver auditoria por dossiê</Link>
           </Button>
         </CardContent>
       </Card>

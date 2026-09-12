@@ -55,7 +55,7 @@ export default function OnboardingPage() {
       }
       toast.success("Organização criada com sucesso.");
       await waitForSession();
-      window.location.assign("/app");
+      window.location.assign("/painel");
     } finally {
       setLoading(false);
     }
