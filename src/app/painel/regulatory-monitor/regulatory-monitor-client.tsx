@@ -228,7 +228,7 @@ export function RegulatoryMonitorClient({
       )}
       <section className="space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-foreground">Fontes monitoradas</h2>
+          <h2 className="text-[16px] font-semibold text-foreground">Fontes monitoradas</h2>
           <Dialog open={addSourceOpen} onOpenChange={setAddSourceOpen}>
             <DialogTrigger asChild>
               <Button size="sm" variant="outline">
@@ -301,7 +301,7 @@ export function RegulatoryMonitorClient({
         ) : (
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {sources.map((source) => (
-              <Card key={source.id}>
+              <Card key={source.id} className="rounded-xl border-border/80 shadow-sm hover:shadow-md transition-shadow">
                 <CardHeader className="pb-2">
                   <div className="flex items-start justify-between gap-2">
                     <div>
@@ -339,7 +339,7 @@ export function RegulatoryMonitorClient({
       </section>
 
       <section className="space-y-3">
-        <h2 className="text-sm font-semibold text-foreground">Fila de publicações normativas</h2>
+        <h2 className="text-[16px] font-semibold text-foreground">Fila de publicações normativas</h2>
         {items.length === 0 ? (
           <EmptyState
             icon={Inbox}
@@ -349,7 +349,7 @@ export function RegulatoryMonitorClient({
         ) : (
           <div className="space-y-3">
             {items.map((item) => (
-              <Card key={item.id}>
+              <Card key={item.id} className="rounded-xl border-border/80 shadow-sm">
                 <CardContent className="space-y-3 p-5">
                   <div className="flex flex-wrap items-start justify-between gap-2">
                     <div>

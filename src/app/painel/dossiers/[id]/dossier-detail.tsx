@@ -36,7 +36,7 @@ export function DossierDetail({
   return (
     <div className="space-y-5">
       {/* HEADER PRINCIPAL DO WORKSPACE V3 */}
-      <div className="no-print space-y-3 rounded-lg border border-border bg-card p-5 shadow-sm">
+      <div className="no-print space-y-3 rounded-xl border border-border bg-card p-6 shadow-sm">
         <div className="flex items-center justify-between">
           <Link
             href="/painel/dossiers"
@@ -54,7 +54,7 @@ export function DossierDetail({
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between pt-1 border-t border-border/60">
           <div>
             <div className="flex flex-wrap items-center gap-2.5">
-              <h1 className="text-xl font-bold tracking-tight text-foreground">{dossier.internalNumber}</h1>
+              <h1 className="text-2xl font-bold tracking-tight text-foreground">{dossier.internalNumber}</h1>
               <DossierStatusBadge status={dossier.status} />
 
               {criticalAlertsCount > 0 ? (
@@ -105,21 +105,21 @@ export function DossierDetail({
       </div>
 
       {/* 5 ABAS UNIFICADAS DO WORKSPACE */}
-      <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList className="no-print bg-muted/70 p-1">
-          <TabsTrigger value="overview" className="text-xs">
+      <Tabs defaultValue="overview" className="space-y-5">
+        <TabsList className="no-print h-auto bg-muted/60 p-1 gap-0.5">
+          <TabsTrigger value="overview" className="text-[13.5px] font-medium px-4 py-2">
             Visão Geral
           </TabsTrigger>
-          <TabsTrigger value="documents" className="text-xs">
+          <TabsTrigger value="documents" className="text-[13.5px] font-medium px-4 py-2">
             Documentos ({documents.length})
           </TabsTrigger>
-          <TabsTrigger value="review" className="text-xs">
+          <TabsTrigger value="review" className="text-[13.5px] font-medium px-4 py-2">
             Revisão {alerts.length > 0 && `(${alerts.length})`}
           </TabsTrigger>
-          <TabsTrigger value="decision" className="text-xs">
+          <TabsTrigger value="decision" className="text-[13.5px] font-medium px-4 py-2">
             Decisão & Relatório
           </TabsTrigger>
-          <TabsTrigger value="history" className="text-xs">
+          <TabsTrigger value="history" className="text-[13.5px] font-medium px-4 py-2">
             Histórico ({auditEvents.length})
           </TabsTrigger>
         </TabsList>

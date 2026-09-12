@@ -65,7 +65,7 @@ const columns: ColumnDef<DossierRow>[] = [
       </Button>
     ),
     cell: ({ row }) => (
-      <Link href={`/painel/dossiers/${row.original.id}`} className="font-semibold text-primary hover:underline">
+      <Link href={`/painel/dossiers/${row.original.id}`} className="text-[14px] font-bold text-foreground hover:text-primary hover:underline">
         {row.original.internalNumber}
       </Link>
     ),
@@ -73,22 +73,22 @@ const columns: ColumnDef<DossierRow>[] = [
   {
     accessorKey: "importerName",
     header: "Cliente / Importador",
-    cell: ({ row }) => <span className="font-medium text-foreground">{row.original.importerName}</span>,
+    cell: ({ row }) => <span className="text-[14px] font-medium text-foreground">{row.original.importerName}</span>,
   },
   {
     accessorKey: "productName",
     header: "Produto / Itens",
     cell: ({ row }) => (
       <div className="max-w-[200px] truncate">
-        <p className="font-medium text-foreground">{row.original.brand}</p>
-        <p className="text-xs text-muted-foreground truncate">{row.original.productName}</p>
+        <p className="text-[14px] font-medium text-foreground">{row.original.brand}</p>
+        <p className="text-[12px] text-muted-foreground truncate">{row.original.productName}</p>
       </div>
     ),
   },
   {
     accessorKey: "countryOrigin",
     header: "Origem",
-    cell: ({ row }) => <span className="text-xs text-muted-foreground">{row.original.countryOrigin ?? "—"}</span>,
+    cell: ({ row }) => <span className="text-[13px] text-muted-foreground">{row.original.countryOrigin ?? "—"}</span>,
   },
   {
     accessorKey: "status",
@@ -100,11 +100,11 @@ const columns: ColumnDef<DossierRow>[] = [
     header: "Blockers",
     cell: ({ row }) =>
       row.original.criticalAlerts > 0 ? (
-        <Badge variant="critical" className="gap-1 text-xs">
+        <Badge variant="critical" className="gap-1 text-[12px]">
           <ShieldAlert className="h-3 w-3" /> {row.original.criticalAlerts}
         </Badge>
       ) : (
-        <span className="text-xs text-muted-foreground">0</span>
+        <span className="text-[13px] text-muted-foreground">—</span>
       ),
   },
   {
@@ -112,9 +112,9 @@ const columns: ColumnDef<DossierRow>[] = [
     header: "Score",
     cell: ({ row }) =>
       row.original.complianceScore == null ? (
-        <span className="text-xs text-muted-foreground">—</span>
+        <span className="text-[13px] text-muted-foreground">—</span>
       ) : (
-        <span className="text-xs font-semibold">{row.original.complianceScore} pts</span>
+        <span className="text-[13px] font-semibold">{row.original.complianceScore} pts</span>
       ),
   },
   {
@@ -136,7 +136,7 @@ const columns: ColumnDef<DossierRow>[] = [
       </Button>
     ),
     cell: ({ row }) => (
-      <span className="text-xs text-muted-foreground">
+      <span className="text-[13px] text-muted-foreground">
         {format(new Date(row.original.updatedAt), "dd/MM/yyyy", { locale: ptBR })}
       </span>
     ),
@@ -150,12 +150,12 @@ const columns: ColumnDef<DossierRow>[] = [
         row.original.status === "documentos_pendentes" ||
         row.original.status === "DRAFT";
       const hasBlockers = row.original.criticalAlerts > 0;
-      const label = isDocs ? "Documentar" : hasBlockers ? "Revisar" : "Conferir";
+      const label = isDocs ? "Anexar documentos" : hasBlockers ? "Tratar bloqueios" : "Conferir dossiê";
       return (
         <div className="text-right">
-          <Button size="sm" variant={hasBlockers ? "default" : "outline"} className="h-7 text-xs px-2.5" asChild>
+          <Button size="sm" variant={hasBlockers ? "default" : "outline"} className="h-8 text-[13px] font-medium px-3" asChild>
             <Link href={`/painel/dossiers/${row.original.id}`}>
-              {label} <ArrowRight className="ml-1 h-3 w-3" />
+              {label} <ArrowRight className="ml-1 h-3.5 w-3.5" />
             </Link>
           </Button>
         </div>

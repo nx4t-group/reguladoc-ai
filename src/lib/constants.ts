@@ -47,16 +47,16 @@ export const DOSSIER_STATUS_LABELS: Record<DossierStatus, string> = {
   arquivado: "Arquivado",
 };
 
-export const DOSSIER_STATUS_BADGE: Record<DossierStatus, "neutral" | "info" | "warning" | "success" | "destructive"> = {
+export const DOSSIER_STATUS_BADGE: Record<DossierStatus, "neutral" | "info" | "warning" | "success" | "destructive" | "violet" | "critical"> = {
   DRAFT: "neutral",
   AWAITING_DOCUMENTS: "warning",
   PROCESSING: "info",
   READY_FOR_REVIEW: "info",
   IN_REVIEW: "info",
-  BLOCKED: "destructive",
-  READY_FOR_APPROVAL: "success",
+  BLOCKED: "critical",
+  READY_FOR_APPROVAL: "violet",
   APPROVED: "success",
-  REJECTED: "destructive",
+  REJECTED: "neutral",
   ARCHIVED: "neutral",
   // Legados
   rascunho: "neutral",
@@ -65,7 +65,7 @@ export const DOSSIER_STATUS_BADGE: Record<DossierStatus, "neutral" | "info" | "w
   em_revisao: "info",
   aprovado: "success",
   aprovado_com_ressalvas: "warning",
-  reprovado: "destructive",
+  reprovado: "neutral",
   arquivado: "neutral",
 };
 

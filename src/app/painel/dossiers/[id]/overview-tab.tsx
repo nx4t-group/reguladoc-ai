@@ -17,8 +17,8 @@ import type { DossierDetailData } from "./types";
 function Field({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div>
-      <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{label}</p>
-      <p className="text-sm font-medium text-foreground mt-0.5">{value ?? "—"}</p>
+      <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{label}</p>
+      <p className="text-[14px] font-medium text-foreground mt-1">{value ?? "—"}</p>
     </div>
   );
 }
@@ -55,12 +55,12 @@ export function OverviewTab({
     <div className="grid gap-4 lg:grid-cols-3">
       <div className="space-y-4 lg:col-span-2">
         {/* RESUMO DO PROCESSO */}
-        <Card className="border-border shadow-sm">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-semibold">Resumo do Processo & Embarque</CardTitle>
-            <CardDescription className="text-xs">Dados cadastrais informados do dossiê de importação.</CardDescription>
+        <Card className="border-border shadow-sm rounded-xl">
+          <CardHeader className="pb-4">
+            <CardTitle className="text-[15px] font-semibold">Resumo do Processo & Embarque</CardTitle>
+            <CardDescription className="text-[13px]">Dados cadastrais informados do dossiê de importação.</CardDescription>
           </CardHeader>
-          <CardContent className="grid gap-4 sm:grid-cols-2">
+          <CardContent className="grid gap-5 sm:grid-cols-2">
             <Field label="Importador" value={dossier.importerName} />
             <Field label="Exportador" value={dossier.exporterName} />
             <Field label="Produtor / Engarrafador" value={dossier.producerName} />

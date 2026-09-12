@@ -22,21 +22,23 @@ export function Sidebar({ role, planLabel }: { role: Role; planLabel: string }) 
 
   return (
     <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground lg:flex">
-      <div className="flex h-16 items-center gap-2.5 border-b border-sidebar-border px-5">
-        <div className="flex h-8 w-8 items-center justify-center rounded-md bg-sidebar-accent text-primary-foreground">
-          <ShieldCheck className="h-4.5 w-4.5" />
+      {/* LOGOMARCA */}
+      <div className="flex h-16 items-center gap-3 border-b border-sidebar-border px-5">
+        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-sidebar-accent/80 ring-1 ring-white/10">
+          <ShieldCheck className="h-5 w-5 text-white" />
         </div>
         <div className="flex flex-col leading-tight">
-          <span className="text-sm font-semibold tracking-tight text-white">RegulaDoc AI</span>
+          <span className="text-[14px] font-bold tracking-tight text-white">RegulaDoc AI</span>
           <span className="text-[11px] text-sidebar-muted">Conferência Regulatória</span>
         </div>
       </div>
 
-      <nav className="flex-1 space-y-4 overflow-y-auto px-3 py-4">
+      {/* NAVEGAÇÃO */}
+      <nav className="flex-1 space-y-5 overflow-y-auto px-3 py-5">
         {visibleSections.map((section, idx) => (
-          <div key={section.title || `sec-${idx}`} className="space-y-1">
+          <div key={section.title || `sec-${idx}`} className="space-y-0.5">
             {section.title && (
-              <p className="px-3 pb-1 pt-2 text-[10px] font-semibold uppercase tracking-wider text-sidebar-muted/70">
+              <p className="px-3 pb-1.5 pt-1 text-[10px] font-bold uppercase tracking-widest text-sidebar-muted/50">
                 {section.title}
               </p>
             )}
@@ -49,14 +51,17 @@ export function Sidebar({ role, planLabel }: { role: Role; planLabel: string }) 
                     key={item.href}
                     href={item.href}
                     className={cn(
-                      "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                      "group flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13.5px] font-medium transition-all duration-150",
                       isActive
-                        ? "bg-sidebar-accent text-white"
+                        ? "bg-sidebar-accent text-white shadow-sm"
                         : "text-sidebar-muted hover:bg-white/5 hover:text-sidebar-foreground",
                     )}
                   >
-                    <Icon className="h-4 w-4 shrink-0" />
-                    {item.label}
+                    <Icon className={cn("h-4 w-4 shrink-0 transition-colors", isActive ? "text-white" : "text-sidebar-muted/70 group-hover:text-sidebar-foreground")} />
+                    <span>{item.label}</span>
+                    {isActive && (
+                      <span className="ml-auto h-1.5 w-1.5 rounded-full bg-white/60" />
+                    )}
                   </Link>
                 );
               })}
@@ -65,10 +70,11 @@ export function Sidebar({ role, planLabel }: { role: Role; planLabel: string }) 
         ))}
       </nav>
 
+      {/* PLANO */}
       <div className="border-t border-sidebar-border px-4 py-4">
-        <div className="rounded-md border border-sidebar-border bg-white/5 px-3 py-2.5">
-          <p className="text-[11px] uppercase tracking-wide text-sidebar-muted">Plano atual</p>
-          <p className="text-sm font-medium text-sidebar-foreground">{planLabel}</p>
+        <div className="rounded-lg border border-sidebar-border/60 bg-white/5 px-3 py-3">
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-sidebar-muted/50">Plano atual</p>
+          <p className="mt-0.5 text-[13px] font-semibold text-sidebar-foreground">{planLabel}</p>
         </div>
       </div>
     </aside>

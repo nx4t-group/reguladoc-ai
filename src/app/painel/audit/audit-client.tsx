@@ -90,8 +90,8 @@ export function AuditLogClient({ events }: { events: AuditEventItem[] }) {
     <Card className="border border-border bg-card">
       <CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <CardTitle className="text-base font-semibold">Eventos auditados ({filteredEvents.length})</CardTitle>
-          <CardDescription>Trilha detalhada e protegida contra exclusão.</CardDescription>
+          <CardTitle className="text-[17px] font-semibold">Eventos auditados ({filteredEvents.length})</CardTitle>
+          <CardDescription className="text-[13px]">Trilha detalhada e protegida contra exclusão.</CardDescription>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <div className="relative w-64">
@@ -136,69 +136,81 @@ export function AuditLogClient({ events }: { events: AuditEventItem[] }) {
           const hasDetails = !!(e.beforeJson || e.afterJson || e.metadataJson);
 
           return (
-            <div key={e.id} className="p-4 transition-colors hover:bg-muted/40">
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex items-start gap-3">
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-muted text-foreground">
-                    <Icon className="h-4 w-4 text-primary" />
-                  </div>
+            <div key={e.id} className="relative flex gap-4 p-4 transition-colors hover:bg-muted/40 group">
+              {/* Linha vertical de timeline */}
+              <div className="absolute left-[38px] top-[56px] bottom-0 w-px bg-border/60 group-last:hidden" />
+
+              <div className={
+                `flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${
+                  info.badgeVariant === "success" ? "bg-status-success/15 text-status-success" :
+                  info.badgeVariant === "destructive" ? "bg-severity-critical/15 text-severity-critical" :
+                  info.badgeVariant === "warning" ? "bg-status-warning/15 text-status-warning" :
+                  info.badgeVariant === "info" ? "bg-severity-low/15 text-severity-low" :
+                  "bg-muted text-muted-foreground"
+                }`
+              }>
+                <Icon className="h-4.5 w-4.5" />
+              </div>
+
+              <div className="flex-1 min-w-0">
+                <div className="flex items-start justify-between gap-4">
                   <div>
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="font-semibold text-foreground text-sm">{info.label}</span>
+                      <span className="text-[15px] font-semibold text-foreground">{info.label}</span>
                       {e.dossierInternalNumber && (
                         <Badge variant="outline" className="font-mono text-[11px]">
                           {e.dossierInternalNumber} {e.dossierBrand ? `· ${e.dossierBrand}` : ""}
                         </Badge>
                       )}
                     </div>
-                    <p className="mt-0.5 text-xs text-muted-foreground">
+                    <p className="mt-0.5 text-[13px] text-muted-foreground">
                       Por <span className="font-medium text-foreground">{e.userName}</span>
                       {e.userEmail ? ` (${e.userEmail})` : ""} · {format(new Date(e.createdAt), "dd/MM/yyyy 'às' HH:mm:ss", { locale: ptBR })}
                       {e.ipAddress && ` · IP: ${e.ipAddress}`}
                     </p>
                   </div>
+                  {hasDetails && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 gap-1 text-[12px] text-muted-foreground shrink-0"
+                      onClick={() => toggleExpand(e.id)}
+                    >
+                      {isExpanded ? "Ocultar detalhes" : "Ver payload"}
+                      {isExpanded ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
+                    </Button>
+                  )}
                 </div>
-                {hasDetails && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 gap-1 text-xs text-muted-foreground"
-                    onClick={() => toggleExpand(e.id)}
-                  >
-                    {isExpanded ? "Ocultar detalhes" : "Ver payload"}
-                    {isExpanded ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
-                  </Button>
+
+                {isExpanded && hasDetails && (
+                  <div className="mt-3 grid gap-3 rounded-xl bg-muted/70 p-3 text-xs sm:grid-cols-2">
+                    {e.beforeJson && (
+                      <div>
+                        <p className="mb-1 font-semibold uppercase text-muted-foreground text-[10px]">Antes (Estado Prévio)</p>
+                        <pre className="max-h-40 overflow-auto rounded bg-background p-2 font-mono text-[11px] text-foreground">
+                          {e.beforeJson}
+                        </pre>
+                      </div>
+                    )}
+                    {e.afterJson && (
+                      <div>
+                        <p className="mb-1 font-semibold uppercase text-muted-foreground text-[10px]">Depois (Estado Resultante)</p>
+                        <pre className="max-h-40 overflow-auto rounded bg-background p-2 font-mono text-[11px] text-foreground">
+                          {e.afterJson}
+                        </pre>
+                      </div>
+                    )}
+                    {e.metadataJson && (
+                      <div className="sm:col-span-2">
+                        <p className="mb-1 font-semibold uppercase text-muted-foreground text-[10px]">Metadados & Snapshot</p>
+                        <pre className="max-h-40 overflow-auto rounded bg-background p-2 font-mono text-[11px] text-foreground">
+                          {e.metadataJson}
+                        </pre>
+                      </div>
+                    )}
+                  </div>
                 )}
               </div>
-
-              {isExpanded && hasDetails && (
-                <div className="mt-3 grid gap-3 rounded-md bg-muted/70 p-3 text-xs sm:grid-cols-2">
-                  {e.beforeJson && (
-                    <div>
-                      <p className="mb-1 font-semibold uppercase text-muted-foreground text-[10px]">Antes (Estado Prévio)</p>
-                      <pre className="max-h-40 overflow-auto rounded bg-background p-2 font-mono text-[11px] text-foreground">
-                        {e.beforeJson}
-                      </pre>
-                    </div>
-                  )}
-                  {e.afterJson && (
-                    <div>
-                      <p className="mb-1 font-semibold uppercase text-muted-foreground text-[10px]">Depois (Estado Resultante)</p>
-                      <pre className="max-h-40 overflow-auto rounded bg-background p-2 font-mono text-[11px] text-foreground">
-                        {e.afterJson}
-                      </pre>
-                    </div>
-                  )}
-                  {e.metadataJson && (
-                    <div className="sm:col-span-2">
-                      <p className="mb-1 font-semibold uppercase text-muted-foreground text-[10px]">Metadados & Snapshot</p>
-                      <pre className="max-h-40 overflow-auto rounded bg-background p-2 font-mono text-[11px] text-foreground">
-                        {e.metadataJson}
-                      </pre>
-                    </div>
-                  )}
-                </div>
-              )}
             </div>
           );
         })}

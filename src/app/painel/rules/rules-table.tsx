@@ -204,23 +204,23 @@ export function RulesTable({ rules, hasDossierForSimulation }: { rules: RuleRow[
         ) : (
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead>Código</TableHead>
-                <TableHead>Nome</TableHead>
-                <TableHead>Categoria</TableHead>
-                <TableHead>Severidade</TableHead>
-                <TableHead>Versão</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Fonte</TableHead>
-                <TableHead className="text-right">Ações</TableHead>
+              <TableRow className="bg-muted/40 hover:bg-muted/40">
+                <TableHead className="text-[12px] font-semibold uppercase tracking-wide text-muted-foreground py-3">Código</TableHead>
+                <TableHead className="text-[12px] font-semibold uppercase tracking-wide text-muted-foreground">Nome</TableHead>
+                <TableHead className="text-[12px] font-semibold uppercase tracking-wide text-muted-foreground">Categoria</TableHead>
+                <TableHead className="text-[12px] font-semibold uppercase tracking-wide text-muted-foreground">Severidade</TableHead>
+                <TableHead className="text-[12px] font-semibold uppercase tracking-wide text-muted-foreground">Versão</TableHead>
+                <TableHead className="text-[12px] font-semibold uppercase tracking-wide text-muted-foreground">Status</TableHead>
+                <TableHead className="text-[12px] font-semibold uppercase tracking-wide text-muted-foreground">Fonte</TableHead>
+                <TableHead className="text-right text-[12px] font-semibold uppercase tracking-wide text-muted-foreground">Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filtered.map((rule) => (
-                <TableRow key={rule.id}>
-                  <TableCell className="whitespace-nowrap font-mono text-xs">{rule.code}</TableCell>
-                  <TableCell className="max-w-xs">{rule.name}</TableCell>
-                  <TableCell className="whitespace-nowrap text-xs text-muted-foreground">
+                <TableRow key={rule.id} className="hover:bg-muted/25 transition-colors">
+                  <TableCell className="py-3.5 whitespace-nowrap font-mono text-[13px] font-semibold text-primary">{rule.code}</TableCell>
+                  <TableCell className="py-3.5 max-w-xs text-[14px] font-medium text-foreground">{rule.name}</TableCell>
+                  <TableCell className="py-3.5 whitespace-nowrap text-[13px] text-muted-foreground">
                     {RULE_CATEGORY_LABELS[rule.category as RuleCategory] ?? rule.category}
                   </TableCell>
                   <TableCell>
