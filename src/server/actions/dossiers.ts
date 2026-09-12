@@ -150,6 +150,29 @@ export async function requestCorrection(dossierId: string): Promise<ActionResult
   return { ok: true };
 }
 
+export async function startFinalReview(dossierId: string): Promise<ActionResult> {
+  const tenant = await requireTenant();
+  const dossier = await prisma.dossier.findFirst({ where: { id: dossierId, organizationId: tenant.organizationId } });
+  if (!dossier) return { ok: false, error: "Dossiê não encontrado." };
+
+  await prisma.dossier.update({ where: { id: dossierId }, data: { status: "READY_FOR_REVIEW" } });
+  await logAuditEvent({
+    organizationId: tenant.organizationId,
+    userId: tenant.userId,
+    dossierId,
+    action: AUDIT_ACTIONS.DOSSIER_STATUS_CHANGED,
+    entityType: "dossier",
+    entityId: dossierId,
+    before: { status: dossier.status },
+    after: { status: "READY_FOR_REVIEW", reason: "Documentação completa — conferência final iniciada" },
+  });
+
+  revalidatePath(`/app/dossiers/${dossierId}`);
+  revalidatePath("/app/dossiers");
+  revalidatePath("/app");
+  return { ok: true };
+}
+
 export async function archiveDossier(dossierId: string): Promise<ActionResult> {
   const tenant = await requireTenant();
   const dossier = await prisma.dossier.findFirst({ where: { id: dossierId, organizationId: tenant.organizationId } });
@@ -171,3 +194,4 @@ export async function archiveDossier(dossierId: string): Promise<ActionResult> {
   revalidatePath("/app/dossiers");
   return { ok: true };
 }
+

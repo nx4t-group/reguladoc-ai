@@ -36,6 +36,7 @@ import { uploadDocument } from "@/server/actions/documents";
 import { safeJsonParse } from "../format";
 
 export interface ReviewClientProps {
+  embedded?: boolean;
   tenantRole: Role;
   dossier: {
     id: string;
@@ -98,6 +99,7 @@ export interface ReviewClientProps {
 }
 
 export function ReviewClient({
+  embedded = false,
   tenantRole,
   dossier,
   documents,
@@ -193,41 +195,43 @@ export function ReviewClient({
 
   return (
     <div className="space-y-3 pb-8">
-      {/* Barra de Título Superior */}
-      <div className="flex flex-col gap-3 rounded-lg border border-border bg-card p-4 shadow-sm lg:flex-row lg:items-center lg:justify-between">
-        <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" asChild className="h-8 w-8">
-            <Link href={`/app/dossiers/${dossier.id}`}>
-              <ArrowLeft className="h-4 w-4" />
-            </Link>
-          </Button>
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-lg font-bold tracking-tight">{dossier.internalNumber}</h1>
-              <DossierStatusBadge status={dossier.status} />
-              {dossier.complianceScore != null && (
-                <Badge variant={dossier.complianceScore >= 90 ? "success" : "warning"} className="font-mono text-xs">
-                  Score: {dossier.complianceScore}/100
-                </Badge>
-              )}
+      {/* Barra de Título Superior (apenas quando não embutido) */}
+      {!embedded && (
+        <div className="flex flex-col gap-3 rounded-lg border border-border bg-card p-4 shadow-sm lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" size="icon" asChild className="h-8 w-8">
+              <Link href={`/app/dossiers/${dossier.id}`}>
+                <ArrowLeft className="h-4 w-4" />
+              </Link>
+            </Button>
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="text-lg font-bold tracking-tight">{dossier.internalNumber}</h1>
+                <DossierStatusBadge status={dossier.status} />
+                {dossier.complianceScore != null && (
+                  <Badge variant={dossier.complianceScore >= 90 ? "success" : "warning"} className="font-mono text-xs">
+                    Score: {dossier.complianceScore}/100
+                  </Badge>
+                )}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {dossier.brand} · {dossier.productName} · Workspace de Decisão Técnica Pré-Embarque
+              </p>
             </div>
-            <p className="text-xs text-muted-foreground">
-              {dossier.brand} · {dossier.productName} · Workspace de Decisão Técnica Pré-Embarque
+          </div>
+
+          {/* Disclaimer Legal Obrigatório em Banner Compacto */}
+          <div className="max-w-md rounded border border-amber-200 dark:border-amber-900/50 bg-amber-50 dark:bg-amber-950/20 px-3 py-1.5 text-[11px] text-amber-800 dark:text-amber-300">
+            <div className="flex items-center gap-1.5 font-semibold">
+              <Scale className="h-3.5 w-3.5 shrink-0" />
+              <span>Apoio à Decisão Operacional</span>
+            </div>
+            <p className="mt-0.5 line-clamp-1 hover:line-clamp-none text-[10px] opacity-90 transition-all">
+              {MANDATORY_LEGAL_DISCLAIMER}
             </p>
           </div>
         </div>
-
-        {/* Disclaimer Legal Obrigatório em Banner Compacto */}
-        <div className="max-w-md rounded border border-amber-200 dark:border-amber-900/50 bg-amber-50 dark:bg-amber-950/20 px-3 py-1.5 text-[11px] text-amber-800 dark:text-amber-300">
-          <div className="flex items-center gap-1.5 font-semibold">
-            <Scale className="h-3.5 w-3.5 shrink-0" />
-            <span>Apoio à Decisão Operacional</span>
-          </div>
-          <p className="mt-0.5 line-clamp-1 hover:line-clamp-none text-[10px] opacity-90 transition-all">
-            {MANDATORY_LEGAL_DISCLAIMER}
-          </p>
-        </div>
-      </div>
+      )}
 
       {/* Grid de 3 Painéis Desktop */}
       <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr_420px] gap-4 min-h-[720px]">

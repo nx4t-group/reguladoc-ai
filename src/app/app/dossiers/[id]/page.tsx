@@ -14,6 +14,7 @@ export default async function DossierDetailPage({ params }: { params: { id: stri
     include: {
       assignedTo: { select: { id: true, name: true } },
       createdBy: { select: { id: true, name: true } },
+      items: { orderBy: { itemNumber: "asc" } },
     },
   });
   if (!dossier) notFound();
@@ -21,14 +22,22 @@ export default async function DossierDetailPage({ params }: { params: { id: stri
   const [documents, extractedFields, validationRuns, alerts, auditEvents, reports, members, rules] = await Promise.all([
     prisma.document.findMany({
       where: { dossierId: dossier.id },
-      include: { uploadedBy: { select: { name: true } } },
+      include: {
+        uploadedBy: { select: { name: true } },
+        versions: { orderBy: { versionNumber: "desc" } },
+      },
       orderBy: { createdAt: "asc" },
     }),
     prisma.extractedField.findMany({ where: { dossierId: dossier.id }, orderBy: { fieldKey: "asc" } }),
     prisma.validationRun.findMany({ where: { dossierId: dossier.id }, orderBy: { startedAt: "desc" } }),
     prisma.validationAlert.findMany({
       where: { dossierId: dossier.id },
-      include: { rule: true, reviewedBy: { select: { name: true } }, confirmedBy: { select: { name: true } } },
+      include: {
+        rule: true,
+        reviewedBy: { select: { name: true } },
+        confirmedBy: { select: { name: true } },
+        actions: { orderBy: { createdAt: "desc" } },
+      },
       orderBy: [{ createdAt: "desc" }],
     }),
     prisma.auditEvent.findMany({
@@ -83,6 +92,20 @@ export default async function DossierDetailPage({ params }: { params: { id: stri
         createdBy: dossier.createdBy,
         createdAt: dossier.createdAt.toISOString(),
         updatedAt: dossier.updatedAt.toISOString(),
+        items: dossier.items.map((i) => ({
+          id: i.id,
+          itemNumber: i.itemNumber,
+          productName: i.productName,
+          brand: i.brand,
+          vintage: i.vintage,
+          geographicalIndication: i.geographicalIndication,
+          batchNumber: i.batchNumber,
+          packageType: i.packageType,
+          packageCount: i.packageCount,
+          unitsPerPackage: i.unitsPerPackage,
+          unitCapacityLiters: i.unitCapacityLiters,
+          totalVolumeLiters: i.totalVolumeLiters,
+        })),
       }}
       documents={documents.map((d) => ({
         id: d.id,
@@ -91,11 +114,13 @@ export default async function DossierDetailPage({ params }: { params: { id: stri
         mimeType: d.mimeType,
         size: d.size,
         checksum: d.checksum,
+        currentVersion: d.currentVersion,
         uploadStatus: d.uploadStatus,
         extractionStatus: d.extractionStatus,
         confidenceScore: d.confidenceScore,
         uploadedByName: d.uploadedBy.name,
         createdAt: d.createdAt.toISOString(),
+        versionsCount: d.versions.length,
       }))}
       extractedFields={extractedFields.map((f) => ({
         id: f.id,
@@ -118,6 +143,8 @@ export default async function DossierDetailPage({ params }: { params: { id: stri
         ruleId: a.ruleId,
         ruleCode: a.rule.code,
         ruleName: a.rule.name,
+        ruleDescription: a.rule.description,
+        sourceReference: a.rule.sourceReference,
         severity: a.severity,
         status: a.status,
         title: a.title,
@@ -129,6 +156,14 @@ export default async function DossierDetailPage({ params }: { params: { id: stri
         confirmedByName: a.confirmedBy?.name ?? null,
         createdAt: a.createdAt.toISOString(),
         updatedAt: a.updatedAt.toISOString(),
+        actions: a.actions.map((act) => ({
+          id: act.id,
+          actionType: act.actionType,
+          reason: act.reason,
+          previousStatus: act.previousStatus,
+          newStatus: act.newStatus,
+          createdAt: act.createdAt.toISOString(),
+        })),
       }))}
       auditEvents={auditEvents.map((e) => ({
         id: e.id,
@@ -152,7 +187,14 @@ export default async function DossierDetailPage({ params }: { params: { id: stri
       }))}
       members={members.map((m) => ({ userId: m.user.id, name: m.user.name, role: m.role }))}
       appliedRuleCodes={Array.from(new Set(alerts.map((a) => a.rule.code)))}
-      allRules={rules.map((r) => ({ id: r.id, code: r.code, name: r.name, category: r.category, severity: r.severity, version: r.version }))}
+      allRules={rules.map((r) => ({
+        id: r.id,
+        code: r.code,
+        name: r.name,
+        category: r.category,
+        severity: r.severity,
+        version: r.version,
+      }))}
       missingRequiredDocuments={missingRequiredDocuments}
       isExtractionSimulated={isExtractionSimulated()}
     />

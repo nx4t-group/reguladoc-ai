@@ -24,8 +24,9 @@ export function roleGuard(requiredCapabilities: Capability[]) {
           assertCapability(userRole, cap, `Acesso negado: capacidade ${cap} necessária.`);
         }
         await handler(req, res);
-      } catch (e: any) {
-        res.status(403).json({ error: e.message ?? "Acesso proibido" });
+      } catch (e: unknown) {
+        const message = e instanceof Error ? e.message : "Acesso proibido";
+        res.status(403).json({ error: message });
       }
     };
   };

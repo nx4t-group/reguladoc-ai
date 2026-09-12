@@ -1,5 +1,20 @@
 import type { TenantContext } from "@/lib/tenant";
 
+export interface DossierItemData {
+  id: string;
+  itemNumber: number;
+  productName: string;
+  brand: string;
+  vintage: string | null;
+  geographicalIndication: string | null;
+  batchNumber: string | null;
+  packageType: string | null;
+  packageCount: number | null;
+  unitsPerPackage: number | null;
+  unitCapacityLiters: number | null;
+  totalVolumeLiters: number | null;
+}
+
 export interface DossierDetailData {
   id: string;
   internalNumber: string;
@@ -24,6 +39,7 @@ export interface DossierDetailData {
   createdBy: { id: string; name: string };
   createdAt: string;
   updatedAt: string;
+  items?: DossierItemData[];
 }
 
 export interface DocumentData {
@@ -38,6 +54,8 @@ export interface DocumentData {
   confidenceScore: number | null;
   uploadedByName: string;
   createdAt: string;
+  currentVersion?: number;
+  versionsCount?: number;
 }
 
 export interface ExtractedFieldData {
@@ -57,12 +75,23 @@ export interface ValidationRunData {
   completedAt: string | null;
 }
 
+export interface FindingActionData {
+  id: string;
+  actionType: string;
+  reason: string;
+  previousStatus: string | null;
+  newStatus: string;
+  createdAt: string;
+}
+
 export interface AlertData {
   id: string;
   validationRunId: string;
   ruleId: string;
   ruleCode: string;
   ruleName: string;
+  ruleDescription?: string;
+  sourceReference?: string | null;
   severity: string;
   status: string;
   title: string;
@@ -74,6 +103,7 @@ export interface AlertData {
   confirmedByName: string | null;
   createdAt: string;
   updatedAt: string;
+  actions?: FindingActionData[];
 }
 
 export interface AuditEventData {
