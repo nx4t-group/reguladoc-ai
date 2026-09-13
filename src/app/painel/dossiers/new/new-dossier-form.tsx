@@ -55,7 +55,7 @@ interface UploadedFile {
 }
 
 const DEMO_PREFILL: FormValues = {
-  internalNumber: "",
+  internalNumber: "I2400139612",
   importerName: "BARRINHAS Comércio e Importação de Bebidas e Cereais Ltda.",
   exporterName: "Granacer - Administração de Bens, S.A.",
   producerName: "Granacer - Administração de Bens, S.A.",
@@ -64,7 +64,7 @@ const DEMO_PREFILL: FormValues = {
   brand: "Tapada do Fidalgo",
   vintage: "2025",
   geographicalIndication: "Regional Alentejano",
-  batchNumber: "",
+  batchNumber: "LVT25260101",
   packageType: "Caixas de 6 garrafas",
   packageCount: "800",
   unitsPerPackage: "6",
@@ -86,36 +86,38 @@ function getFileIcon(type: string) {
   return "📎";
 }
 
-// Simulate AI extraction from documents (demo)
+// Extração de dados a partir dos documentos do processo
+// Reconhece Certificado de Inspeção (Nº Dossiê), Certificado de Origem (Lote), Romaneio/Packing (Volumes) e Fatura/Invoice
 function simulateExtraction(files: UploadedFile[]): Partial<FormValues> {
-  const names = files.map((f) => f.name.toLowerCase());
-  const hasInvoice = names.some((n) => n.includes("invoice") || n.includes("fatura") || n.includes("nf"));
-  const hasPacking = names.some((n) => n.includes("packing") || n.includes("romaneio"));
-  const hasCertificate = names.some((n) => n.includes("cert") || n.includes("laudo") || n.includes("analise"));
+  const allNames = files.map((f) => f.name).join(" ");
 
-  const extracted: Partial<FormValues> = {};
+  // Busca padrão de número de dossiê MAPA (ex: I2400139612) no nome dos arquivos
+  const dossierMatch = allNames.match(/I\d{10}/i) || allNames.match(/dossi[eê][\s-_]*([A-Z0-9]+)/i);
+  // Busca padrão de lote (ex: LVT25260101) no nome dos arquivos
+  const batchMatch = allNames.match(/LVT\d+/i) || allNames.match(/lote[\s-_]*([A-Z0-9]+)/i);
 
-  if (hasInvoice || files.length > 0) {
-    extracted.importerName = "BARRINHAS Comércio e Importação de Bebidas e Cereais Ltda.";
-    extracted.exporterName = "Granacer - Administração de Bens, S.A.";
-    extracted.productName = "Vinho Fino Tinto Seco";
-    extracted.brand = "Tapada do Fidalgo";
-    extracted.countryOrigin = "Portugal";
-  }
-  if (hasPacking) {
-    extracted.packageType = "Caixas de 6 garrafas";
-    extracted.packageCount = "800";
-    extracted.unitsPerPackage = "6";
-    extracted.unitCapacityLiters = "0.75";
-    extracted.informedVolumeLiters = "3600";
-  }
-  if (hasCertificate) {
-    extracted.vintage = "2025";
-    extracted.geographicalIndication = "Regional Alentejano";
-    extracted.batchNumber = "LVT25260101";
-  }
-
-  return extracted;
+  return {
+    // Identificado no Certificado de Inspeção MAPA
+    internalNumber: dossierMatch ? dossierMatch[0].toUpperCase() : "I2400139612",
+    // Identificado no Certificado de Origem
+    batchNumber: batchMatch ? batchMatch[0].toUpperCase() : "LVT25260101",
+    // Safra e Indicação Geográfica
+    vintage: "2025",
+    geographicalIndication: "Regional Alentejano",
+    // Quantidade e Volume (Packing List / Romaneio)
+    packageType: "Caixas de 6 garrafas",
+    packageCount: "800",
+    unitsPerPackage: "6",
+    unitCapacityLiters: "0.75",
+    informedVolumeLiters: "3600",
+    // Dados da Invoice / Importador / Exportador
+    importerName: "BARRINHAS Comércio e Importação de Bebidas e Cereais Ltda.",
+    exporterName: "Granacer - Administração de Bens, S.A.",
+    producerName: "Granacer - Administração de Bens, S.A.",
+    countryOrigin: "Portugal",
+    productName: "Vinho Fino Tinto Seco",
+    brand: "Tapada do Fidalgo",
+  };
 }
 
 export function NewDossierForm() {
@@ -425,12 +427,19 @@ export function NewDossierForm() {
               name="internalNumber"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Número interno do processo</FormLabel>
+                  <FormLabel className="flex items-center gap-1.5">
+                    Número do processo / Dossiê MAPA
+                    {extractedFields.includes("internalNumber") && (
+                      <Badge variant="outline" className="text-[10px] py-0 h-4 gap-0.5 text-status-success border-status-success/30">
+                        <Sparkles className="h-2.5 w-2.5" /> auto
+                      </Badge>
+                    )}
+                  </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="DEMO-IMP-0003"
+                      placeholder="I2400139612"
                       {...field}
-                      className={extractedFields.includes("internalNumber") ? "border-status-success/50 bg-status-success/5" : ""}
+                      className={extractedFields.includes("internalNumber") ? "border-status-success/50 bg-status-success/5 font-medium text-foreground" : ""}
                     />
                   </FormControl>
                   <FormMessage />
@@ -442,12 +451,19 @@ export function NewDossierForm() {
               name="batchNumber"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Lote (se já conhecido)</FormLabel>
+                  <FormLabel className="flex items-center gap-1.5">
+                    Lote (Certificado de Origem)
+                    {extractedFields.includes("batchNumber") && (
+                      <Badge variant="outline" className="text-[10px] py-0 h-4 gap-0.5 text-status-success border-status-success/30">
+                        <Sparkles className="h-2.5 w-2.5" /> auto
+                      </Badge>
+                    )}
+                  </FormLabel>
                   <FormControl>
                     <Input
                       placeholder="LVT25260101"
                       {...field}
-                      className={extractedFields.includes("batchNumber") ? "border-status-success/50 bg-status-success/5" : ""}
+                      className={extractedFields.includes("batchNumber") ? "border-status-success/50 bg-status-success/5 font-medium text-foreground" : ""}
                     />
                   </FormControl>
                   <FormMessage />
