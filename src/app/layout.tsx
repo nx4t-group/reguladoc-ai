@@ -21,6 +21,13 @@ export const metadata: Metadata = {
   title: "RegulaDoc AI — Validação documental regulatória",
   description:
     "Apoio à decisão para conformidade documental de importações reguladas, com foco inicial em vinhos.",
+  icons: {
+    icon: [
+      { url: "/icon.jpg", type: "image/jpeg" },
+    ],
+    apple: "/logo.png",
+    shortcut: "/icon.jpg",
+  },
 };
 
 export default function RootLayout({

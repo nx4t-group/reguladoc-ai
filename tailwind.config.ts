@@ -81,6 +81,11 @@ const config: Config = {
           accent: "hsl(var(--sidebar-accent))",
           border: "hsl(var(--sidebar-border))",
         },
+        brand: {
+          green: "hsl(var(--brand-green))",
+          navy: "hsl(var(--brand-navy))",
+          blue: "hsl(var(--brand-blue))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",

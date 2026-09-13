@@ -85,7 +85,7 @@ export function Topbar({
     .toUpperCase();
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-border bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/80 lg:px-6">
+    <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-border bg-background/98 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/95 shadow-sm lg:px-6">
       <MobileNav role={role} />
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>

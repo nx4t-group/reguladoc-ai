@@ -4,112 +4,131 @@
 
 @layer base {
   :root {
-    --background: 210 20% 98%;
-    --foreground: 215 28% 12%;
+    /* ──────────────────────────────────────────────────────────────
+     * REGULADOC AI — Design System V3
+     * Logo: Navy #0D2B6B + Cyan-Blue gradient + Green accent #22C55E
+     * Reference: Clean enterprise SaaS · Navy headings · Green CTA
+     * ──────────────────────────────────────────────────────────────
+     */
+
+    /* Surface */
+    --background: 210 25% 97%;          /* Near-white warm */
+    --foreground: 220 40% 10%;          /* Deep navy text */
 
     --card: 0 0% 100%;
-    --card-foreground: 215 28% 12%;
+    --card-foreground: 220 40% 10%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 215 28% 12%;
+    --popover-foreground: 220 40% 10%;
 
-    --primary: 201 70% 20%;
-    --primary-foreground: 210 40% 98%;
+    /* Primary — Navy from logo */
+    --primary: 220 72% 24%;             /* #0D2B6B navy */
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 25% 94%;
-    --secondary-foreground: 215 28% 18%;
+    /* Secondary */
+    --secondary: 216 25% 93%;
+    --secondary-foreground: 220 40% 18%;
 
-    --muted: 210 20% 95%;
-    --muted-foreground: 215 15% 45%;
+    /* Muted */
+    --muted: 216 20% 94%;
+    --muted-foreground: 220 18% 46%;
 
-    --accent: 199 60% 92%;
-    --accent-foreground: 201 70% 18%;
+    /* Accent — Green from reference print */
+    --accent: 142 72% 45%;              /* #22C55E vibrant green */
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 72% 45%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214 20% 89%;
-    --input: 214 20% 89%;
-    --ring: 201 70% 30%;
+    --border: 216 20% 88%;
+    --input: 216 20% 88%;
+    --ring: 217 91% 58%;                /* Bright blue for focus */
 
-    --radius: 0.6rem;
+    --radius: 0.75rem;
 
-    /* Severity / status scale, used across alerts, badges and charts */
+    /* ── Severity / status scale ── */
     --severity-critical: 0 72% 45%;
     --severity-high: 24 88% 48%;
-    --severity-medium: 38 92% 50%;
-    --severity-low: 205 70% 48%;
-    --severity-info: 215 15% 55%;
+    --severity-medium: 38 90% 50%;
+    --severity-low: 217 91% 58%;        /* Blue for low/info */
+    --severity-info: 220 18% 55%;
 
-    --status-success: 152 60% 32%;
-    --status-warning: 38 92% 45%;
+    --status-success: 142 72% 35%;      /* Forest green — success */
+    --status-warning: 38 90% 45%;
     --status-danger: 0 72% 45%;
-    --status-neutral: 215 15% 45%;
+    --status-neutral: 220 18% 46%;
 
-    --chart-1: 201 70% 30%;
-    --chart-2: 152 55% 38%;
-    --chart-3: 38 92% 50%;
-    --chart-4: 0 72% 50%;
-    --chart-5: 262 45% 55%;
+    /* ── Chart palette ── */
+    --chart-1: 220 72% 24%;             /* Navy */
+    --chart-2: 142 72% 40%;             /* Green */
+    --chart-3: 217 91% 58%;             /* Blue */
+    --chart-4: 38 90% 50%;              /* Amber */
+    --chart-5: 262 45% 55%;             /* Violet */
 
-    --sidebar-background: 215 32% 11%;
-    --sidebar-foreground: 210 25% 88%;
-    --sidebar-muted: 215 20% 65%;
-    --sidebar-accent: 201 60% 22%;
-    --sidebar-border: 215 28% 18%;
+    /* ── Sidebar — Deep navy matching logo ── */
+    --sidebar-background: 222 47% 11%;  /* #0D1B3E deep navy */
+    --sidebar-foreground: 214 30% 88%;
+    --sidebar-muted: 216 20% 58%;
+    --sidebar-accent: 220 72% 22%;      /* Slightly lighter navy for active */
+    --sidebar-border: 222 35% 18%;
+
+    /* ── Brand green accent (CSS custom prop for non-tailwind usage) ── */
+    --brand-green: 142 72% 45%;
+    --brand-navy: 220 72% 24%;
+    --brand-blue: 217 91% 58%;
   }
 
   .dark {
-    --background: 215 32% 9%;
-    --foreground: 210 25% 92%;
+    --background: 222 47% 8%;
+    --foreground: 214 30% 92%;
 
-    --card: 215 28% 12%;
-    --card-foreground: 210 25% 92%;
+    --card: 222 40% 11%;
+    --card-foreground: 214 30% 92%;
 
-    --popover: 215 28% 12%;
-    --popover-foreground: 210 25% 92%;
+    --popover: 222 40% 11%;
+    --popover-foreground: 214 30% 92%;
 
-    --primary: 199 70% 55%;
-    --primary-foreground: 215 32% 9%;
+    --primary: 217 91% 62%;
+    --primary-foreground: 222 47% 8%;
 
-    --secondary: 215 24% 18%;
-    --secondary-foreground: 210 25% 92%;
+    --secondary: 222 30% 16%;
+    --secondary-foreground: 214 30% 92%;
 
-    --muted: 215 24% 16%;
-    --muted-foreground: 215 15% 65%;
+    --muted: 222 30% 14%;
+    --muted-foreground: 216 20% 62%;
 
-    --accent: 201 40% 22%;
-    --accent-foreground: 199 70% 85%;
+    --accent: 142 65% 50%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 62% 50%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 215 24% 20%;
-    --input: 215 24% 20%;
-    --ring: 199 70% 55%;
+    --border: 222 30% 18%;
+    --input: 222 30% 18%;
+    --ring: 217 91% 62%;
 
     --severity-critical: 0 70% 58%;
     --severity-high: 24 85% 58%;
     --severity-medium: 38 88% 58%;
-    --severity-low: 205 75% 62%;
-    --severity-info: 215 15% 65%;
+    --severity-low: 217 85% 65%;
+    --severity-info: 216 20% 62%;
 
-    --status-success: 152 50% 45%;
+    --status-success: 142 60% 45%;
     --status-warning: 38 85% 55%;
     --status-danger: 0 70% 58%;
-    --status-neutral: 215 15% 60%;
+    --status-neutral: 216 20% 58%;
 
-    --chart-1: 199 70% 55%;
-    --chart-2: 152 50% 45%;
+    --chart-1: 217 91% 62%;
+    --chart-2: 142 60% 48%;
     --chart-3: 38 88% 58%;
     --chart-4: 0 70% 58%;
     --chart-5: 262 55% 68%;
 
-    --sidebar-background: 215 34% 7%;
-    --sidebar-foreground: 210 25% 88%;
-    --sidebar-muted: 215 15% 60%;
-    --sidebar-accent: 199 60% 22%;
-    --sidebar-border: 215 28% 15%;
+    --sidebar-background: 222 47% 7%;
+    --sidebar-foreground: 214 30% 88%;
+    --sidebar-muted: 216 20% 55%;
+    --sidebar-accent: 217 91% 22%;
+    --sidebar-border: 222 35% 14%;
   }
 
   * {
@@ -124,6 +143,22 @@
       "cv04",
       "cv11";
   }
+
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground));
+  }
 }
 
 @layer utilities {
@@ -132,6 +167,31 @@
   }
   .scrollbar-thin {
     scrollbar-width: thin;
+  }
+
+  /* Brand green text utility */
+  .text-brand-green {
+    color: hsl(var(--brand-green));
+  }
+  .bg-brand-green {
+    background-color: hsl(var(--brand-green));
+  }
+
+  /* Skeleton shimmer animation */
+  .skeleton {
+    background: linear-gradient(
+      90deg,
+      hsl(var(--muted)) 25%,
+      hsl(var(--secondary)) 50%,
+      hsl(var(--muted)) 75%
+    );
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.5s ease-in-out infinite;
+  }
+
+  @keyframes skeleton-shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
   }
 }
 
