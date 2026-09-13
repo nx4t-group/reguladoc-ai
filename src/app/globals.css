@@ -169,12 +169,12 @@
     scrollbar-width: thin;
   }
 
-  /* Brand green text utility */
-  .text-brand-green {
-    color: hsl(var(--brand-green));
+  /* Subtle background grain & glowing aesthetics */
+  .bg-soft-gradient {
+    background: radial-gradient(circle at 10% 20%, rgba(240, 253, 244, 0.7) 0%, rgba(255, 255, 255, 0.95) 100%);
   }
-  .bg-brand-green {
-    background-color: hsl(var(--brand-green));
+  .custom-shadow {
+    box-shadow: 0 20px 40px -15px rgba(16, 42, 67, 0.08), 0 0 1px 1px rgba(16, 42, 67, 0.04);
   }
 
   /* Skeleton shimmer animation */

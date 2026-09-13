@@ -82,9 +82,15 @@ const config: Config = {
           border: "hsl(var(--sidebar-border))",
         },
         brand: {
-          green: "hsl(var(--brand-green))",
-          navy: "hsl(var(--brand-navy))",
-          blue: "hsl(var(--brand-blue))",
+          navy: "#102A43",
+          dark: "#1B2559",
+          green: "#2e7d32",
+          greenHover: "#256629",
+          lightGreen: "#f0fdf4",
+          accent: "#388e3c",
+          cream: "#FAF9F6",
+          border: "#E2E8F0",
+          blue: "#2196F3",
         },
       },
       borderRadius: {

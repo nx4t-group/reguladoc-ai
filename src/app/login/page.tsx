@@ -7,11 +7,18 @@ import { signIn } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { FileCheck2, GitBranch, Lock } from "lucide-react";
+import {
+  FileCheck2,
+  GitBranch,
+  Lock,
+  ArrowRight,
+  ShieldCheck,
+  CheckCircle2,
+  Info,
+  Loader2,
+} from "lucide-react";
 import { toast } from "sonner";
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { waitForSession } from "@/lib/auth-client";
@@ -31,6 +38,7 @@ const DEMO_ACCOUNTS = [
 
 export default function LoginPage() {
   const [loading, setLoading] = React.useState(false);
+  const [activeAccount, setActiveAccount] = React.useState<string>("analista@demo.com");
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -50,163 +58,290 @@ export default function LoginPage() {
       toast.error("Credenciais inválidas. Verifique o e-mail e a senha.");
       return;
     }
-    // Confirma que a sessão já está visível antes de navegar (evita um bounce
-    // de volta para /login por causa de uma corrida com o cookie recém-emitido),
-    // depois faz uma navegação completa para garantir que o cookie seja enviado.
+
     await waitForSession();
     window.location.assign("/painel");
   }
 
+  function fillCredentials(email: string) {
+    setActiveAccount(email);
+    form.setValue("email", email, { shouldDirty: true });
+    form.setValue("password", "demo1234", { shouldDirty: true });
+  }
+
   return (
-    <div className="grid min-h-screen lg:grid-cols-2">
-      <div className="relative hidden flex-col justify-between overflow-hidden bg-sidebar p-10 text-sidebar-foreground lg:flex">
-        <div className="flex items-center gap-3">
-          <div className="relative h-10 w-10 overflow-hidden rounded-xl bg-white/10 p-1 ring-1 ring-white/20">
+    <main className="min-h-screen flex flex-col lg:flex-row relative overflow-hidden bg-brand-cream selection:bg-brand-green selection:text-white font-sans text-slate-800 antialiased">
+      {/* ── LEFT HERO SECTION (BRAND STORYTELLING) ── */}
+      <section className="lg:w-7/12 relative flex flex-col justify-between p-8 sm:p-12 lg:p-16 xl:p-20 bg-soft-gradient border-b lg:border-b-0 lg:border-r border-slate-200/80 overflow-hidden">
+        {/* Background Decorative Graphic Elements */}
+        <div className="absolute -top-24 -right-24 w-96 h-96 bg-emerald-100/50 rounded-full blur-3xl pointer-events-none -z-10" />
+        <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-green-50/70 rounded-full blur-2xl pointer-events-none -z-10" />
+
+        {/* Top Header / Logo */}
+        <div className="flex items-center space-x-3 z-10">
+          <div className="w-11 h-11 rounded-xl bg-brand-navy flex items-center justify-center shadow-md shadow-brand-navy/20 border border-slate-700/30 p-1.5">
             <Image
               src="/icon.png"
               alt="RegulaDoc AI"
-              width={40}
-              height={40}
-              className="h-full w-full object-contain rounded-lg"
+              width={36}
+              height={36}
+              className="h-full w-full object-contain"
               priority
             />
           </div>
-          <div className="flex flex-col">
+          <div>
             <div className="flex items-center gap-1.5">
-              <span className="text-xl font-bold tracking-tight text-white">RegulaDoc</span>
-              <span className="rounded bg-primary/20 px-1.5 py-0.2 text-xs font-bold text-primary ring-1 ring-primary/30">AI</span>
+              <span className="text-xl font-extrabold tracking-tight text-brand-navy">RegulaDoc</span>
+              <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-brand-navy text-emerald-400">AI</span>
             </div>
-            <span className="text-xs text-sidebar-muted">Validação Regulatória & IA</span>
+            <p className="text-xs text-slate-500 font-medium tracking-wide">Validação Regulatória &amp; Governança</p>
           </div>
         </div>
 
-        <div className="max-w-md space-y-6">
-          <h1 className="text-3xl font-semibold leading-tight tracking-tight text-white">
-            Apoio à decisão para conformidade documental em importações reguladas.
+        {/* Center Content & Value Proposition */}
+        <div className="my-10 lg:my-auto max-w-xl z-10">
+          {/* Sector Badge */}
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-100/70 border border-emerald-300/60 mb-6">
+            <span className="flex h-2 w-2 rounded-full bg-emerald-600 animate-pulse" />
+            <span className="text-xs font-bold tracking-wide uppercase text-emerald-900">
+              Importação de Bebidas &amp; Vinhos
+            </span>
+          </div>
+
+          {/* Headline */}
+          <h1 className="text-3xl sm:text-4xl xl:text-5xl font-extrabold tracking-tight text-brand-navy leading-[1.18]">
+            Apoio à decisão para <br className="hidden sm:inline" />
+            <span className="text-brand-green">conformidade documental</span> <br className="hidden sm:inline" />
+            em importações reguladas.
           </h1>
-          <p className="text-sm leading-relaxed text-sidebar-muted">
-            Validação documental, motor de regras versionado, trilha de auditoria completa e monitor regulatório
-            multi-fonte — com foco inicial em vinhos importados no Brasil.
+
+          {/* Subheading */}
+          <p className="mt-5 text-base sm:text-lg text-slate-600 leading-relaxed font-normal">
+            Validação documental ponta a ponta, motor de regras versionado, trilha de auditoria completa e monitor regulatório multi-fonte — com precisão cirúrgica em vinhos importados no Brasil.
           </p>
-          <ul className="space-y-3 text-sm">
-            <li className="flex items-center gap-3 text-sidebar-foreground/90">
-              <FileCheck2 className="h-4 w-4 text-primary" /> Parecer de conformidade com evidências e score
-            </li>
-            <li className="flex items-center gap-3 text-sidebar-foreground/90">
-              <GitBranch className="h-4 w-4 text-primary" /> Regras versionadas com trilha de auditoria completa
-            </li>
-            <li className="flex items-center gap-3 text-sidebar-foreground/90">
-              <Lock className="h-4 w-4 text-primary" /> Isolamento multi-tenant e supervisão humana obrigatória
-            </li>
-          </ul>
-        </div>
 
-        <p className="text-xs text-sidebar-muted">
-          Sistema de apoio à decisão — não substitui a análise do especialista humano.
-        </p>
-      </div>
-
-      <div className="flex items-center justify-center bg-muted/30 px-6 py-12">
-        <div className="w-full max-w-sm space-y-6">
-          <div className="space-y-2 text-center lg:hidden">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white p-1.5 shadow-md ring-1 ring-slate-200">
-              <Image
-                src="/icon.png"
-                alt="RegulaDoc AI"
-                width={56}
-                height={56}
-                className="h-full w-full object-contain rounded-xl"
-              />
+          {/* Feature Bullets */}
+          <div className="mt-8 space-y-4">
+            <div className="flex items-start space-x-3.5">
+              <div className="mt-1 flex-shrink-0 w-6 h-6 rounded-md bg-emerald-100/90 text-emerald-800 flex items-center justify-center border border-emerald-300/40">
+                <FileCheck2 className="w-3.5 h-3.5 stroke-[2.5]" />
+              </div>
+              <span className="text-sm sm:text-base text-slate-700 font-medium">
+                Parecer de conformidade com evidências e score automatizado
+              </span>
             </div>
-            <p className="text-xl font-bold tracking-tight">RegulaDoc AI</p>
+
+            <div className="flex items-start space-x-3.5">
+              <div className="mt-1 flex-shrink-0 w-6 h-6 rounded-md bg-emerald-100/90 text-emerald-800 flex items-center justify-center border border-emerald-300/40">
+                <GitBranch className="w-3.5 h-3.5 stroke-[2.5]" />
+              </div>
+              <span className="text-sm sm:text-base text-slate-700 font-medium">
+                Regras versionadas com trilha de auditoria completa e rastreabilidade
+              </span>
+            </div>
+
+            <div className="flex items-start space-x-3.5">
+              <div className="mt-1 flex-shrink-0 w-6 h-6 rounded-md bg-emerald-100/90 text-emerald-800 flex items-center justify-center border border-emerald-300/40">
+                <Lock className="w-3.5 h-3.5 stroke-[2.5]" />
+              </div>
+              <span className="text-sm sm:text-base text-slate-700 font-medium">
+                Isolamento multi-tenant de dados e supervisão humana obrigatória
+              </span>
+            </div>
           </div>
 
-          <Card className="border-slate-200/80 shadow-lg">
-            <CardHeader className="space-y-3 pb-4">
-              <div className="flex items-center gap-3">
-                <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-xl bg-slate-900 p-1 shadow ring-1 ring-slate-800">
-                  <Image
-                    src="/icon.png"
-                    alt="RegulaDoc AI"
-                    width={44}
-                    height={44}
-                    className="h-full w-full object-contain rounded-lg"
-                  />
-                </div>
-                <div>
-                  <CardTitle className="text-xl">Acessar Painel</CardTitle>
-                  <CardDescription className="text-xs">RegulaDoc AI — Validação Regulatória</CardDescription>
-                </div>
+          {/* Wine Sector Inspiration Badge */}
+          <div className="mt-10 p-4 rounded-xl bg-white/70 backdrop-blur-sm border border-emerald-100 flex items-center gap-4 shadow-sm">
+            <div className="w-12 h-12 rounded-lg bg-emerald-50 border border-emerald-200/60 flex items-center justify-center text-xl flex-shrink-0">
+              🍇
+            </div>
+            <div>
+              <div className="text-xs uppercase tracking-wider font-bold text-brand-green">
+                Especialidade Vitivinícola
               </div>
-            </CardHeader>
-            <CardContent>
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>E-mail</FormLabel>
-                        <FormControl>
-                          <Input type="email" placeholder="voce@empresa.com" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="password"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Senha</FormLabel>
-                        <FormControl>
-                          <Input type="password" placeholder="••••••••" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <Button type="submit" className="w-full" disabled={loading}>
-                    {loading ? "Entrando…" : "Entrar"}
-                  </Button>
-                </form>
-              </Form>
-            </CardContent>
-          </Card>
+              <p className="text-xs text-slate-600 mt-0.5">
+                Integrado com padrões MAPA, análise de certificados analíticos, contrarrótulos e dossiês de desembaraço.
+              </p>
+            </div>
+          </div>
+        </div>
 
-          <Card className="border-dashed bg-muted/40">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm">Modo demonstração</CardTitle>
-              <CardDescription>Use qualquer uma das contas abaixo com a senha <code className="rounded bg-muted px-1 py-0.5">demo1234</code>.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-1.5 pb-4">
-              {DEMO_ACCOUNTS.map((acc) => (
-                <button
-                  key={acc.email}
-                  type="button"
-                  onClick={() => {
-                    form.setValue("email", acc.email);
-                    form.setValue("password", "demo1234");
-                  }}
-                  className="flex w-full items-center justify-between rounded-md border border-transparent px-2 py-1.5 text-left text-xs hover:border-border hover:bg-background"
-                >
-                  <span className="font-medium">{acc.email}</span>
-                  <span className="text-muted-foreground">{acc.role}</span>
-                </button>
-              ))}
-            </CardContent>
-          </Card>
-
-          <p className="text-center text-sm text-muted-foreground">
-            Nova organização?{" "}
-            <Link href="/onboarding" className="font-medium text-primary hover:underline">
-              Configurar agora
-            </Link>
+        {/* Legal Disclaimer Footer */}
+        <div className="pt-6 border-t border-slate-200/80 z-10">
+          <p className="text-xs text-slate-500 flex items-center gap-2">
+            <Info className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+            Sistema de apoio à decisão — não substitui a análise do especialista humano.
           </p>
         </div>
-      </div>
-    </div>
+      </section>
+
+      {/* ── RIGHT AUTH SECTION (LOGIN CARD) ── */}
+      <section className="lg:w-5/12 flex items-center justify-center p-6 sm:p-10 lg:p-12 bg-[#FAF9F6]">
+        <div className="w-full max-w-md">
+          {/* Card */}
+          <div className="bg-white rounded-2xl p-7 sm:p-9 border border-slate-200/90 custom-shadow">
+            {/* Header */}
+            <div className="flex items-center space-x-3.5 mb-7">
+              <div className="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-200/70 flex items-center justify-center text-brand-green">
+                <Lock className="w-6 h-6 stroke-[2]" />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-brand-navy">Acessar Painel</h2>
+                <p className="text-xs text-slate-500 font-medium">RegulaDoc AI — Validação Regulatória</p>
+              </div>
+            </div>
+
+            {/* Form */}
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
+                        E-mail corporativo
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          type="email"
+                          placeholder="analista@demo.com"
+                          className="block w-full px-3.5 py-2.5 text-sm text-slate-900 bg-slate-50/70 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-green focus:border-brand-green transition duration-150 ease-in-out placeholder:text-slate-400"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <FormLabel className="block text-xs font-semibold uppercase tracking-wider text-slate-700">
+                          Senha
+                        </FormLabel>
+                        <span className="text-xs text-brand-green hover:text-brand-greenHover font-semibold transition cursor-pointer">
+                          Esqueceu?
+                        </span>
+                      </div>
+                      <FormControl>
+                        <Input
+                          type="password"
+                          placeholder="••••••••"
+                          className="block w-full px-3.5 py-2.5 text-sm text-slate-900 bg-slate-50/70 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-green focus:border-brand-green transition duration-150 ease-in-out placeholder:text-slate-400"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Remember Checkbox */}
+                <div className="flex items-center justify-between pt-1">
+                  <label className="flex items-center space-x-2 cursor-pointer">
+                    <input
+                      defaultChecked
+                      type="checkbox"
+                      className="w-4 h-4 rounded text-brand-green border-slate-300 focus:ring-brand-green accent-brand-green"
+                    />
+                    <span className="text-xs text-slate-600 font-medium">Lembrar sessão segura</span>
+                  </label>
+                </div>
+
+                {/* Submit Button */}
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full mt-2 py-3 px-4 bg-brand-green hover:bg-brand-greenHover disabled:opacity-70 text-white font-semibold text-sm rounded-lg shadow-md shadow-emerald-800/15 hover:shadow-lg transition-all duration-200 flex items-center justify-center space-x-2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-green cursor-pointer"
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin mr-1.5" />
+                      <span>Entrando no Sistema…</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Entrar no Sistema</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </>
+                  )}
+                </button>
+              </form>
+            </Form>
+
+            {/* Demo Credentials Box */}
+            <div className="mt-7 pt-5 border-t border-dashed border-slate-200">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-700">Modo demonstração</span>
+                <span className="text-[11px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-mono font-medium">
+                  demo1234
+                </span>
+              </div>
+              <p className="text-xs text-slate-500 mb-3">
+                Clique em uma das credenciais para carregar o perfil de teste:
+              </p>
+
+              <div className="space-y-2">
+                {DEMO_ACCOUNTS.map((acc) => {
+                  const isSelected = activeAccount === acc.email;
+                  return (
+                    <button
+                      key={acc.email}
+                      type="button"
+                      onClick={() => fillCredentials(acc.email)}
+                      className={`w-full flex items-center justify-between p-2 rounded-lg border transition text-left cursor-pointer ${
+                        isSelected
+                          ? "bg-emerald-50/80 border-emerald-300/80 shadow-xs"
+                          : "bg-slate-50 hover:bg-emerald-50/70 border-slate-200/80 hover:border-emerald-300/60"
+                      }`}
+                    >
+                      <div className="flex items-center space-x-2">
+                        <span
+                          className={`w-2 h-2 rounded-full ${
+                            isSelected ? "bg-emerald-500 ring-2 ring-emerald-300" : "bg-slate-400"
+                          }`}
+                        />
+                        <span className={`text-xs font-medium ${isSelected ? "text-brand-navy font-semibold" : "text-slate-700"}`}>
+                          {acc.email}
+                        </span>
+                      </div>
+                      <span className={`text-[11px] font-semibold ${isSelected ? "text-brand-green" : "text-slate-500"}`}>
+                        {acc.role}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Footer inside card */}
+            <div className="mt-6 text-center text-xs text-slate-500">
+              Nova organização?{" "}
+              <Link href="/onboarding" className="font-bold text-brand-navy hover:text-brand-green hover:underline ml-1">
+                Configurar agora
+              </Link>
+            </div>
+          </div>
+
+          {/* Security badges below card */}
+          <div className="mt-6 flex items-center justify-center space-x-6 text-xs text-slate-500">
+            <div className="flex items-center space-x-1.5">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+              <span>Criptografia 256-bit</span>
+            </div>
+            <span className="text-slate-300">•</span>
+            <div className="flex items-center space-x-1.5">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+              <span>LGPD Compliance</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
   );
 }
