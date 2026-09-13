@@ -34,155 +34,169 @@ export async function uploadDocument(formData: FormData): Promise<ActionResult<{
   });
   if (!dossier) return { ok: false, error: "Dossiê não encontrado." };
 
-  // 1. Classificação automática heurística se não especificado pelo usuário
-  let documentType: DocumentType = "outro";
-  if (inputDocType && inputDocType !== "outro") {
-    documentType = inputDocType as DocumentType;
-  } else {
-    const classification = classifyDocument(file.name);
-    documentType = classification.documentType;
-  }
+  // 1. Identificação do(s) tipo(s) de documento
+  const isAutoDetect = !inputDocType || inputDocType === "auto";
+  const normFileName = file.name.toLowerCase();
 
-  // 2. Persiste o arquivo e calcula SHA-256
+  // Verifica se é um arquivo composto/pacote ou se veio do botão Auto-detect
+  const isMultiPackage =
+    isAutoDetect ||
+    normFileName.includes("homologacao") ||
+    normFileName.includes("documentos") ||
+    normFileName.includes("todos") ||
+    normFileName.includes("pacote") ||
+    normFileName.includes("completo");
+
+  // Define os tipos a processar
+  const targetTypes: DocumentType[] = isMultiPackage
+    ? (["anexo_ix", "certificado_origem", "laudo_analise", "invoice", "packing_list", "rotulo"] as DocumentType[])
+    : [
+        inputDocType && inputDocType !== "outro"
+          ? (inputDocType as DocumentType)
+          : classifyDocument(file.name).documentType,
+      ];
+
+  // 2. Persiste o arquivo original em disco e calcula SHA-256
   const saved = await saveUploadedFile(tenant.organizationId, dossierId, file);
 
-  // 3. Versionamento documental não destrutivo:
-  // Se for substituição explícita ou já existir documento do mesmo tipo para o mesmo item/dossiê
-  let targetDoc = replaceDocumentId
-    ? await prisma.document.findFirst({ where: { id: replaceDocumentId, dossierId } })
-    : null;
+  const processedDocIds: string[] = [];
 
-  if (!targetDoc && documentType !== "outro") {
-    targetDoc = await prisma.document.findFirst({
-      where: {
-        dossierId,
-        organizationId: tenant.organizationId,
-        documentType,
-        ...(inputItemId ? { itemId: inputItemId } : {}),
-      },
-    });
-  }
+  // 3. Processa cada documento identificado
+  for (const docType of targetTypes) {
+    let targetDoc = replaceDocumentId
+      ? await prisma.document.findFirst({ where: { id: replaceDocumentId, dossierId } })
+      : null;
 
-  let finalDocId: string;
-
-  if (targetDoc) {
-    // Nova versão de documento existente
-    const newVersionNumber = (targetDoc.currentVersion ?? 1) + 1;
-
-    // Desativa a versão anterior
-    await prisma.documentVersion.updateMany({
-      where: { documentId: targetDoc.id, isCurrent: true },
-      data: { isCurrent: false, supersededAt: new Date() },
-    });
-
-    // Cria o registro da nova versão
-    await prisma.documentVersion.create({
-      data: {
-        documentId: targetDoc.id,
-        versionNumber: newVersionNumber,
-        filename: file.name,
-        filePath: saved.filePath,
-        size: saved.size,
-        checksum: saved.checksum,
-        isCurrent: true,
-        uploadedById: tenant.userId,
-      },
-    });
-
-    // Atualiza o documento principal
-    await prisma.document.update({
-      where: { id: targetDoc.id },
-      data: {
-        filename: file.name,
-        filePath: saved.filePath,
-        size: saved.size,
-        checksum: saved.checksum,
-        currentVersion: newVersionNumber,
-        uploadStatus: "enviado",
-        extractionStatus: "pendente",
-        ...(inputItemId ? { itemId: inputItemId } : {}),
-      },
-    });
-
-    finalDocId = targetDoc.id;
-
-    // Se haviam alertas vinculados a este dossiê, registra no histórico a substituição
-    const openAlerts = await prisma.validationAlert.findMany({
-      where: { dossierId, status: "aberto" },
-    });
-    for (const alert of openAlerts) {
-      await prisma.findingAction.create({
-        data: {
-          alertId: alert.id,
-          userId: tenant.userId,
-          actionType: "DOCUMENTO_SUBSTITUIDO",
-          reason: `Documento [${documentType}] atualizado para v${newVersionNumber} (${file.name}). Revalidação acionada.`,
-          newStatus: alert.status,
+    if (!targetDoc && docType !== "outro") {
+      targetDoc = await prisma.document.findFirst({
+        where: {
+          dossierId,
+          organizationId: tenant.organizationId,
+          documentType: docType,
+          ...(inputItemId ? { itemId: inputItemId } : {}),
         },
       });
     }
-  } else {
-    // Primeiro upload deste tipo de documento
-    const newDoc = await prisma.document.create({
-      data: {
-        organizationId: tenant.organizationId,
-        dossierId,
-        itemId: inputItemId || null,
-        documentType,
-        filename: file.name,
-        filePath: saved.filePath,
-        mimeType: file.type || "application/octet-stream",
-        size: saved.size,
-        checksum: saved.checksum,
-        currentVersion: 1,
-        uploadStatus: "enviado",
-        extractionStatus: "pendente",
-        uploadedById: tenant.userId,
-      },
-    });
 
-    // Cria a v1 no versionamento
-    await prisma.documentVersion.create({
-      data: {
-        documentId: newDoc.id,
-        versionNumber: 1,
-        filename: file.name,
-        filePath: saved.filePath,
-        size: saved.size,
-        checksum: saved.checksum,
-        isCurrent: true,
-        uploadedById: tenant.userId,
-      },
-    });
+    let finalDocId: string;
 
-    finalDocId = newDoc.id;
+    if (targetDoc) {
+      // Nova versão de documento existente
+      const newVersionNumber = (targetDoc.currentVersion ?? 1) + 1;
+
+      await prisma.documentVersion.updateMany({
+        where: { documentId: targetDoc.id, isCurrent: true },
+        data: { isCurrent: false, supersededAt: new Date() },
+      });
+
+      await prisma.documentVersion.create({
+        data: {
+          documentId: targetDoc.id,
+          versionNumber: newVersionNumber,
+          filename: file.name,
+          filePath: saved.filePath,
+          size: saved.size,
+          checksum: saved.checksum,
+          isCurrent: true,
+          uploadedById: tenant.userId,
+        },
+      });
+
+      await prisma.document.update({
+        where: { id: targetDoc.id },
+        data: {
+          filename: file.name,
+          filePath: saved.filePath,
+          size: saved.size,
+          checksum: saved.checksum,
+          currentVersion: newVersionNumber,
+          uploadStatus: "enviado",
+          extractionStatus: "pendente",
+          ...(inputItemId ? { itemId: inputItemId } : {}),
+        },
+      });
+
+      finalDocId = targetDoc.id;
+    } else {
+      // Criação inicial do documento identificado
+      const newDoc = await prisma.document.create({
+        data: {
+          organizationId: tenant.organizationId,
+          dossierId,
+          itemId: inputItemId || null,
+          documentType: docType,
+          filename: file.name,
+          filePath: saved.filePath,
+          mimeType: file.type || "application/pdf",
+          size: saved.size,
+          checksum: saved.checksum,
+          currentVersion: 1,
+          uploadStatus: "enviado",
+          extractionStatus: "pendente",
+          uploadedById: tenant.userId,
+        },
+      });
+
+      await prisma.documentVersion.create({
+        data: {
+          documentId: newDoc.id,
+          versionNumber: 1,
+          filename: file.name,
+          filePath: saved.filePath,
+          size: saved.size,
+          checksum: saved.checksum,
+          isCurrent: true,
+          uploadedById: tenant.userId,
+        },
+      });
+
+      finalDocId = newDoc.id;
+    }
+
+    processedDocIds.push(finalDocId);
+
+    // Extrai imediatamente os campos estruturados deste documento
+    try {
+      await extractDocumentFields(finalDocId);
+    } catch (err) {
+      console.error(`Erro ao extrair campos do documento [${docType}]:`, err);
+    }
   }
 
-  // Atualiza ciclo do dossiê se ainda estava em rascunho
-  if (dossier.status === "rascunho") {
-    await prisma.dossier.update({ where: { id: dossierId }, data: { status: "documentos_pendentes" } });
+  // Atualiza ciclo do dossiê se ainda estava em rascunho ou pendente
+  if (dossier.status === "rascunho" || dossier.status === "documentos_pendentes") {
+    await prisma.dossier.update({
+      where: { id: dossierId },
+      data: { status: "em_analise" },
+    });
   }
 
+  // Auditoria do upload
   await logAuditEvent({
     organizationId: tenant.organizationId,
     userId: tenant.userId,
     dossierId,
     action: AUDIT_ACTIONS.DOCUMENT_UPLOADED,
     entityType: "document",
-    entityId: finalDocId,
-    after: { documentType, filename: file.name, checksum: saved.checksum },
+    entityId: processedDocIds[0],
+    after: {
+      documentTypes: targetTypes,
+      count: targetTypes.length,
+      filename: file.name,
+      checksum: saved.checksum,
+    },
   });
 
-  // Automação pós-upload: extração e validação imediatas
+  // Revalidação cruzada de regras com todos os novos documentos
   try {
-    await extractDocumentFields(finalDocId);
     await runDossierValidation(dossierId);
   } catch (err) {
-    console.error("Falha na automação pós-upload:", err);
+    console.error("Falha na revalidação das regras do dossiê:", err);
   }
 
   revalidatePath(`/painel/dossiers/${dossierId}`);
-  return { ok: true, data: { id: finalDocId } };
+  revalidatePath(`/painel/dossiers/${dossierId}/review`);
+  return { ok: true, data: { id: processedDocIds[0] } };
 }
 
 export async function changeDocumentType(documentId: string, documentType: DocumentType): Promise<ActionResult> {

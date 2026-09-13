@@ -33,6 +33,7 @@ import {
 } from "@/lib/constants";
 import { recordFindingAction } from "@/server/actions/alerts";
 import { uploadDocument } from "@/server/actions/documents";
+import { FIELD_LABELS } from "@/lib/extraction/fields";
 import { safeJsonParse } from "../format";
 
 export interface ReviewClientProps {
@@ -276,8 +277,10 @@ export function ReviewClient({
                     <div
                       key={reqType}
                       onClick={() => {
-                        if (doc) setSelectedDocId(doc.id);
-                        else {
+                        if (doc) {
+                          setSelectedDocId(doc.id);
+                          setCenterTab("fields");
+                        } else {
                           setQuickUploadType(reqType);
                           quickUploadRef.current?.click();
                         }
@@ -464,11 +467,12 @@ export function ReviewClient({
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
                     {docFields.map((field) => {
-                      // Verifica se o campo está envolvido na inconsistência atualmente selecionada
                       const isHighlighted =
                         selectedAlert &&
                         (selectedAlert.title.toLowerCase().includes(field.fieldKey.toLowerCase()) ||
                           selectedAlert.message.toLowerCase().includes(field.fieldValue.toLowerCase()));
+
+                      const friendlyLabel = FIELD_LABELS[field.fieldKey] || field.fieldKey.replace(/_/g, " ");
 
                       return (
                         <div
@@ -476,14 +480,23 @@ export function ReviewClient({
                           className={`p-3 rounded-lg border text-xs transition-all ${
                             isHighlighted
                               ? "border-amber-500 bg-amber-500/10 ring-2 ring-amber-500/20"
-                              : "border-border bg-muted/10 hover:bg-muted/20"
+                              : "border-border bg-card shadow-xs hover:border-primary/40"
                           }`}
                         >
-                          <div className="flex items-center justify-between text-muted-foreground mb-1">
-                            <span className="font-mono uppercase text-[10px] tracking-wider">{field.fieldKey}</span>
-                            <span className="text-[10px] font-mono">{Math.round(field.confidence * 100)}% conf.</span>
+                          <div className="flex items-center justify-between text-muted-foreground mb-1 gap-1">
+                            <span className="font-semibold text-foreground text-[11px] truncate capitalize">
+                              {friendlyLabel}
+                            </span>
+                            <span className="text-[10px] font-mono text-muted-foreground shrink-0">
+                              {Math.round(field.confidence * 100)}% conf.
+                            </span>
                           </div>
-                          <p className="font-semibold text-sm break-all">{field.fieldValue}</p>
+                          <p className="font-semibold text-sm text-foreground break-words mt-0.5">
+                            {field.fieldValue}
+                          </p>
+                          <span className="text-[9px] font-mono text-muted-foreground/70 uppercase">
+                            {field.fieldKey}
+                          </span>
                         </div>
                       );
                     })}
