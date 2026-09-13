@@ -55,12 +55,26 @@ export const FIELD_DEFINITIONS: FieldDefinition[] = [
   { key: "capacidade_unitaria", label: "Capacidade unitária (L)", group: "quantidade" },
   { key: "volume_total_informado", label: "Volume total informado (L)", group: "quantidade" },
   { key: "volume_total_calculado", label: "Volume total calculado (L)", group: "quantidade" },
-  // Regulatório
+  // Regulatório & Comercial Específico
+  { key: "cnpj", label: "CNPJ", group: "regulatorio" },
+  { key: "registro_mapa", label: "Registro MAPA", group: "regulatorio" },
+  { key: "data_referencia", label: "Data de referência", group: "regulatorio" },
+  { key: "numero_certificado_origem", label: "Nº do certificado de origem", group: "regulatorio" },
   { key: "numero_certificado", label: "Número do certificado", group: "regulatorio" },
-  { key: "orgao_emissor", label: "Órgão emissor", group: "regulatorio" },
+  { key: "orgao_emissor", label: "Órgão emissor / Entidade", group: "regulatorio" },
   { key: "data_emissao", label: "Data de emissão", group: "regulatorio" },
   { key: "referencia_normativa", label: "Referência normativa", group: "regulatorio" },
   { key: "apto_inapto", label: "Apto / inapto", group: "regulatorio" },
+  { key: "numero_invoice", label: "Nº da fatura / Invoice", group: "regulatorio" },
+  { key: "data_invoice", label: "Data da fatura", group: "regulatorio" },
+  { key: "incoterm", label: "Incoterm", group: "regulatorio" },
+  { key: "valor_total", label: "Valor total comercial", group: "regulatorio" },
+  { key: "condicao_pagamento", label: "Condição de pagamento", group: "regulatorio" },
+  { key: "peso_bruto", label: "Peso bruto (kg)", group: "quantidade" },
+  { key: "peso_liquido", label: "Peso líquido (kg)", group: "quantidade" },
+  { key: "extrato_seco_reduzido", label: "Extrato seco reduzido", group: "lote_analise" },
+  { key: "extrato_seco_total", label: "Extrato seco total", group: "lote_analise" },
+  { key: "alergênicos_avisos", label: "Advertências e alergênicos", group: "regulatorio" },
   { key: "observacoes", label: "Observações", group: "regulatorio" },
 ];
 

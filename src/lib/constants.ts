@@ -132,14 +132,14 @@ export const DOCUMENT_TYPE_LABELS: Record<DocumentType, string> = {
   outro: "Outro",
 };
 
-/** Documentos exigidos para todo dossiê de vinho (RULE-013). */
+/** Documentos exigidos para todo dossiê de vinho por ordem de importância regulatória (RULE-013). */
 export const REQUIRED_DOCUMENT_TYPES: DocumentType[] = [
-  "anexo_ix",
-  "certificado_origem",
   "laudo_analise",
+  "certificado_origem",
+  "anexo_ix",
+  "rotulo",
   "invoice",
   "packing_list",
-  "rotulo",
 ];
 
 export const DOCUMENT_UPLOAD_STATUSES = ["enviado", "processando", "erro"] as const;
