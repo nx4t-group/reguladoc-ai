@@ -1,12 +1,13 @@
 "use client";
 
 import * as React from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { ShieldCheck, FileCheck2, GitBranch, Lock } from "lucide-react";
+import { FileCheck2, GitBranch, Lock } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -59,15 +60,28 @@ export default function LoginPage() {
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
       <div className="relative hidden flex-col justify-between overflow-hidden bg-sidebar p-10 text-sidebar-foreground lg:flex">
-        <div className="flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-md bg-sidebar-accent">
-            <ShieldCheck className="h-5 w-5" />
+        <div className="flex items-center gap-3">
+          <div className="relative h-10 w-10 overflow-hidden rounded-xl bg-white/10 p-1 ring-1 ring-white/20">
+            <Image
+              src="/icon.png"
+              alt="RegulaDoc AI"
+              width={40}
+              height={40}
+              className="h-full w-full object-contain rounded-lg"
+              priority
+            />
           </div>
-          <span className="text-lg font-semibold tracking-tight">RegulaDoc AI</span>
+          <div className="flex flex-col">
+            <div className="flex items-center gap-1.5">
+              <span className="text-xl font-bold tracking-tight text-white">RegulaDoc</span>
+              <span className="rounded bg-primary/20 px-1.5 py-0.2 text-xs font-bold text-primary ring-1 ring-primary/30">AI</span>
+            </div>
+            <span className="text-xs text-sidebar-muted">Validação Regulatória & IA</span>
+          </div>
         </div>
 
         <div className="max-w-md space-y-6">
-          <h1 className="text-3xl font-semibold leading-tight tracking-tight">
+          <h1 className="text-3xl font-semibold leading-tight tracking-tight text-white">
             Apoio à decisão para conformidade documental em importações reguladas.
           </h1>
           <p className="text-sm leading-relaxed text-sidebar-muted">
@@ -94,17 +108,36 @@ export default function LoginPage() {
 
       <div className="flex items-center justify-center bg-muted/30 px-6 py-12">
         <div className="w-full max-w-sm space-y-6">
-          <div className="space-y-1 text-center lg:hidden">
-            <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-md bg-primary text-primary-foreground">
-              <ShieldCheck className="h-5 w-5" />
+          <div className="space-y-2 text-center lg:hidden">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white p-1.5 shadow-md ring-1 ring-slate-200">
+              <Image
+                src="/icon.png"
+                alt="RegulaDoc AI"
+                width={56}
+                height={56}
+                className="h-full w-full object-contain rounded-xl"
+              />
             </div>
-            <p className="text-lg font-semibold">RegulaDoc AI</p>
+            <p className="text-xl font-bold tracking-tight">RegulaDoc AI</p>
           </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Entrar</CardTitle>
-              <CardDescription>Acesse sua conta para continuar a análise regulatória.</CardDescription>
+          <Card className="border-slate-200/80 shadow-lg">
+            <CardHeader className="space-y-3 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-xl bg-slate-900 p-1 shadow ring-1 ring-slate-800">
+                  <Image
+                    src="/icon.png"
+                    alt="RegulaDoc AI"
+                    width={44}
+                    height={44}
+                    className="h-full w-full object-contain rounded-lg"
+                  />
+                </div>
+                <div>
+                  <CardTitle className="text-xl">Acessar Painel</CardTitle>
+                  <CardDescription className="text-xs">RegulaDoc AI — Validação Regulatória</CardDescription>
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
               <Form {...form}>
