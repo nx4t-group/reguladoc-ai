@@ -101,7 +101,7 @@ export function ReportTab({
                 {recomendacao}
               </Badge>
               {dossier.complianceScore != null && (
-                <p className="text-xs text-muted-foreground mt-1 font-mono">Score: {dossier.complianceScore} pts</p>
+                <p className="text-xs font-semibold text-stone-600 mt-1">Score: {dossier.complianceScore} pts</p>
               )}
             </div>
           </div>
@@ -130,7 +130,7 @@ export function ReportTab({
             </div>
             <div>
               <p className="text-[10px] font-semibold uppercase text-muted-foreground">Lote Principal</p>
-              <p className="text-foreground font-mono mt-0.5">{dossier.batchNumber ?? "—"}</p>
+              <p className="text-foreground font-medium mt-0.5">{dossier.batchNumber ?? "—"}</p>
             </div>
             <div>
               <p className="text-[10px] font-semibold uppercase text-muted-foreground">Volume Total</p>
@@ -195,7 +195,7 @@ export function ReportTab({
                     <div className="flex items-start justify-between gap-3">
                       <div>
                         <span className="font-semibold text-foreground text-xs">{a.title}</span>
-                        <p className="text-[11px] text-muted-foreground font-mono mt-0.5">
+                        <p className="text-[11px] text-muted-foreground font-medium mt-0.5">
                           {a.ruleCode} · Severidade: {a.severity.toUpperCase()} · Status: {a.status.toUpperCase()}
                         </p>
                       </div>

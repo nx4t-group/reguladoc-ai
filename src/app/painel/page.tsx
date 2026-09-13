@@ -471,7 +471,7 @@ export default async function DashboardPage() {
                 >
                   <div className="space-y-1.5 min-w-0">
                     <div className="flex flex-wrap items-center gap-2.5">
-                      <span className="font-mono font-bold text-sm text-stone-900">{d.internalNumber}</span>
+                      <span className="font-bold text-sm text-stone-900 tracking-tight">{d.internalNumber}</span>
                       {badgeJsx}
                       <span className="text-xs text-stone-400">
                         • atualizado {formatDistanceToNow(new Date(d.updatedAt), { addSuffix: true, locale: ptBR })}
@@ -572,7 +572,7 @@ export default async function DashboardPage() {
 
                     return (
                       <tr key={d.id} className="hover:bg-stone-50/70 transition">
-                        <td className="py-3.5 px-4 font-mono font-bold text-stone-900">
+                        <td className="py-3.5 px-4 font-bold text-stone-900 tracking-tight">
                           <Link href={`/painel/dossiers/${d.id}`} className="hover:text-bordeaux-800 hover:underline">
                             {d.internalNumber}
                           </Link>

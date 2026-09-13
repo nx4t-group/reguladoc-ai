@@ -388,7 +388,7 @@ export function DossiersTable({ data }: { data: DossierRow[] }) {
                         <div>
                           <Link
                             href={`/painel/dossiers/${d.id}`}
-                            className="font-mono font-bold text-base text-stone-900 hover:text-bordeaux-800 hover:underline block"
+                            className="font-bold text-base text-stone-900 hover:text-bordeaux-800 hover:underline block tracking-tight"
                           >
                             {d.internalNumber}
                           </Link>
@@ -406,14 +406,14 @@ export function DossiersTable({ data }: { data: DossierRow[] }) {
                         </div>
 
                         <div className="flex justify-between text-stone-500 text-[11px] pt-1 border-t border-stone-100">
-                          <span>Lote: <strong className="font-mono text-stone-700">{d.batchNumber ?? "—"}</strong></span>
-                          <span>Origem: <strong className="text-stone-700">{d.countryOrigin ?? "Portugal"}</strong></span>
+                          <span>Lote: <strong className="font-semibold text-stone-800">{d.batchNumber ?? "—"}</strong></span>
+                          <span>Origem: <strong className="font-medium text-stone-800">{d.countryOrigin ?? "Portugal"}</strong></span>
                         </div>
 
                         <div className="flex items-center justify-between pt-1">
                           <span className="text-stone-500">
                             Score:{" "}
-                            <strong className="font-mono text-stone-900">{d.complianceScore != null ? `${d.complianceScore} pts` : "—"}</strong>
+                            <strong className="font-bold text-stone-900">{d.complianceScore != null ? `${d.complianceScore} pts` : "—"}</strong>
                           </span>
                           {d.criticalAlerts > 0 ? (
                             <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-rose-700 bg-rose-50 px-2 py-0.5 rounded border border-rose-200">

@@ -218,7 +218,7 @@ export function RulesTable({ rules, hasDossierForSimulation }: { rules: RuleRow[
             <TableBody>
               {filtered.map((rule) => (
                 <TableRow key={rule.id} className="hover:bg-muted/25 transition-colors">
-                  <TableCell className="py-3.5 whitespace-nowrap font-mono text-[13px] font-semibold text-primary">{rule.code}</TableCell>
+                  <TableCell className="py-3.5 whitespace-nowrap text-[13px] font-bold text-primary tracking-tight">{rule.code}</TableCell>
                   <TableCell className="py-3.5 max-w-xs text-[14px] font-medium text-foreground">{rule.name}</TableCell>
                   <TableCell className="py-3.5 whitespace-nowrap text-[13px] text-muted-foreground">
                     {RULE_CATEGORY_LABELS[rule.category as RuleCategory] ?? rule.category}

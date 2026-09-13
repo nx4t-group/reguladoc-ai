@@ -134,7 +134,7 @@ export function OverviewTab({
                     <span className="font-semibold text-foreground">
                       Item #{item.itemNumber} · {item.brand} ({item.productName})
                     </span>
-                    <Badge variant="outline" className="text-[11px] font-mono">
+                    <Badge variant="outline" className="text-[11px] font-semibold text-stone-700">
                       Lote: {item.batchNumber ?? "—"}
                     </Badge>
                   </div>

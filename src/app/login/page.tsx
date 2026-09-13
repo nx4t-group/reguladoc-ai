@@ -278,7 +278,7 @@ export default function LoginPage() {
             <div className="mt-7 pt-5 border-t border-dashed border-slate-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-xs font-bold uppercase tracking-wider text-slate-700">Modo demonstração</span>
-                <span className="text-[11px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-mono font-medium">
+                <span className="text-[11px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded font-semibold tracking-tight">
                   demo1234
                 </span>
               </div>

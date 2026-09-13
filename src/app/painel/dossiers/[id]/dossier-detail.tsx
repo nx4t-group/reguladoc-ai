@@ -69,7 +69,7 @@ export function DossierDetail({
               )}
 
               {dossier.complianceScore != null && (
-                <Badge variant="outline" className="font-mono text-xs">
+                <Badge variant="outline" className="font-semibold text-xs text-stone-700 bg-stone-50 border-stone-300">
                   Score: {dossier.complianceScore} pts
                 </Badge>
               )}

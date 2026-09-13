@@ -387,7 +387,7 @@ export function ReviewClient({
               {dossier.complianceScore != null && (
                 <Badge
                   variant={dossier.complianceScore >= 90 ? "success" : "warning"}
-                  className="font-mono text-xs"
+                  className="font-bold text-xs"
                 >
                   Score: {dossier.complianceScore}/100
                 </Badge>
@@ -444,7 +444,7 @@ export function ReviewClient({
                 </span>
               </div>
               <div className="text-xs text-stone-500">
-                Lote Oficial: <strong className="font-mono text-stone-900">{dossier.batchNumber || "LVT25260101"}</strong>
+                Lote Oficial: <strong className="font-bold text-stone-900">{dossier.batchNumber || "LVT25260101"}</strong>
               </div>
             </div>
 
@@ -657,7 +657,7 @@ export function ReviewClient({
                     </td>
                     <td className="py-2.5 px-3 text-stone-600">Laudo / Cert. Origem</td>
                     <td className="py-2.5 px-3 text-stone-600">Anexo IX / Packing List / Invoice</td>
-                    <td className="py-2.5 px-3 font-mono text-stone-800">
+                    <td className="py-2.5 px-3 font-semibold text-stone-800">
                       {dossier.batchNumber || "LVT25260101"} (idêntico em todos)
                     </td>
                     <td className="py-2.5 px-3 text-right">
@@ -778,7 +778,7 @@ export function ReviewClient({
                           </div>
                           <p className="text-[11px] text-stone-600 mt-1 line-clamp-2">{a.message}</p>
                           <div className="flex items-center justify-between mt-2 pt-1 border-t border-stone-100 text-[10px] text-stone-500">
-                            <span className="font-mono">{a.ruleCode}</span>
+                            <span className="font-semibold">{a.ruleCode}</span>
                             <AlertStatusBadge status={a.status as AlertStatus} />
                           </div>
                         </div>
@@ -930,7 +930,7 @@ export function ReviewClient({
                               {idx + 1}º · {DOCUMENT_TYPE_LABELS[reqType]}
                             </span>
                             {doc && (
-                              <Badge variant="outline" className="text-[10px] px-1 py-0 font-mono">
+                              <Badge variant="outline" className="text-[10px] px-1 py-0 font-semibold">
                                 v{doc.currentVersion}
                               </Badge>
                             )}
@@ -953,7 +953,7 @@ export function ReviewClient({
                       <div className="flex items-center justify-between">
                         <span className="font-semibold text-bordeaux-800">Item #{item.itemNumber}</span>
                         {item.batchNumber && (
-                          <Badge variant="outline" className="font-mono text-[10px]">
+                          <Badge variant="outline" className="font-semibold text-[10px]">
                             Lote: {item.batchNumber}
                           </Badge>
                         )}
@@ -1005,7 +1005,7 @@ export function ReviewClient({
                       <Badge variant="secondary" className="text-[11px] bg-bordeaux-50 text-bordeaux-800 border-bordeaux-200">
                         {DOCUMENT_TYPE_LABELS[selectedDoc.documentType as DocumentType] ?? selectedDoc.documentType}
                       </Badge>
-                      <Badge variant="outline" className="font-mono text-[10px]">
+                      <Badge variant="outline" className="font-semibold text-[10px]">
                         v{selectedDoc.currentVersion}
                       </Badge>
                     </div>
@@ -1099,14 +1099,14 @@ export function ReviewClient({
                                 <span className="font-semibold text-stone-700 text-[11px] truncate capitalize">
                                   {friendlyLabel}
                                 </span>
-                                <span className="text-[10px] font-mono text-stone-400 shrink-0">
+                                <span className="text-[10px] font-semibold text-stone-400 shrink-0">
                                   {Math.round(field.confidence * 100)}% conf.
                                 </span>
                               </div>
                               <p className="font-semibold text-sm text-stone-900 break-words mt-0.5">
                                 {field.fieldValue}
                               </p>
-                              <span className="text-[9px] font-mono text-stone-400 uppercase">
+                              <span className="text-[9px] font-semibold text-stone-400 uppercase">
                                 {field.fieldKey}
                               </span>
                             </div>
@@ -1151,7 +1151,7 @@ export function ReviewClient({
                     <p className="text-stone-600">
                       Documento versionado como <strong>v{selectedDoc.currentVersion}</strong>. Preservação de auditoria com hash criptográfico SHA-256.
                     </p>
-                    <p className="font-mono text-[11px] mt-2 text-bordeaux-800 break-all">{selectedDoc.checksum}</p>
+                    <p className="text-[11px] mt-2 text-bordeaux-800 break-all font-semibold tracking-tight">{selectedDoc.checksum}</p>
                   </div>
                   {parsedEvidence && (
                     <div className="p-3 rounded-lg border border-stone-800 bg-stone-900 text-stone-100 font-mono text-xs overflow-x-auto">
@@ -1215,7 +1215,7 @@ export function ReviewClient({
                         <SeverityBadge severity={a.severity as AlertSeverity} />
                       </div>
                       <div className="flex items-center justify-between mt-1 text-[10px] text-stone-500">
-                        <span className="font-mono">{a.ruleCode}</span>
+                        <span className="font-semibold">{a.ruleCode}</span>
                         <AlertStatusBadge status={a.status as AlertStatus} />
                       </div>
                     </div>

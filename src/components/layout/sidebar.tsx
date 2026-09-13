@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -24,24 +23,12 @@ export function Sidebar({ role }: { role: Role; planLabel?: string }) {
     <aside className="sidebar-wood fixed inset-y-0 left-0 z-40 hidden w-72 flex-col justify-between border-r border-stone-800/80 text-stone-300 select-none lg:flex">
       <div>
         {/* ── MARCA & IDENTIDADE REGULATÓRIA ── */}
-        <div className="px-6 py-5 border-b border-stone-800/60 flex items-center gap-3">
-          <div className="relative h-10 w-10 shrink-0 flex items-center justify-center">
-            <Image
-              src="/icon.png"
-              alt="RegulaDoc AI"
-              width={40}
-              height={40}
-              className="h-full w-full object-contain"
-              priority
-            />
+        <div className="px-6 py-5 border-b border-stone-800/60">
+          <div className="flex items-center gap-2">
+            <span className="font-serif tracking-wider text-lg font-bold text-stone-100">RegulaDoc</span>
+            <span className="text-[10px] uppercase font-bold tracking-widest px-1.5 py-0.5 rounded bg-leaf-700/80 text-emerald-100 border border-leaf-600/60">AI</span>
           </div>
-          <div>
-            <div className="flex items-center gap-1.5">
-              <span className="font-serif tracking-wider text-base font-bold text-stone-100">RegulaDoc</span>
-              <span className="text-[10px] uppercase font-bold tracking-widest px-1.5 py-0.5 rounded bg-leaf-700/80 text-emerald-100 border border-leaf-600/60">AI</span>
-            </div>
-            <p className="text-[11px] text-stone-400 font-medium tracking-wide">Vinhos • MAPA / Siscomex</p>
-          </div>
+          <p className="text-[11px] text-stone-400 font-medium tracking-wide mt-1">Vinhos • MAPA / Siscomex</p>
         </div>
 
         {/* ── MENU PRINCIPAL ── */}
@@ -82,7 +69,7 @@ export function Sidebar({ role }: { role: Role; planLabel?: string }) {
                       {isActive ? (
                         <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_6px_#34d399] shrink-0" />
                       ) : item.badge ? (
-                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-stone-800 text-stone-300 border border-stone-700 font-mono shrink-0">
+                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-stone-800 text-stone-300 border border-stone-700 font-sans font-semibold shrink-0">
                           {item.badge}
                         </span>
                       ) : null}

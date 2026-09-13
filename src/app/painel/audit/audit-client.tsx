@@ -158,7 +158,7 @@ export function AuditLogClient({ events }: { events: AuditEventItem[] }) {
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="text-[15px] font-semibold text-foreground">{info.label}</span>
                       {e.dossierInternalNumber && (
-                        <Badge variant="outline" className="font-mono text-[11px]">
+                        <Badge variant="outline" className="font-semibold text-[11px]">
                           {e.dossierInternalNumber} {e.dossierBrand ? `· ${e.dossierBrand}` : ""}
                         </Badge>
                       )}

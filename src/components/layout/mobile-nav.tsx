@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu } from "lucide-react";
@@ -30,23 +29,13 @@ export function MobileNav({ role }: { role: Role }) {
         </Button>
       </SheetTrigger>
       <SheetContent side="left" className="w-72 border-r border-stone-800/80 sidebar-wood p-0 text-stone-300">
-        <div className="flex h-16 items-center border-b border-stone-800/60 px-5 gap-3">
-          <div className="relative h-9 w-9 shrink-0 flex items-center justify-center">
-            <Image
-              src="/icon.png"
-              alt="RegulaDoc AI"
-              width={36}
-              height={36}
-              className="h-full w-full object-contain"
-              priority
-            />
-          </div>
+        <div className="flex h-16 items-center border-b border-stone-800/60 px-5">
           <div>
             <div className="flex items-center gap-1.5">
-              <span className="font-serif tracking-wider text-sm font-bold text-stone-100">RegulaDoc</span>
-              <span className="text-[9px] uppercase font-bold tracking-widest px-1 py-0.2 rounded bg-leaf-700/80 text-emerald-100 border border-leaf-600/60">AI</span>
+              <span className="font-serif tracking-wider text-base font-bold text-stone-100">RegulaDoc</span>
+              <span className="text-[9px] uppercase font-bold tracking-widest px-1.5 py-0.2 rounded bg-leaf-700/80 text-emerald-100 border border-leaf-600/60">AI</span>
             </div>
-            <p className="text-[10px] text-stone-400 font-medium">Vinhos • MAPA / Siscomex</p>
+            <p className="text-[10px] text-stone-400 font-medium mt-0.5">Vinhos • MAPA / Siscomex</p>
           </div>
         </div>
         <nav className="flex-1 space-y-4 overflow-y-auto px-3.5 py-5">

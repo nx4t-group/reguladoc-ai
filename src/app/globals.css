@@ -177,12 +177,15 @@
     box-shadow: 0 20px 40px -15px rgba(16, 42, 67, 0.08), 0 0 1px 1px rgba(16, 42, 67, 0.04);
   }
 
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&family=Cormorant+Garamond:wght@600;700&display=swap');
+
   /* Wine Craft Editorial Theme (Pós-login) */
   .craft-bg {
-    background-color: #f7f5f0;
+    background-color: #f7f4ed;
     background-image: 
-      radial-gradient(at 100% 0%, rgba(114, 32, 44, 0.035) 0px, transparent 50%),
-      radial-gradient(at 0% 100%, rgba(45, 122, 70, 0.035) 0px, transparent 50%);
+      radial-gradient(at 10% 10%, rgba(124, 30, 45, 0.035) 0px, transparent 55%),
+      radial-gradient(at 90% 15%, rgba(60, 121, 73, 0.035) 0px, transparent 50%),
+      radial-gradient(at 50% 90%, rgba(197, 154, 63, 0.04) 0px, transparent 60%);
   }
   .sidebar-wood {
     background: linear-gradient(180deg, #1d1614 0%, #150f0e 100%);
@@ -190,13 +193,24 @@
   }
   .card-craft {
     background: #ffffff;
-    border: 1px solid rgba(215, 208, 196, 0.65);
+    border: 1px solid rgba(228, 219, 206, 0.9);
     box-shadow: 0 2px 10px rgba(40, 30, 20, 0.03), 0 1px 2px rgba(40, 30, 20, 0.02);
     transition: all 0.2s ease-in-out;
   }
   .card-craft:hover {
     border-color: rgba(180, 168, 150, 0.85);
     box-shadow: 0 8px 24px rgba(40, 30, 20, 0.06);
+  }
+  .glass-panel {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(230, 222, 211, 0.85);
+  }
+  .glass-card {
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(228, 219, 206, 0.9);
   }
 
   /* Skeleton shimmer animation */
