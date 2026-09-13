@@ -322,7 +322,7 @@ export default async function DashboardPage() {
         <div className="h-4 w-px bg-stone-200 hidden md:block"></div>
         <div className="flex items-center gap-2 text-stone-600">
           <AlertTriangle className="w-4 h-4 text-bordeaux-700" />
-          <span className="text-stone-500">Findings pendentes:</span>
+          <span className="text-stone-500">Apontamentos pendentes:</span>
           <span className="font-bold text-bordeaux-800">{pendingFindingsCount} apontamentos</span>
         </div>
         <div className="h-4 w-px bg-stone-200 hidden md:block"></div>
@@ -408,7 +408,7 @@ export default async function DashboardPage() {
                   href={`/painel/dossiers/${d.id}`}
                   className="w-full md:w-auto px-4 py-2 text-xs font-semibold text-white bg-bordeaux-800 hover:bg-bordeaux-900 rounded-lg shadow transition flex items-center justify-center gap-1.5 whitespace-nowrap"
                 >
-                  <span>Revisar findings</span>
+                  <span>Revisar apontamentos</span>
                   <ChevronRight className="w-3.5 h-3.5" />
                 </Link>
               );
@@ -439,7 +439,7 @@ export default async function DashboardPage() {
                     href={`/painel/dossiers/${d.id}`}
                     className="w-full md:w-auto px-4 py-2 text-xs font-semibold text-white bg-slate-800 hover:bg-slate-900 rounded-lg shadow transition flex items-center justify-center gap-1.5 whitespace-nowrap"
                   >
-                    <span>Revisar findings</span>
+                    <span>Revisar apontamentos</span>
                     <ChevronRight className="w-3.5 h-3.5" />
                   </Link>
                 );
@@ -553,7 +553,7 @@ export default async function DashboardPage() {
                     const isBlocked = d.status === "BLOCKED" || blockers > 0;
                     const isReview = d.status === "READY_FOR_REVIEW" || d.status === "em_revisao";
 
-                    let actionLabel = "Revisar findings";
+                    let actionLabel = "Revisar apontamentos";
                     let actionBtnStyle = "text-white bg-slate-800 hover:bg-slate-900";
 
                     if (isBlocked) {

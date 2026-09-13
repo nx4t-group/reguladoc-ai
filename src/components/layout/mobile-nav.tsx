@@ -31,12 +31,12 @@ export function MobileNav({ role }: { role: Role }) {
       </SheetTrigger>
       <SheetContent side="left" className="w-72 border-r border-stone-800/80 sidebar-wood p-0 text-stone-300">
         <div className="flex h-16 items-center border-b border-stone-800/60 px-5 gap-3">
-          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-bordeaux-800 to-bordeaux-950 flex items-center justify-center border border-bordeaux-700/50 shadow-md p-1 shrink-0">
+          <div className="relative h-9 w-9 shrink-0 flex items-center justify-center">
             <Image
               src="/icon.png"
               alt="RegulaDoc AI"
-              width={28}
-              height={28}
+              width={36}
+              height={36}
               className="h-full w-full object-contain"
               priority
             />

@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import type { Role } from "@/lib/constants";
 import { NAV_SECTIONS } from "./nav-config";
 
-export function Sidebar({ role, planLabel }: { role: Role; planLabel: string }) {
+export function Sidebar({ role }: { role: Role; planLabel?: string }) {
   const pathname = usePathname();
 
   const visibleSections = NAV_SECTIONS.map((section) => {
@@ -25,12 +25,12 @@ export function Sidebar({ role, planLabel }: { role: Role; planLabel: string }) 
       <div>
         {/* ── MARCA & IDENTIDADE REGULATÓRIA ── */}
         <div className="px-6 py-5 border-b border-stone-800/60 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-bordeaux-800 to-bordeaux-950 flex items-center justify-center border border-bordeaux-700/50 shadow-md p-1.5 shrink-0">
+          <div className="relative h-10 w-10 shrink-0 flex items-center justify-center">
             <Image
               src="/icon.png"
               alt="RegulaDoc AI"
-              width={32}
-              height={32}
+              width={40}
+              height={40}
               className="h-full w-full object-contain"
               priority
             />
@@ -93,24 +93,6 @@ export function Sidebar({ role, planLabel }: { role: Role; planLabel: string }) 
             </div>
           ))}
         </nav>
-      </div>
-
-      {/* ── RODAPÉ DA BARRA LATERAL: STATUS & PLANO ── */}
-      <div className="p-4 border-t border-stone-800/70 space-y-3 bg-black/25">
-        <div className="flex items-center justify-between text-xs">
-          <span className="text-stone-400 flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-emerald-500" /> SIPEAGRO / MAPA
-          </span>
-          <span className="text-[11px] text-stone-400 font-mono">780ms OK</span>
-        </div>
-        <div className="rounded-lg bg-stone-900/90 p-3 border border-stone-800">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] tracking-wider uppercase font-semibold text-amber-200">Plano Ativo</span>
-            <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800">Conformidade Total</span>
-          </div>
-          <div className="mt-1 font-medium text-xs text-stone-200">{planLabel || "Professional Vinícola"}</div>
-          <p className="text-[11px] text-stone-400 mt-0.5 truncate">Barrinhas Comércio • Dossiês Vinhos</p>
-        </div>
       </div>
     </aside>
   );

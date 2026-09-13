@@ -129,11 +129,6 @@ export function Topbar({
 
       {/* Ações do Cabeçalho & Perfil */}
       <div className="flex items-center gap-4 ml-6">
-        {/* Badge de Sincronização MAPA */}
-        <div className="hidden lg:flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-medium">
-          <span className="w-2 h-2 rounded-full bg-emerald-600 animate-ping" />
-          <span>Sincronismo Aduaneiro Ativo</span>
-        </div>
 
         {/* Notificações */}
         <DropdownMenu>

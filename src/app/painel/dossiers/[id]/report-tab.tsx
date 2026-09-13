@@ -178,7 +178,7 @@ export function ReportTab({
           <section>
             <div className="flex items-center justify-between mb-2">
               <h3 className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-                Findings & Tratamentos ({relevantAlerts.length})
+                Apontamentos & Tratamentos ({relevantAlerts.length})
               </h3>
               <span className="text-muted-foreground">{blockersCount} blocker(s) crítico(s)</span>
             </div>

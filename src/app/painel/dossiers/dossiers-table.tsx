@@ -32,7 +32,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { DossierStatusBadge } from "@/components/domain/status-badge";
 
 export interface DossierRow {
@@ -165,7 +164,7 @@ const columns: ColumnDef<DossierRow>[] = [
 ];
 
 export function DossiersTable({ data }: { data: DossierRow[] }) {
-  const [viewMode, setViewMode] = React.useState<"table" | "cards">("table");
+  const [viewMode, setViewMode] = React.useState<"table" | "cards">("cards");
   const [globalFilter, setGlobalFilter] = React.useState("");
   const [quickFilter, setQuickFilter] = React.useState<string>("todos");
   const [sorting, setSorting] = React.useState<SortingState>([{ id: "updatedAt", desc: true }]);
@@ -348,63 +347,153 @@ export function DossiersTable({ data }: { data: DossierRow[] }) {
           </div>
         </div>
       ) : (
-        /* VISUALIZAÇÃO EM CARDS (OPCIONAL) */
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {filteredData.length === 0 && (
-            <div className="col-span-full py-12 text-center text-sm text-muted-foreground">
-              Nenhum processo encontrado.
-            </div>
-          )}
-          {filteredData.map((d) => (
-            <Card key={d.id} className="border border-border hover:shadow-md transition-shadow">
-              <CardHeader className="pb-3">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <CardTitle className="text-base font-semibold text-primary">
-                      <Link href={`/painel/dossiers/${d.id}`} className="hover:underline">
-                        {d.internalNumber}
+        /* VISUALIZAÇÃO EM CARDS (PADRÃO) */
+        <div className="space-y-4">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {table.getRowModel().rows.length === 0 ? (
+              <div className="col-span-full py-12 text-center text-sm text-stone-500">
+                Nenhum processo encontrado com os filtros selecionados.
+              </div>
+            ) : (
+              table.getRowModel().rows.map((row) => {
+                const d = row.original;
+                const isBlocked = d.criticalAlerts > 0;
+                const isAwaitingDocs =
+                  d.status === "AWAITING_DOCUMENTS" || d.status === "documentos_pendentes" || d.status === "DRAFT";
+                const isReview = d.status === "READY_FOR_REVIEW" || d.status === "em_revisao";
+
+                let borderClass = "border-l-4 border-l-stone-300";
+                if (isBlocked) borderClass = "border-l-4 border-l-rose-700";
+                else if (isAwaitingDocs) borderClass = "border-l-4 border-l-amber-500";
+                else if (isReview) borderClass = "border-l-4 border-l-leaf-600";
+
+                let actionLabel = "Revisar apontamentos";
+                let actionBtnStyle = "text-white bg-slate-800 hover:bg-slate-900";
+
+                if (isBlocked) {
+                  actionLabel = "Tratar bloqueios";
+                  actionBtnStyle = "text-white bg-bordeaux-800 hover:bg-bordeaux-900";
+                } else if (isAwaitingDocs) {
+                  actionLabel = "Anexar documentos";
+                  actionBtnStyle = "text-stone-700 bg-stone-100 hover:bg-stone-200 border border-stone-300";
+                }
+
+                return (
+                  <div
+                    key={d.id}
+                    className={`card-craft rounded-xl p-5 border border-stone-200 flex flex-col justify-between transition-all hover:shadow-md bg-white ${borderClass}`}
+                  >
+                    <div>
+                      <div className="flex items-start justify-between gap-2">
+                        <div>
+                          <Link
+                            href={`/painel/dossiers/${d.id}`}
+                            className="font-mono font-bold text-base text-stone-900 hover:text-bordeaux-800 hover:underline block"
+                          >
+                            {d.internalNumber}
+                          </Link>
+                          <p className="text-xs text-stone-600 mt-0.5 font-medium line-clamp-1">
+                            {d.importerName}
+                          </p>
+                        </div>
+                        <DossierStatusBadge status={d.status} />
+                      </div>
+
+                      <div className="mt-3 pt-3 border-t border-stone-100 space-y-2 text-xs">
+                        <div>
+                          <span className="font-semibold text-stone-900">{d.brand}</span>
+                          <p className="text-stone-500 truncate">{d.productName}</p>
+                        </div>
+
+                        <div className="flex justify-between text-stone-500 text-[11px] pt-1 border-t border-stone-100">
+                          <span>Lote: <strong className="font-mono text-stone-700">{d.batchNumber ?? "—"}</strong></span>
+                          <span>Origem: <strong className="text-stone-700">{d.countryOrigin ?? "Portugal"}</strong></span>
+                        </div>
+
+                        <div className="flex items-center justify-between pt-1">
+                          <span className="text-stone-500">
+                            Score:{" "}
+                            <strong className="font-mono text-stone-900">{d.complianceScore != null ? `${d.complianceScore} pts` : "—"}</strong>
+                          </span>
+                          {d.criticalAlerts > 0 ? (
+                            <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-rose-700 bg-rose-50 px-2 py-0.5 rounded border border-rose-200">
+                              <span className="w-1.5 h-1.5 rounded-full bg-rose-600"></span>
+                              {d.criticalAlerts} blocker(s)
+                            </span>
+                          ) : (
+                            <span className="text-emerald-700 text-[11px] font-medium">Sem bloqueios</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex justify-between items-center pt-3 mt-3 border-t border-stone-100 text-xs">
+                      <span className="text-[11px] text-stone-400">
+                        {format(new Date(d.updatedAt), "dd/MM/yyyy", { locale: ptBR })}
+                      </span>
+                      <Link
+                        href={`/painel/dossiers/${d.id}`}
+                        className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold shadow-xs transition ${actionBtnStyle}`}
+                      >
+                        <span>{actionLabel}</span>
+                        <ArrowRight className="h-3 w-3" />
                       </Link>
-                    </CardTitle>
-                    <CardDescription className="text-xs mt-0.5">{d.importerName}</CardDescription>
+                    </div>
                   </div>
-                  <DossierStatusBadge status={d.status} />
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-2 text-xs">
-                <div>
-                  <span className="font-semibold text-foreground">{d.brand}</span>
-                  <p className="text-muted-foreground">{d.productName}</p>
-                </div>
-                <div className="flex justify-between text-muted-foreground pt-1 border-t border-border/60">
-                  <span>Lote: {d.batchNumber ?? "—"}</span>
-                  <span>Origem: {d.countryOrigin ?? "—"}</span>
-                </div>
-                <div className="flex items-center justify-between pt-1">
-                  <span>
-                    Score:{" "}
-                    <strong>{d.complianceScore != null ? `${d.complianceScore} pts` : "—"}</strong>
-                  </span>
-                  {d.criticalAlerts > 0 ? (
-                    <Badge variant="critical" className="gap-1 text-[11px]">
-                      <ShieldAlert className="h-3 w-3" /> {d.criticalAlerts} blocker(s)
-                    </Badge>
-                  ) : (
-                    <span className="text-muted-foreground">0 blockers</span>
-                  )}
-                </div>
-              </CardContent>
-              <CardFooter className="flex justify-between items-center pt-2 border-t border-border/60">
-                <span className="text-[11px] text-muted-foreground">
-                  {format(new Date(d.updatedAt), "dd/MM/yyyy", { locale: ptBR })}
-                </span>
-                <Button size="sm" variant="outline" className="h-7 text-xs" asChild>
-                  <Link href={`/painel/dossiers/${d.id}`}>
-                    Abrir dossiê <ArrowRight className="ml-1 h-3 w-3" />
-                  </Link>
+                );
+              })
+            )}
+          </div>
+
+          {/* PAGINAÇÃO DE CARDS */}
+          <div className="flex flex-col items-center justify-between gap-3 border-t border-stone-200 px-2 py-3 sm:flex-row text-xs text-stone-500">
+            <div>
+              Mostrando {table.getRowModel().rows.length} de {filteredData.length} processos
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs">
+                Página {table.getState().pagination.pageIndex + 1} de {table.getPageCount() || 1}
+              </span>
+              <div className="flex items-center gap-1">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-7 w-7 border-stone-300"
+                  onClick={() => table.setPageIndex(0)}
+                  disabled={!table.getCanPreviousPage()}
+                >
+                  <ChevronsLeft className="h-3.5 w-3.5" />
                 </Button>
-              </CardFooter>
-            </Card>
-          ))}
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-7 w-7 border-stone-300"
+                  onClick={() => table.previousPage()}
+                  disabled={!table.getCanPreviousPage()}
+                >
+                  <ChevronLeft className="h-3.5 w-3.5" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-7 w-7 border-stone-300"
+                  onClick={() => table.nextPage()}
+                  disabled={!table.getCanNextPage()}
+                >
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-7 w-7 border-stone-300"
+                  onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+                  disabled={!table.getCanNextPage()}
+                >
+                  <ChevronsRight className="h-3.5 w-3.5" />
+                </Button>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>

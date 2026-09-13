@@ -3,10 +3,8 @@ import {
   FileStack,
   ShieldCheck,
   Scale,
-  FileBarChart,
   Settings,
   Users,
-  History,
   type LucideIcon,
 } from "lucide-react";
 
@@ -33,9 +31,7 @@ export const NAV_SECTIONS: NavSection[] = [
       { href: "/painel", label: "Painel Operacional", icon: LayoutDashboard },
       { href: "/painel/dossiers", label: "Dossiês de Importação", icon: FileStack, badge: "6" },
       { href: "/painel/rules", label: "Motor de Regras Viti-MAPA", icon: ShieldCheck, badge: "15 ativas" },
-      { href: "/painel/regulatory-monitor", label: "Alertas & Findings", icon: Scale, badge: "13" },
-      { href: "/painel/audit", label: "Auditoria MAPA v1.4", icon: History },
-      { href: "/painel/reports", label: "Tabelas Enológicas", icon: FileBarChart },
+      { href: "/painel/regulatory-monitor", label: "Alertas & Apontamentos", icon: Scale, badge: "13" },
     ],
   },
   {
