@@ -26,11 +26,11 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   }));
 
   return (
-    <div className="min-h-screen bg-muted/30">
+    <div className="min-h-screen craft-bg text-slate-800 antialiased">
       <div className="no-print contents">
         <Sidebar role={tenant.role} planLabel={PLAN_LABELS[(organization?.plan ?? "starter") as Plan]} />
       </div>
-      <div className="flex min-h-screen flex-col lg:pl-64">
+      <div className="flex min-h-screen flex-col lg:pl-72">
         <div className="no-print contents">
           <Topbar
             name={tenant.name}

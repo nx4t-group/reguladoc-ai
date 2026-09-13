@@ -17,6 +17,7 @@ export interface NavItem {
   label: string;
   icon: LucideIcon;
   roles?: Role[];
+  badge?: string;
 }
 
 export interface NavSection {
@@ -27,32 +28,21 @@ export interface NavSection {
 
 export const NAV_SECTIONS: NavSection[] = [
   {
+    title: "Controle Regulatório",
     items: [
-      { href: "/painel", label: "Painel", icon: LayoutDashboard },
-      { href: "/painel/dossiers", label: "Dossiês", icon: FileStack },
-    ],
-  },
-  {
-    title: "Governança",
-    roles: ["admin", "gestor"],
-    items: [
-      { href: "/painel/rules", label: "Regras", icon: ShieldCheck, roles: ["admin", "gestor"] },
-      { href: "/painel/regulatory-monitor", label: "Monitor Regulatório", icon: Scale, roles: ["admin", "gestor"] },
-    ],
-  },
-  {
-    title: "Gestão",
-    roles: ["admin", "gestor"],
-    items: [
-      { href: "/painel/reports", label: "Relatórios", icon: FileBarChart, roles: ["admin", "gestor"] },
-      { href: "/painel/audit", label: "Auditoria", icon: History, roles: ["admin", "gestor"] },
+      { href: "/painel", label: "Painel Operacional", icon: LayoutDashboard },
+      { href: "/painel/dossiers", label: "Dossiês de Importação", icon: FileStack, badge: "6" },
+      { href: "/painel/rules", label: "Motor de Regras Viti-MAPA", icon: ShieldCheck, badge: "15 ativas" },
+      { href: "/painel/regulatory-monitor", label: "Alertas & Findings", icon: Scale, badge: "13" },
+      { href: "/painel/audit", label: "Auditoria MAPA v1.4", icon: History },
+      { href: "/painel/reports", label: "Tabelas Enológicas", icon: FileBarChart },
     ],
   },
   {
     title: "Administração",
     roles: ["admin"],
     items: [
-      { href: "/painel/admin", label: "Administração", icon: Users, roles: ["admin"] },
+      { href: "/painel/admin", label: "Equipe & Acessos", icon: Users, roles: ["admin"] },
       { href: "/painel/settings", label: "Configurações", icon: Settings, roles: ["admin"] },
     ],
   },
