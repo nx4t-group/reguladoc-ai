@@ -23,12 +23,12 @@ export const metadata: Metadata = {
     "Apoio à decisão para conformidade documental de importações reguladas, com foco inicial em vinhos.",
   icons: {
     icon: [
-      { url: "/favicon.ico", sizes: "any" },
-      { url: "/icon.png", type: "image/png" },
-      { url: "/icon.jpg", type: "image/jpeg" },
+      { url: "/favicon.ico?v=2", sizes: "any" },
+      { url: "/icon.png?v=2", type: "image/png" },
+      { url: "/icon.jpg?v=2", type: "image/jpeg" },
     ],
-    apple: "/logo.png",
-    shortcut: "/favicon.ico",
+    apple: "/icon.png?v=2",
+    shortcut: "/favicon.ico?v=2",
   },
 };
 

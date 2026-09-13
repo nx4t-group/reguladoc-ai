@@ -32,12 +32,12 @@ export function MobileNav({ role }: { role: Role }) {
       <SheetContent side="left" className="w-64 border-r border-sidebar-border bg-sidebar p-0 text-sidebar-foreground">
         <div className="flex h-16 items-center border-b border-sidebar-border px-4">
           <Link href="/painel" className="flex items-center gap-2.5">
-            <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-xl bg-white/10 ring-1 ring-white/10">
+            <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-xl bg-white p-1 shadow-sm ring-1 ring-white/20">
               <Image
-                src="/icon.jpg"
+                src="/icon.png"
                 alt="RegulaDoc AI"
                 fill
-                className="object-cover"
+                className="object-contain"
                 priority
               />
             </div>
