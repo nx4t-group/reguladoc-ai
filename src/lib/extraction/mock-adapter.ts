@@ -138,7 +138,26 @@ export class MockExtractionAdapter implements DocumentExtractionAdapter {
 
   async extract(input: ExtractionInput): Promise<ExtractedFieldValue[]> {
     const base = baseFieldsForDocument(input.documentType, input.dossierContext);
-    const merged: Record<string, string | undefined> = { ...base };
+    let fromFile: Record<string, string | undefined> = {};
+
+    if (input.filePath) {
+      try {
+        const { readStoredFile } = await import("@/lib/storage");
+        const { extractPdfText } = await import("./pdf-text");
+        const { parseDocumentFieldsFromPdfText } = await import("./text-field-parser");
+        const buffer = await readStoredFile(input.filePath);
+        if (input.filename.toLowerCase().endsWith(".pdf")) {
+          const pages = extractPdfText(buffer);
+          if (pages.length > 0) {
+            fromFile = parseDocumentFieldsFromPdfText(input.documentType, pages, input.dossierContext);
+          }
+        }
+      } catch (err) {
+        console.warn("Falha ao extrair texto do documento no MockAdapter:", err);
+      }
+    }
+
+    const merged: Record<string, string | undefined> = { ...base, ...fromFile };
     for (const [key, value] of Object.entries(input.fieldOverrides ?? {})) {
       merged[key] = value ?? undefined;
     }
@@ -148,3 +167,4 @@ export class MockExtractionAdapter implements DocumentExtractionAdapter {
       .map(([key, value]) => ({ key, value, confidence: confidenceFor(key) }));
   }
 }
+

@@ -23,8 +23,9 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { calculateTotalVolume } from "@/lib/rules/calculations";
-import { createDossierAndRedirect, type CreateDossierInput } from "@/server/actions/dossiers";
-
+import { createDossier, type CreateDossierInput } from "@/server/actions/dossiers";
+import { uploadDocument } from "@/server/actions/documents";
+import { extractInitialDossierData } from "@/server/actions/extract-dossier";
 const schema = z.object({
   internalNumber: z.string().min(2, "Informe o número interno do processo."),
   importerName: z.string().min(2, "Informe o importador."),
@@ -86,40 +87,6 @@ function getFileIcon(type: string) {
   return "📎";
 }
 
-// Extração de dados a partir dos documentos do processo
-// Reconhece Certificado de Inspeção (Nº Dossiê), Certificado de Origem (Lote), Romaneio/Packing (Volumes) e Fatura/Invoice
-function simulateExtraction(files: UploadedFile[]): Partial<FormValues> {
-  const allNames = files.map((f) => f.name).join(" ");
-
-  // Busca padrão de número de dossiê MAPA (ex: I2400139612) no nome dos arquivos
-  const dossierMatch = allNames.match(/I\d{10}/i) || allNames.match(/dossi[eê][\s-_]*([A-Z0-9]+)/i);
-  // Busca padrão de lote (ex: LVT25260101) no nome dos arquivos
-  const batchMatch = allNames.match(/LVT\d+/i) || allNames.match(/lote[\s-_]*([A-Z0-9]+)/i);
-
-  return {
-    // Identificado no Certificado de Inspeção MAPA
-    internalNumber: dossierMatch ? dossierMatch[0].toUpperCase() : "I2400139612",
-    // Identificado no Certificado de Origem
-    batchNumber: batchMatch ? batchMatch[0].toUpperCase() : "LVT25260101",
-    // Safra e Indicação Geográfica
-    vintage: "2025",
-    geographicalIndication: "Regional Alentejano",
-    // Quantidade e Volume (Packing List / Romaneio)
-    packageType: "Caixas de 6 garrafas",
-    packageCount: "800",
-    unitsPerPackage: "6",
-    unitCapacityLiters: "0.75",
-    informedVolumeLiters: "3600",
-    // Dados da Invoice / Importador / Exportador
-    importerName: "BARRINHAS Comércio e Importação de Bebidas e Cereais Ltda.",
-    exporterName: "Granacer - Administração de Bens, S.A.",
-    producerName: "Granacer - Administração de Bens, S.A.",
-    countryOrigin: "Portugal",
-    productName: "Vinho Fino Tinto Seco",
-    brand: "Tapada do Fidalgo",
-  };
-}
-
 export function NewDossierForm() {
   const router = useRouter();
   const [submitting, setSubmitting] = React.useState(false);
@@ -164,6 +131,48 @@ export function NewDossierForm() {
     return calculateTotalVolume(p, u, c);
   }, [packageCount, unitsPerPackage, unitCapacityLiters]);
 
+  async function performExtraction(filesToExtract: UploadedFile[]) {
+    if (filesToExtract.length === 0) return;
+    setExtracting(true);
+    setUploadedFiles((prev) => prev.map((f) => ({ ...f, status: "analyzing" })));
+
+    try {
+      const formData = new FormData();
+      filesToExtract.forEach((f) => {
+        formData.append("files", f.file);
+      });
+
+      const res = await extractInitialDossierData(formData);
+      if (!res.ok || !res.fields) {
+        toast.error(res.error ?? "Não foi possível extrair dados dos documentos.");
+        setUploadedFiles((prev) => prev.map((f) => ({ ...f, status: "ready" })));
+        return;
+      }
+
+      const filledFields: string[] = [];
+      Object.entries(res.fields).forEach(([key, value]) => {
+        if (value) {
+          form.setValue(key as keyof FormValues, String(value), { shouldDirty: true, shouldValidate: true });
+          filledFields.push(key);
+        }
+      });
+
+      setExtractedFields(filledFields);
+      setUploadedFiles((prev) => prev.map((f) => ({ ...f, status: "done" })));
+
+      toast.success(
+        `${filledFields.length} campos preenchidos automaticamente a partir dos documentos.`,
+        { description: "Revise os campos antes de criar o dossiê." }
+      );
+    } catch (err) {
+      console.error("Erro na extração de dados:", err);
+      toast.error("Ocorreu uma falha ao extrair dados dos arquivos.");
+      setUploadedFiles((prev) => prev.map((f) => ({ ...f, status: "ready" })));
+    } finally {
+      setExtracting(false);
+    }
+  }
+
   function addFiles(files: FileList | File[]) {
     const newFiles: UploadedFile[] = Array.from(files).map((file) => ({
       id: `${Date.now()}-${Math.random()}`,
@@ -173,7 +182,14 @@ export function NewDossierForm() {
       status: "ready" as const,
       file,
     }));
-    setUploadedFiles((prev) => [...prev, ...newFiles]);
+
+    setUploadedFiles((prev) => {
+      const combined = [...prev, ...newFiles];
+      setTimeout(() => {
+        performExtraction(combined);
+      }, 150);
+      return combined;
+    });
   }
 
   function removeFile(id: string) {
@@ -192,31 +208,7 @@ export function NewDossierForm() {
   }
 
   async function handleAutoFill() {
-    if (uploadedFiles.length === 0) return;
-    setExtracting(true);
-    setUploadedFiles((prev) => prev.map((f) => ({ ...f, status: "analyzing" })));
-
-    // Simulate AI analysis delay
-    await new Promise((r) => setTimeout(r, 2000));
-
-    const extracted = simulateExtraction(uploadedFiles);
-    const filledFields: string[] = [];
-
-    Object.entries(extracted).forEach(([key, value]) => {
-      if (value) {
-        form.setValue(key as keyof FormValues, value, { shouldDirty: true });
-        filledFields.push(key);
-      }
-    });
-
-    setExtractedFields(filledFields);
-    setUploadedFiles((prev) => prev.map((f) => ({ ...f, status: "done" })));
-    setExtracting(false);
-
-    toast.success(
-      `${filledFields.length} campos preenchidos automaticamente a partir dos documentos.`,
-      { description: "Revise os campos antes de criar o dossiê." }
-    );
+    await performExtraction(uploadedFiles);
   }
 
   function handleDragOver(e: React.DragEvent) {
@@ -244,10 +236,38 @@ export function NewDossierForm() {
         unitCapacityLiters: values.unitCapacityLiters ? Number(values.unitCapacityLiters) : undefined,
         informedVolumeLiters: values.informedVolumeLiters ? Number(values.informedVolumeLiters) : undefined,
       };
-      const result = await createDossierAndRedirect(payload);
-      if (result && !result.ok) {
+
+      const result = await createDossier(payload);
+      if (!result.ok || !result.data?.id) {
         toast.error(result.error ?? "Não foi possível criar o dossiê.");
+        return;
       }
+
+      const newDossierId = result.data.id;
+
+      // Anexa os documentos enviados no dropzone ao novo dossiê
+      if (uploadedFiles.length > 0) {
+        toast.loading("Anexando documentos ao dossiê...", { id: "uploading-dossier-docs" });
+        for (const uf of uploadedFiles) {
+          try {
+            const fd = new FormData();
+            fd.set("dossierId", newDossierId);
+            fd.set("documentType", "auto");
+            fd.set("file", uf.file);
+            await uploadDocument(fd);
+          } catch (uploadErr) {
+            console.error("Erro ao salvar arquivo no dossiê:", uploadErr);
+          }
+        }
+        toast.dismiss("uploading-dossier-docs");
+      }
+
+      toast.success("Dossiê criado com sucesso!");
+      router.push(`/painel/dossiers/${newDossierId}`);
+      router.refresh();
+    } catch (err) {
+      console.error("Erro ao submeter formulário de dossiê:", err);
+      toast.error("Ocorreu um erro ao criar o dossiê.");
     } finally {
       setSubmitting(false);
     }
