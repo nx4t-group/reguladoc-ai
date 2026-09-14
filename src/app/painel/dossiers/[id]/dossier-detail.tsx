@@ -1,7 +1,8 @@
 "use client";
 
+import * as React from "react";
 import Link from "next/link";
-import { ArrowLeft, Check, CheckCircle2, ShieldAlert, Sparkles, Wine } from "lucide-react";
+import { ArrowLeft, Check, CheckCircle2, LayoutGrid, ShieldAlert, Sparkles, Wine } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
@@ -27,6 +28,8 @@ export function DossierDetail({
   missingRequiredDocuments,
   isExtractionSimulated,
 }: DossierDetailProps) {
+  const [activeTab, setActiveTab] = React.useState("overview");
+
   const criticalAlertsCount = alerts.filter(
     (a) => a.severity === "critica" && (a.status === "aberto" || a.status === "confirmado")
   ).length;
@@ -240,45 +243,46 @@ export function DossierDetail({
       </header>
 
       {/* 5 ABAS UNIFICADAS DO WORKSPACE */}
-      <Tabs defaultValue="review" className="space-y-5">
-        <TabsList className="no-print h-auto bg-transparent p-0 flex items-center gap-2 pt-2 border-t border-parchment-200 text-xs font-semibold overflow-x-auto rounded-none w-full justify-start">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-5">
+        <TabsList className="no-print h-auto bg-transparent p-0 flex items-center space-x-2 border-b border-stone-200 pb-1 text-xs font-semibold overflow-x-auto rounded-none w-full justify-start">
           <TabsTrigger
             value="overview"
-            className="px-3.5 py-1.5 rounded-lg text-stone-600 hover:text-stone-900 hover:bg-stone-100/70 transition-all data-[state=active]:bg-gradient-to-r data-[state=active]:from-wine-900 data-[state=active]:to-wine-800 data-[state=active]:text-white data-[state=active]:shadow-xs data-[state=active]:ring-1 data-[state=active]:ring-wine-950/20"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-xs text-stone-600 hover:text-stone-900 hover:bg-stone-200/60 transition-all focus:outline-none data-[state=active]:text-white data-[state=active]:bg-[#722f37] data-[state=active]:shadow-sm"
           >
-            Visão Geral
+            <LayoutGrid className="w-4 h-4" />
+            <span>Visão Geral</span>
           </TabsTrigger>
           <TabsTrigger
             value="documents"
-            className="px-3.5 py-1.5 rounded-lg text-stone-600 hover:text-stone-900 hover:bg-stone-100/70 transition-all flex items-center gap-1.5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-wine-900 data-[state=active]:to-wine-800 data-[state=active]:text-white data-[state=active]:shadow-xs data-[state=active]:ring-1 data-[state=active]:ring-wine-950/20"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-xs text-stone-600 hover:text-stone-900 hover:bg-stone-200/60 transition-all data-[state=active]:text-white data-[state=active]:bg-[#722f37] data-[state=active]:shadow-sm"
           >
             <span>Documentos</span>
-            <span className="px-1.5 py-0.2 rounded-md bg-stone-200/70 text-stone-700 text-[10px] font-bold">
+            <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-stone-200 text-stone-700 data-[state=active]:bg-white/20 data-[state=active]:text-white">
               {documents.length}
             </span>
           </TabsTrigger>
           <TabsTrigger
             value="review"
-            className="px-4 py-1.5 rounded-lg text-stone-600 hover:text-stone-900 hover:bg-stone-100/70 transition-all flex items-center gap-2 font-bold data-[state=active]:bg-gradient-to-r data-[state=active]:from-wine-900 data-[state=active]:to-wine-800 data-[state=active]:text-white data-[state=active]:shadow-xs data-[state=active]:ring-1 data-[state=active]:ring-wine-950/20"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-xs text-stone-600 hover:text-stone-900 hover:bg-stone-200/60 transition-all data-[state=active]:text-white data-[state=active]:bg-[#722f37] data-[state=active]:shadow-sm"
           >
-            <CheckCircle2 className="h-3.5 w-3.5 text-gold-500" />
+            <CheckCircle2 className="w-3.5 h-3.5 text-[#722f37] data-[state=active]:text-white" />
             <span>Revisão</span>
-            <span className="px-1.5 py-0.2 rounded-md bg-wine-700 text-gold-500 border border-gold-500/30 text-[10px] font-bold">
+            <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-[#722f37] text-white shadow-xs data-[state=active]:bg-white data-[state=active]:text-[#722f37]">
               {alerts.length}
             </span>
           </TabsTrigger>
           <TabsTrigger
             value="decision"
-            className="px-3.5 py-1.5 rounded-lg text-stone-600 hover:text-stone-900 hover:bg-stone-100/70 transition-all data-[state=active]:bg-gradient-to-r data-[state=active]:from-wine-900 data-[state=active]:to-wine-800 data-[state=active]:text-white data-[state=active]:shadow-xs data-[state=active]:ring-1 data-[state=active]:ring-wine-950/20"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-xs text-stone-600 hover:text-stone-900 hover:bg-stone-200/60 transition-all data-[state=active]:text-white data-[state=active]:bg-[#722f37] data-[state=active]:shadow-sm"
           >
-            Decisão & Relatório
+            <span>Decisão &amp; Relatório</span>
           </TabsTrigger>
           <TabsTrigger
             value="history"
-            className="px-3.5 py-1.5 rounded-lg text-stone-600 hover:text-stone-900 hover:bg-stone-100/70 transition-all flex items-center gap-1.5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-wine-900 data-[state=active]:to-wine-800 data-[state=active]:text-white data-[state=active]:shadow-xs data-[state=active]:ring-1 data-[state=active]:ring-wine-950/20"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-xs text-stone-600 hover:text-stone-900 hover:bg-stone-200/60 transition-all data-[state=active]:text-white data-[state=active]:bg-[#722f37] data-[state=active]:shadow-sm"
           >
             <span>Histórico</span>
-            <span className="px-1.5 py-0.2 rounded-md bg-stone-200/70 text-stone-700 text-[10px] font-bold">
+            <span className="px-2 py-0.5 text-[10px] font-medium rounded-full bg-stone-200 text-stone-600 data-[state=active]:bg-white/20 data-[state=active]:text-white">
               {auditEvents.length}
             </span>
           </TabsTrigger>
@@ -286,7 +290,12 @@ export function DossierDetail({
 
         {/* 1. VISÃO GERAL */}
         <TabsContent value="overview">
-          <OverviewTab dossier={dossier} missingRequiredDocuments={missingRequiredDocuments} />
+          <OverviewTab
+            dossier={dossier}
+            missingRequiredDocuments={missingRequiredDocuments}
+            documents={documents}
+            onNavigateToDocuments={() => setActiveTab("documents")}
+          />
         </TabsContent>
 
         {/* 2. DOCUMENTOS */}
