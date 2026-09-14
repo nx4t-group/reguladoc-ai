@@ -113,7 +113,28 @@ export async function runDossierValidation(dossierId: string): Promise<ActionRes
   const detectedRuleIds = new Set<string>();
 
   for (const finding of engineResult.findings) {
-    const rule = ruleByCode.get(finding.ruleCode);
+    let rule = ruleByCode.get(finding.ruleCode);
+    if (!rule) {
+      const def = RULE_DEFINITIONS.find((d) => d.code === finding.ruleCode);
+      if (def) {
+        rule = await prisma.validationRule.create({
+          data: {
+            code: def.code,
+            name: def.name,
+            description: def.description,
+            category: def.category,
+            severity: def.severity,
+            sourceType: def.sourceType,
+            sourceReference: def.sourceReference,
+            version: 1,
+            status: "ativa",
+            errorMessage: def.errorMessage,
+            suggestion: def.suggestion,
+          },
+        });
+        ruleByCode.set(rule.code, rule);
+      }
+    }
     if (!rule) continue;
     detectedRuleIds.add(rule.id);
 

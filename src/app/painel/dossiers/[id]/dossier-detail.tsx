@@ -181,61 +181,85 @@ export function DossierDetail({
             </div>
           </div>
 
-          {/* Linha 2: Faixa de Contexto Enológico (4 Cards) */}
-          <div className="py-2.5 grid grid-cols-1 md:grid-cols-12 gap-3 items-center text-xs">
-            {/* Card 1: Produto Regulado com Selo Visual */}
-            <div className="md:col-span-4 flex items-center gap-3 bg-white/80 p-2 rounded-xl border border-parchment-border/80 shadow-2xs">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-b from-stone-900 to-wine-950 flex items-center justify-center flex-shrink-0 relative overflow-hidden border border-gold-500/40">
-                <Wine className="text-gold-500 h-5 w-5" />
-                <span className="absolute bottom-0 inset-x-0 h-1 bg-gradient-to-r from-wine-600 to-gold-500"></span>
+          {/* Linha 2: Faixa de Contexto do Produto Regulado (Card Unificado) */}
+          <div className="bg-white rounded-2xl border border-stone-200/90 shadow-sm p-3.5 sm:p-4 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
+            {/* Bloco 1: Produto Regulado & Selo Enológico */}
+            <div className="flex items-center gap-3.5 flex-1 min-w-0">
+              <div className="w-12 h-12 rounded-xl bg-[#faecee] border border-[#f5d0d6] flex items-center justify-center flex-shrink-0 shadow-2xs">
+                <Wine className="text-[#802a36] h-6 w-6 stroke-[1.75]" />
               </div>
-              <div className="min-w-0">
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-bold tracking-wider uppercase text-wine-700">Produto Regulado</span>
-                  <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-amber-100 text-amber-900 border border-amber-300/80">
-                    {dossier.geographicalIndication || "Alentejo DOC"}
+              <div className="min-w-0 space-y-1">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-[#fae8e8] text-[#9b2c3b] uppercase tracking-wider">
+                    PRODUTO REGULADO
                   </span>
-                  <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-stone-100 text-stone-700">
-                    {dossier.vintage ? `Safra ${dossier.vintage}` : "Safra 2024"}
+                  <span className="text-[10px] font-medium px-2 py-0.5 rounded bg-stone-100 text-stone-600">
+                    {dossier.geographicalIndication || "Regional Alentejano"}
+                  </span>
+                  <span className="text-[10px] font-medium px-2 py-0.5 rounded bg-stone-100 text-stone-600">
+                    {dossier.vintage ? `Safra ${dossier.vintage}` : "Safra 2025"}
                   </span>
                 </div>
-                <h2 className="font-serif text-sm font-bold text-wine-950 truncate" title={`${dossier.brand} · ${dossier.productName}`}>
-                  {dossier.brand} · {dossier.productName}
+                <h2 className="text-base sm:text-lg font-bold text-stone-900 tracking-tight truncate font-display" title={`${dossier.brand} · ${dossier.productName}`}>
+                  {dossier.brand || "Tapada do Fidalgo"} · {dossier.productName || "Vinho Fino Tinto Seco"}
                 </h2>
               </div>
             </div>
 
-            {/* Card 2: Cliente / Importador */}
-            <div className="md:col-span-3 bg-white/80 p-2 rounded-xl border border-parchment-border/80 min-w-0 shadow-2xs">
-              <span className="text-[10px] font-semibold text-stone-400 uppercase tracking-wider block">Cliente / Importador:</span>
-              <p className="font-semibold text-stone-800 truncate" title={dossier.importerName}>
-                {dossier.importerName}
+            {/* Separador vertical */}
+            <div className="hidden lg:block h-10 w-px bg-stone-200 flex-shrink-0" />
+
+            {/* Bloco 2: Cliente / Importador */}
+            <div className="min-w-0 lg:min-w-[200px] lg:max-w-[240px]">
+              <span className="text-[10px] font-semibold text-stone-400 uppercase tracking-wider block mb-0.5">
+                CLIENTE / IMPORTADOR
+              </span>
+              <p className="text-xs sm:text-sm font-bold text-stone-900 truncate" title={dossier.importerName}>
+                {dossier.importerName || "BARRINHAS Comércio e Importação de Be..."}
               </p>
-              <span className="text-[10px] text-stone-500 font-semibold">CNPJ: 36.167.492/0001-51</span>
+              <span className="text-[11px] text-stone-500 font-medium block">
+                CNPJ: 36.167.492/0001-51
+              </span>
             </div>
 
-            {/* Card 3: Produtor / Origem */}
-            <div className="md:col-span-2 bg-white/80 p-2 rounded-xl border border-parchment-border/80 min-w-0 shadow-2xs">
-              <span className="text-[10px] font-semibold text-stone-400 uppercase tracking-wider block">Produtor / Origem:</span>
-              <p className="font-semibold text-stone-800 truncate" title={dossier.exporterName ?? "Granacer S.A."}>
-                {dossier.exporterName || "Granacer S.A."} · {dossier.countryOrigin || "Portugal"}
+            {/* Separador vertical */}
+            <div className="hidden lg:block h-10 w-px bg-stone-200 flex-shrink-0" />
+
+            {/* Bloco 3: Produtor / Origem */}
+            <div className="min-w-0 lg:min-w-[180px] lg:max-w-[220px]">
+              <span className="text-[10px] font-semibold text-stone-400 uppercase tracking-wider block mb-0.5">
+                PRODUTOR / ORIGEM
+              </span>
+              <p className="text-xs sm:text-sm font-bold text-stone-900 truncate" title={dossier.exporterName ?? dossier.producerName ?? "Granacer - Adm. de Ben..."}>
+                {dossier.exporterName || dossier.producerName || "Granacer - Adm. de Ben..."}
               </p>
+              <div className="flex items-center gap-1.5 text-[11px] font-semibold text-emerald-800 mt-0.5">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0 shadow-2xs"></span>
+                <span>Conexão MAPA Ativa</span>
+              </div>
             </div>
 
-            {/* Card 4: Responsável Técnico & Atualização */}
-            <div className="md:col-span-3 bg-white/80 p-2 rounded-xl border border-parchment-border/80 flex items-center justify-between shadow-2xs">
+            {/* Separador vertical */}
+            <div className="hidden lg:block h-10 w-px bg-stone-200 flex-shrink-0" />
+
+            {/* Bloco 4: Responsável Técnico */}
+            <div className="flex items-center justify-between lg:justify-start lg:gap-6 min-w-0 lg:min-w-[170px]">
               <div>
-                <span className="text-[10px] font-semibold text-stone-400 uppercase tracking-wider block">Responsável Técnico:</span>
-                <p className="font-semibold text-stone-800 flex items-center gap-1.5 text-xs">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-2xs"></span>
-                  {dossier.assignedTo?.name || "Analista Demo"}
+                <span className="text-[10px] font-semibold text-stone-400 uppercase tracking-wider block mb-0.5">
+                  RESPONSÁVEL TÉCNICO
+                </span>
+                <p className="text-xs sm:text-sm font-bold text-stone-900 flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0 shadow-2xs"></span>
+                  <span>{dossier.assignedTo?.name || "Analista Demo"}</span>
                 </p>
               </div>
-              <div className="text-right pl-2 border-l border-parchment-200">
-                <span className="text-[10px] font-semibold text-stone-400 uppercase tracking-wider block">Atualização:</span>
-                <span className="font-semibold text-[11px] text-stone-700">
-                  {format(new Date(dossier.updatedAt), "dd/MM/yyyy HH:mm", { locale: ptBR })}
-                </span>
+              <div className="text-right lg:text-left text-[10px] text-stone-400 font-medium leading-tight">
+                <div>
+                  Atualização: <span className="text-stone-700 font-semibold">{format(new Date(dossier.updatedAt), "dd/MM/yyyy", { locale: ptBR })}</span>
+                </div>
+                <div className="text-stone-700 font-semibold mt-0.5">
+                  {format(new Date(dossier.updatedAt), "HH:mm", { locale: ptBR })}
+                </div>
               </div>
             </div>
           </div>

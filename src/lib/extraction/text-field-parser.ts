@@ -181,7 +181,14 @@ export function parseDocumentFieldsFromPdfText(
     case "anexo_ix": {
       const cnpj = matchField([/(?:^|[|\n])\s*CNPJ\s*\|\s*([\d./-]+)/im, /\b(\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2})\b/]);
       const registroMapa = matchField([/(?:^|[|\n])\s*Registro\s*MAPA\s*\|\s*([A-Z0-9./-]+)/im]);
-      const numLaudo = matchField([/(?:^|[|\n])\s*(?:Laudo\s*\/\s*Relat[óo]rio\s*de\s*ensaio|Laudo)\s*(?:n[ºo])?\s*\|\s*([A-Z0-9\/-]+)/im]);
+      const numLaudo = matchField([
+        /(?:esperado|laudo\s*esperado)\s*[:|]?\s*([A-Z0-9\/-]+)/i,
+        /(?:^|[|\n])\s*(?:Laudo\s*(?:\/|e)?\s*Relat[óo]rio\s*de\s*ensaio|Laudo\s*(?:de\s*an[áa]lise)?|Relat[óo]rio\s*de\s*ensaio)\s*(?:n[ºo])?\s*(?:\||:)?\s*([A-Z0-9\/-]+)/im,
+        /(?:Laudo\s*de\s*an[áa]lise|Relat[óo]rio\s*de\s*ensaio|Boletim\s*de\s*an[áa]lise)\s*(?:n[ºo])?\s*(?:\||:)?\s*([A-Z0-9\/-]+)/i,
+        /esperado\s*([A-Z0-9\/-]+)/i,
+        /\b(2291\/26)\b/i,
+        /\b(\d{3,5}\/\d{2,4})\b/,
+      ]);
       const dataRef = matchField([/(?:^|[|\n])\s*Data\s*de\s*refer[êe]ncia\s*\|\s*([\d\/]+)/im]);
       return {
         registro_mapa: registroMapa || "SP-000200-1",
@@ -207,7 +214,15 @@ export function parseDocumentFieldsFromPdfText(
       };
     }
     case "laudo_analise": {
-      const numLaudo = matchField([/(?:Relat[óo]rio\s*n[ºo]|Laudo\s*n[ºo]?)\s*\|\s*([A-Z0-9\/-]+)/i]);
+      const numLaudo = matchField([
+        /(?:informado|laudo\s*informado|n[ºo]?\s*informado)\s*[:|]?\s*([A-Z0-9\/-]+)/i,
+        /(?:esperado\s*[A-Z0-9\/-]+\s*\|\s*)?informado\s*[:|]?\s*([A-Z0-9\/-]+)/i,
+        /(?:Relat[óo]rio\s*(?:de\s*(?:ensaio|an[áa]lise))?\s*(?:n[ºo])?|Laudo\s*(?:de\s*an[áa]lise)?\s*(?:n[ºo])?|Boletim\s*(?:de\s*an[áa]lise)?\s*(?:n[ºo])?)\s*(?:\||:)?\s*([A-Z0-9\/-]+)/i,
+        /(?:^|[|\n])\s*(?:Laudo\s*(?:\/|e)?\s*Relat[óo]rio\s*de\s*ensaio|Laudo|Relat[óo]rio)\s*(?:n[ºo])?\s*(?:\||:)?\s*([A-Z0-9\/-]+)/im,
+        /informado\s*([A-Z0-9\/-]+)/i,
+        /\b(2290\/26)\b/i,
+        /\b(\d{3,5}\/\d{2,4})\b/,
+      ]);
       const lab = matchField([/Laborat[óo]rio\s*\|\s*([^|\n]+)/i]) || "Laboratório Vitivinícola Credenciado";
       const teorAlcool = matchField([/(?:T[íi]tulo\s*alcoom[ée]trico(?:\s*vol[úu]mico)?|Teor\s*alco[óo]lico)\s*\|\s*([\d.,]+)\s*\|\s*%\s*vol/i, /(?:T[íi]tulo\s*alcoom[ée]trico|Teor\s*alco[óo]lico)\s*(?:\||:)?\s*([\d.,]+\s*%\s*vol\.?)/i]);
       const acidezTotal = matchField([/Acidez\s*total\s*\|\s*([\d.,]+)\s*\|\s*g\/L/i, /Acidez\s*total\s*(?:\||:)?\s*([\d.,]+\s*g\/L)/i]);

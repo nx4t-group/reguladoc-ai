@@ -132,3 +132,50 @@ describe("runRuleEngine — RULE-013 documento obrigatório ausente", () => {
     expect(result.findings.filter((f) => f.ruleCode === "RULE-013")).toHaveLength(0);
   });
 });
+
+describe("IRREGULARIDADE DE TESTE — RULE-003 Laudo de Análise (esperado 2291/26 | informado 2290/26)", () => {
+  it("detecta divergência de número do laudo entre Anexo IX (2291/26) e Laudo de Análise (2290/26)", () => {
+    const divergingDocuments: DocumentFieldSet[] = [
+      {
+        documentType: "anexo_ix",
+        fields: {
+          numero_laudo: "2291/26",
+          numero_lote: "LVT25260101",
+          marca: "Tapada do Fidalgo",
+        },
+      },
+      {
+        documentType: "laudo_analise",
+        fields: {
+          numero_laudo: "2290/26",
+          numero_lote: "LVT25260101",
+          teor_alcoolico: "13,5% vol",
+          acidez_total: "5,3 g/L",
+          acidez_volatil: "0,65 g/L",
+          acucares_totais: "1,5 g/L",
+          metanol: "180 mg/L",
+          ph: "3,65",
+        },
+      },
+    ];
+
+    const result = runRuleEngine({ dossier: cleanDossier, documents: divergingDocuments });
+    const laudoFinding = result.findings.find((f) => f.ruleCode === "RULE-003");
+
+    expect(laudoFinding).toBeDefined();
+    expect(laudoFinding?.title).toBe("Número de relatório/laudo divergente");
+    expect(laudoFinding?.message).toContain('("2291/26") diverge de Laudo de Análise ("2290/26")');
+    expect(laudoFinding?.severity).toBe("alta");
+  });
+
+  it("extrai corretamente esperado (2291/26) e informado (2290/26) a partir de texto sintético ou PDF", async () => {
+    const { parseDocumentFieldsFromPdfText } = await import("@/lib/extraction/text-field-parser");
+    const testText = ["IRREGULARIDADE DE TESTE Laudo de Analise: esperado 2291/26 | informado 2290/26"];
+
+    const anexoFields = parseDocumentFieldsFromPdfText("anexo_ix", testText);
+    const laudoFields = parseDocumentFieldsFromPdfText("laudo_analise", testText);
+
+    expect(anexoFields.numero_laudo).toBe("2291/26");
+    expect(laudoFields.numero_laudo).toBe("2290/26");
+  });
+});

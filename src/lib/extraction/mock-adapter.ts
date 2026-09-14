@@ -150,7 +150,13 @@ export class MockExtractionAdapter implements DocumentExtractionAdapter {
           const pages = extractPdfText(buffer);
           if (pages.length > 0) {
             fromFile = parseDocumentFieldsFromPdfText(input.documentType, pages, input.dossierContext);
+          } else {
+            const raw = buffer.toString("utf-8");
+            fromFile = parseDocumentFieldsFromPdfText(input.documentType, [raw], input.dossierContext);
           }
+        } else {
+          const raw = buffer.toString("utf-8");
+          fromFile = parseDocumentFieldsFromPdfText(input.documentType, [raw], input.dossierContext);
         }
       } catch (err) {
         console.warn("Falha ao extrair texto do documento no MockAdapter:", err);

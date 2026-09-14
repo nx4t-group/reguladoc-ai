@@ -27,6 +27,7 @@ import {
   Bookmark,
   ExternalLink,
   Lock,
+  ShieldAlert,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -700,6 +701,30 @@ export function ReviewClient({
                       <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded bg-emerald-50 text-leaf-700 border border-leaf-200">
                         <Check className="h-3 w-3" /> Coerente
                       </span>
+                    </td>
+                  </tr>
+
+                  {/* Linha 2: Número do Laudo (RULE-003) */}
+                  <tr className="hover:bg-stone-50/60">
+                    <td className="py-2.5 px-3 font-semibold text-stone-800">
+                      Número do Laudo de Análise (RULE-003)
+                    </td>
+                    <td className="py-2.5 px-3 text-stone-600">Anexo IX MAPA</td>
+                    <td className="py-2.5 px-3 text-stone-600">Laudo de Análise</td>
+                    <td className="py-2.5 px-3 text-stone-800">
+                      {getFieldValue("anexo_ix", "numero_laudo") || "2291/26"} (Esperado) vs{" "}
+                      {getFieldValue("laudo_analise", "numero_laudo") || "2290/26"} (Informado)
+                    </td>
+                    <td className="py-2.5 px-3 text-right">
+                      {alerts.some((a) => a.ruleCode === "RULE-003" && (a.status === "aberto" || a.status === "confirmado")) ? (
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded bg-rose-50 text-rose-800 border border-rose-300">
+                          <ShieldAlert className="h-3 w-3 text-rose-600" /> Irregularidade Detectada
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded bg-emerald-50 text-leaf-700 border border-leaf-200">
+                          <Check className="h-3 w-3" /> Coerente
+                        </span>
+                      )}
                     </td>
                   </tr>
 
