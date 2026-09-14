@@ -23,16 +23,31 @@ import {
   ChevronsRight,
   ArrowRight,
   Filter,
+  Trash2,
 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { DossierStatusBadge } from "@/components/domain/status-badge";
+import { deleteDossier } from "@/server/actions/dossiers";
 
 export interface DossierRow {
   id: string;
@@ -163,7 +178,9 @@ const columns: ColumnDef<DossierRow>[] = [
   },
 ];
 
-export function DossiersTable({ data }: { data: DossierRow[] }) {
+export function DossiersTable({ data, userRole }: { data: DossierRow[]; userRole?: string }) {
+  const router = useRouter();
+  const canDelete = userRole === "gestor" || userRole === "admin";
   const [viewMode, setViewMode] = React.useState<"table" | "cards">("cards");
   const [globalFilter, setGlobalFilter] = React.useState("");
   const [quickFilter, setQuickFilter] = React.useState<string>("todos");
@@ -431,13 +448,56 @@ export function DossiersTable({ data }: { data: DossierRow[] }) {
                       <span className="text-[11px] text-stone-400">
                         {format(new Date(d.updatedAt), "dd/MM/yyyy", { locale: ptBR })}
                       </span>
-                      <Link
-                        href={`/painel/dossiers/${d.id}`}
-                        className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold shadow-xs transition ${actionBtnStyle}`}
-                      >
-                        <span>{actionLabel}</span>
-                        <ArrowRight className="h-3 w-3" />
-                      </Link>
+                      <div className="flex items-center gap-1.5">
+                        {canDelete && (
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <button
+                                type="button"
+                                className="p-1.5 text-stone-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                                title="Excluir Dossiê"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle className="text-rose-950 flex items-center gap-2">
+                                  <Trash2 className="h-5 w-5 text-rose-600" />
+                                  Excluir Dossiê &quot;{d.internalNumber}&quot;?
+                                </AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Esta ação executará a exclusão lógica (soft-delete) do dossiê no sistema, preservando o histórico de auditoria intacto para governança regulatória.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                <AlertDialogAction
+                                  className="bg-rose-600 hover:bg-rose-700 text-white font-semibold"
+                                  onClick={async () => {
+                                    const res = await deleteDossier(d.id);
+                                    if (!res.ok) {
+                                      toast.error(res.error ?? "Não foi possível excluir o dossiê.");
+                                      return;
+                                    }
+                                    toast.success("Dossiê excluído com sucesso.");
+                                    router.refresh();
+                                  }}
+                                >
+                                  Confirmar Exclusão
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        )}
+                        <Link
+                          href={`/painel/dossiers/${d.id}`}
+                          className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold shadow-xs transition ${actionBtnStyle}`}
+                        >
+                          <span>{actionLabel}</span>
+                          <ArrowRight className="h-3 w-3" />
+                        </Link>
+                      </div>
                     </div>
                   </div>
                 );

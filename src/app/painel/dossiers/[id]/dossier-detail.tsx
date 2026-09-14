@@ -47,14 +47,11 @@ export function DossierDetail({
                 <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-wine-900 via-wine-800 to-foliage-800 flex items-center justify-center shadow-md ring-1 ring-gold-500/30">
                   <Wine className="text-gold-500 h-5 w-5" />
                 </div>
-                <div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="font-serif font-bold text-base tracking-wide text-wine-950">RegulaDoc</span>
-                    <span className="text-[9px] font-bold tracking-widest px-1.5 py-0.5 rounded bg-foliage-100 text-foliage-800 uppercase border border-foliage-500/20">
-                      AI MAPA
-                    </span>
-                  </div>
-                  <p className="text-[10px] text-stone-500 font-medium">Compliance Vitivinícola</p>
+                <div className="flex items-center gap-1.5">
+                  <span className="font-serif font-bold text-lg tracking-wide text-wine-950">RegulaDoc</span>
+                  <span className="text-[10px] font-bold tracking-wider px-1.5 py-0.5 rounded bg-foliage-100 text-foliage-800 uppercase border border-foliage-500/20">
+                    AI
+                  </span>
                 </div>
               </div>
 
@@ -146,6 +143,7 @@ export function DossierDetail({
               />
               <HeaderActions
                 dossierId={dossier.id}
+                internalNumber={dossier.internalNumber}
                 role={tenant.role}
                 status={dossier.status}
                 complianceScore={dossier.complianceScore}

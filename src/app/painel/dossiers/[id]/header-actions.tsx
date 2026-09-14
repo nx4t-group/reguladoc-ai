@@ -3,7 +3,7 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { CheckCircle2, FileBarChart, PlayCircle, ThumbsDown, ThumbsUp, Undo2 } from "lucide-react";
+import { CheckCircle2, FileBarChart, PlayCircle, ThumbsDown, ThumbsUp, Trash2, Undo2 } from "lucide-react";
 
 import {
   AlertDialog,
@@ -19,11 +19,12 @@ import {
 import { Button } from "@/components/ui/button";
 import type { Role } from "@/lib/constants";
 import { decideDossier, generateReport } from "@/server/actions/reports";
-import { requestCorrection } from "@/server/actions/dossiers";
+import { deleteDossier, requestCorrection } from "@/server/actions/dossiers";
 import { runDossierValidation } from "@/server/actions/validation";
 
 export function HeaderActions({
   dossierId,
+  internalNumber,
   role,
   status,
   complianceScore,
@@ -32,6 +33,7 @@ export function HeaderActions({
   hasReport,
 }: {
   dossierId: string;
+  internalNumber?: string;
   role: Role;
   status: string;
   complianceScore: number | null;
@@ -164,6 +166,54 @@ export function HeaderActions({
             </AlertDialogContent>
             </AlertDialog>
           </>
+        )}
+
+        {canDecide && (
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <button
+                type="button"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-white border border-rose-300 text-rose-700 hover:bg-rose-50 hover:border-rose-400 transition-all shadow-2xs disabled:opacity-50 cursor-pointer"
+                disabled={pending !== null}
+              >
+                <Trash2 className="h-3.5 w-3.5 text-rose-600" />
+                <span>Excluir Dossiê</span>
+              </button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle className="text-rose-950 flex items-center gap-2">
+                  <Trash2 className="h-5 w-5 text-rose-600" />
+                  Excluir Dossiê {internalNumber ? `"${internalNumber}"` : ""}?
+                </AlertDialogTitle>
+                <AlertDialogDescription>
+                  Esta ação executará a exclusão lógica (soft-delete) do dossiê no sistema. O processo será removido de todas as listagens operacionais, preservando o registro na trilha de auditoria para conformidade regulatória.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                <AlertDialogAction
+                  className="bg-rose-600 hover:bg-rose-700 text-white font-semibold"
+                  onClick={async () => {
+                    setPending("delete");
+                    try {
+                      const res = await deleteDossier(dossierId);
+                      if (!res.ok) {
+                        toast.error(res.error ?? "Não foi possível excluir o dossiê.");
+                        return;
+                      }
+                      toast.success("Dossiê excluído com sucesso.");
+                      router.push("/painel/dossiers");
+                    } finally {
+                      setPending(null);
+                    }
+                  }}
+                >
+                  Confirmar Exclusão
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         )}
       </div>
     </div>

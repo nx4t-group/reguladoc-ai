@@ -47,7 +47,7 @@ export default async function DossiersPage() {
           </Button>
         }
       />
-      <DossiersTable data={rows} />
+      <DossiersTable data={rows} userRole={tenant.role} />
     </div>
   );
 }

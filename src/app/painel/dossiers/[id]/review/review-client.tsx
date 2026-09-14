@@ -372,8 +372,46 @@ export function ReviewClient({
 
   return (
     <div className="space-y-4 pb-8">
-      {/* ── BARRA DE TÍTULO & ALTERNADOR DE MODO DE VALIDAÇÃO (Apenas quando não embutido) ── */}
-      {!embedded && (
+      {/* ── BARRA DE TÍTULO & ALTERNADOR DE MODO DE VALIDAÇÃO ── */}
+      {embedded ? (
+        <div className="flex flex-wrap items-center justify-between gap-3 p-2.5 rounded-xl bg-white/90 border border-parchment-border shadow-2xs">
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-bold text-stone-800">Visualização de Documentos:</span>
+            <span className="text-[11px] text-stone-500 hidden sm:inline">
+              {viewMode === "compilado"
+                ? "Dossiê completo unificado em tela única consolidada"
+                : "Inspeção detalhada documento a documento"}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-1.5 bg-stone-100/90 p-1 rounded-xl border border-parchment-300/80">
+            <button
+              type="button"
+              onClick={() => setViewMode("por_documento")}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                viewMode === "por_documento"
+                  ? "bg-white text-wine-950 shadow-xs border border-parchment-200"
+                  : "text-stone-600 hover:text-stone-900"
+              }`}
+            >
+              <FileText className="h-3.5 w-3.5 text-stone-500" />
+              <span>Navegação por Documento</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode("compilado")}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                viewMode === "compilado"
+                  ? "bg-white text-wine-950 shadow-xs border border-parchment-200"
+                  : "text-stone-600 hover:text-stone-900"
+              }`}
+            >
+              <Layers className="h-3.5 w-3.5 text-wine-800" />
+              <span>Visualização Unificada (Compilação Geral)</span>
+            </button>
+          </div>
+        </div>
+      ) : (
         <div className="flex flex-col gap-3 rounded-xl border border-stone-200 bg-white p-4 shadow-sm lg:flex-row lg:items-center lg:justify-between">
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="icon" asChild className="h-8 w-8">
@@ -404,7 +442,7 @@ export function ReviewClient({
           <div className="flex items-center gap-2 bg-stone-100/80 p-1 rounded-xl border border-stone-200 self-start lg:self-center">
             <button
               onClick={() => setViewMode("por_documento")}
-              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                 viewMode === "por_documento"
                   ? "bg-white text-wine-950 shadow-sm border border-stone-200"
                   : "text-stone-600 hover:text-stone-900"
@@ -415,14 +453,14 @@ export function ReviewClient({
             </button>
             <button
               onClick={() => setViewMode("compilado")}
-              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                 viewMode === "compilado"
                   ? "bg-white text-wine-950 shadow-sm border border-stone-200"
                   : "text-stone-600 hover:text-stone-900"
               }`}
             >
               <Layers className="h-4 w-4 text-wine-800" />
-              <span>Compilação Geral</span>
+              <span>Visualização Unificada (Compilação Geral)</span>
             </button>
           </div>
         </div>
@@ -1112,14 +1150,21 @@ export function ReviewClient({
                         Recorte OCR mapeado na <strong>Página 2</strong> de {DOCUMENT_TYPE_LABELS[selectedDoc.documentType as DocumentType] ?? selectedDoc.documentType} (Certificação Vinícola)
                       </span>
                     </div>
-                    <button type="button" className="text-[11px] font-semibold text-wine-800 hover:underline flex items-center gap-0.5 cursor-pointer">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        window.open(`/api/documents/${selectedDoc.id}/file`, "_blank");
+                      }}
+                      className="text-[11px] font-semibold text-wine-800 hover:underline flex items-center gap-1 cursor-pointer transition-colors"
+                      title="Abrir arquivo do documento em nova aba"
+                    >
                       Ver no PDF <ExternalLink className="h-3 w-3" />
                     </button>
                   </div>
 
                   {/* Grade de Extração em 2 Colunas */}
                   {centerTab === "fields" ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mt-3 overflow-y-auto pr-1 flex-1" style={{ maxHeight: "calc(100vh - 360px)" }}>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mt-3 overflow-y-auto pr-1 auto-rows-max items-start content-start flex-1" style={{ maxHeight: "calc(100vh - 360px)" }}>
                       {(primaryDocFields.length > 0 ? primaryDocFields : docFields).map((field) => {
                         const isFlagged =
                           selectedAlert &&
@@ -1132,7 +1177,7 @@ export function ReviewClient({
                           return (
                             <div
                               key={field.id}
-                              className="p-3 bg-gradient-to-br from-amber-50/90 via-amber-50/40 to-white border-2 border-amber-500/90 rounded-xl shadow-xs flex flex-col justify-between relative ring-2 ring-amber-400/20"
+                              className="p-3 bg-gradient-to-br from-amber-50/90 via-amber-50/40 to-white border-2 border-amber-500/90 rounded-xl shadow-xs flex flex-col gap-1.5 h-auto relative ring-2 ring-amber-400/20"
                             >
                               <div className="flex items-center justify-between">
                                 <span className="text-[10px] font-bold text-amber-900 uppercase tracking-wider flex items-center gap-1">
@@ -1143,7 +1188,7 @@ export function ReviewClient({
                                   {Math.round(field.confidence * 100)}% conf.
                                 </span>
                               </div>
-                              <div className="mt-2">
+                              <div>
                                 <span className="text-sm font-extrabold text-wine-950 block">{field.fieldValue}</span>
                                 <div className="flex items-center justify-between mt-1">
                                   <span className="text-[9px] font-bold uppercase text-amber-800">{field.fieldKey}</span>
@@ -1159,7 +1204,7 @@ export function ReviewClient({
                         return (
                           <div
                             key={field.id}
-                            className="glass-card p-3 rounded-xl border border-parchment-border hover:border-stone-300 shadow-2xs flex flex-col justify-between transition-all"
+                            className="glass-card p-3 rounded-xl border border-parchment-border hover:border-stone-300 shadow-2xs flex flex-col gap-1.5 h-auto transition-all"
                           >
                             <div className="flex items-center justify-between">
                               <span className="text-[10px] font-bold text-stone-500 uppercase tracking-wider">
@@ -1169,7 +1214,7 @@ export function ReviewClient({
                                 {Math.round(field.confidence * 100)}% conf.
                               </span>
                             </div>
-                            <div className="mt-2">
+                            <div>
                               <span className="text-sm font-bold text-stone-900 block">{field.fieldValue}</span>
                               <span className="block text-[9px] font-semibold uppercase text-stone-400 mt-0.5 tracking-tight">
                                 {field.fieldKey}

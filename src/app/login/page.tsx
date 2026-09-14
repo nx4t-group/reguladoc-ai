@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useForm } from "react-hook-form";
@@ -77,24 +76,14 @@ export default function LoginPage() {
         <div className="absolute -top-24 -right-24 w-96 h-96 bg-emerald-100/50 rounded-full blur-3xl pointer-events-none -z-10" />
         <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-green-50/70 rounded-full blur-2xl pointer-events-none -z-10" />
 
-        {/* Top Header / Logo */}
+        {/* Top Header / Brand */}
         <div className="flex items-center space-x-3 z-10">
-          <div className="w-11 h-11 rounded-xl bg-brand-navy flex items-center justify-center shadow-md shadow-brand-navy/20 border border-slate-700/30 p-1.5">
-            <Image
-              src="/icon.png"
-              alt="RegulaDoc AI"
-              width={36}
-              height={36}
-              className="h-full w-full object-contain"
-              priority
-            />
-          </div>
           <div>
-            <div className="flex items-center gap-1.5">
-              <span className="text-xl font-extrabold tracking-tight text-brand-navy">RegulaDoc</span>
-              <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-brand-navy text-emerald-400">AI</span>
+            <div className="flex items-center gap-2">
+              <span className="text-2xl font-extrabold tracking-tight text-brand-navy">RegulaDoc</span>
+              <span className="text-xs font-semibold px-2 py-0.5 rounded bg-brand-navy text-emerald-400">AI</span>
             </div>
-            <p className="text-xs text-slate-500 font-medium tracking-wide">Validação Regulatória &amp; Governança</p>
+            <p className="text-xs text-slate-500 font-medium tracking-wide mt-0.5">Validação Regulatória &amp; Governança</p>
           </div>
         </div>
 

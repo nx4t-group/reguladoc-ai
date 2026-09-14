@@ -195,3 +195,36 @@ export async function archiveDossier(dossierId: string): Promise<ActionResult> {
   return { ok: true };
 }
 
+export async function deleteDossier(dossierId: string): Promise<ActionResult> {
+  const tenant = await requireTenant();
+  if (tenant.role !== "admin" && tenant.role !== "gestor") {
+    return { ok: false, error: "Apenas Gestores ou Administradores têm permissão para excluir dossiês." };
+  }
+
+  const dossier = await prisma.dossier.findFirst({
+    where: { id: dossierId, organizationId: tenant.organizationId, deletedAt: null },
+  });
+  if (!dossier) return { ok: false, error: "Dossiê não encontrado." };
+
+  await prisma.dossier.update({
+    where: { id: dossierId },
+    data: { deletedAt: new Date() },
+  });
+
+  await logAuditEvent({
+    organizationId: tenant.organizationId,
+    userId: tenant.userId,
+    dossierId,
+    action: "dossie_excluido",
+    entityType: "dossier",
+    entityId: dossierId,
+    before: { internalNumber: dossier.internalNumber, status: dossier.status },
+    after: { deletedAt: new Date().toISOString() },
+  });
+
+  revalidatePath("/painel/dossiers");
+  revalidatePath("/painel");
+  return { ok: true };
+}
+
+

@@ -184,7 +184,7 @@ export function Topbar({
                   {name}
                 </div>
                 <div className="text-[11px] text-stone-500 mt-1 font-medium">
-                  {ROLE_LABELS[role]} • MAPA
+                  {ROLE_LABELS[role]}
                 </div>
               </div>
             </div>
