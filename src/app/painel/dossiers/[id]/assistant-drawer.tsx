@@ -24,7 +24,13 @@ interface ChatMessage {
   content: string;
 }
 
-export function AssistantDrawer({ dossierId }: { dossierId: string }) {
+export function AssistantDrawer({
+  dossierId,
+  triggerButton,
+}: {
+  dossierId: string;
+  triggerButton?: React.ReactNode;
+}) {
   const [open, setOpen] = React.useState(false);
   const [messages, setMessages] = React.useState<ChatMessage[]>([
     {
@@ -59,10 +65,14 @@ export function AssistantDrawer({ dossierId }: { dossierId: string }) {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant="outline" size="sm" className="gap-1.5 border-primary/30 text-primary hover:bg-primary/5">
-          <Sparkles className="h-4 w-4" />
-          Assistente Contextual
-        </Button>
+        {triggerButton ? (
+          triggerButton
+        ) : (
+          <Button variant="outline" size="sm" className="gap-1.5 border-primary/30 text-primary hover:bg-primary/5">
+            <Sparkles className="h-4 w-4" />
+            Assistente Contextual
+          </Button>
+        )}
       </SheetTrigger>
       <SheetContent side="right" className="flex w-full flex-col p-0 sm:max-w-md">
         <SheetHeader className="border-b border-border p-4">

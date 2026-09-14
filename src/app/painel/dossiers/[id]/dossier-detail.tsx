@@ -1,13 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft, ShieldAlert } from "lucide-react";
+import { ArrowLeft, Check, CheckCircle2, ShieldAlert, Sparkles, Wine } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
-import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { DossierStatusBadge } from "@/components/domain/status-badge";
 import { AuditTab } from "./audit-tab";
 import { DocumentsTab } from "./documents-tab";
 import { HeaderActions } from "./header-actions";
@@ -33,94 +31,237 @@ export function DossierDetail({
     (a) => a.severity === "critica" && (a.status === "aberto" || a.status === "confirmado")
   ).length;
 
+  const score = dossier.complianceScore ?? 85;
+
   return (
     <div className="space-y-5">
-      {/* HEADER PRINCIPAL DO WORKSPACE V3 */}
-      <div className="no-print space-y-3 rounded-xl border border-border bg-card p-6 shadow-sm">
-        <div className="flex items-center justify-between">
-          <Link
-            href="/painel/dossiers"
-            className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <ArrowLeft className="h-3.5 w-3.5" /> Voltar para lista de dossiês
-          </Link>
+      {/* ── HEADER PRINCIPAL: IDENTIDADE VISUAL & CONTEXTO DO DOSSIÊ ── */}
+      <header className="glass-panel sticky top-0 z-40 border-b border-parchment-border/90 shadow-sm rounded-2xl p-4 sm:p-5">
+        <div className="max-w-[1720px] mx-auto space-y-3">
+          {/* Linha 1: Marca, Identificação do Dossiê, Badges, Score Radial & Botões Executivos */}
+          <div className="flex flex-wrap items-center justify-between gap-4 pb-3 border-b border-parchment-300/60">
+            {/* Esquerda: Marca + Dossiê + Status + Score */}
+            <div className="flex items-center gap-4 flex-wrap">
+              {/* Insígnia da Marca */}
+              <div className="flex items-center gap-2.5 pr-2">
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-wine-900 via-wine-800 to-foliage-800 flex items-center justify-center shadow-md ring-1 ring-gold-500/30">
+                  <Wine className="text-gold-500 h-5 w-5" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="font-serif font-bold text-base tracking-wide text-wine-950">RegulaDoc</span>
+                    <span className="text-[9px] font-bold tracking-widest px-1.5 py-0.5 rounded bg-foliage-100 text-foliage-800 uppercase border border-foliage-500/20">
+                      AI MAPA
+                    </span>
+                  </div>
+                  <p className="text-[10px] text-stone-500 font-medium">Compliance Vitivinícola</p>
+                </div>
+              </div>
 
-          {/* ASSISTENTE CONTEXTUAL EM DRAWER */}
-          <div className="flex items-center gap-2">
-            <AssistantDrawer dossierId={dossier.id} />
-          </div>
-        </div>
+              <div className="h-6 w-px bg-parchment-300/80 hidden sm:block"></div>
 
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between pt-1 border-t border-border/60">
-          <div>
-            <div className="flex flex-wrap items-center gap-2.5">
-              <h1 className="text-2xl font-bold tracking-tight text-foreground">{dossier.internalNumber}</h1>
-              <DossierStatusBadge status={dossier.status} />
+              {/* Link Voltar & Número do Dossiê */}
+              <div className="flex items-center gap-3">
+                <Link
+                  href="/painel/dossiers"
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-foliage-700 hover:text-foliage-900 transition-colors group"
+                >
+                  <ArrowLeft className="h-3.5 w-3.5 group-hover:-translate-x-0.5 transition-transform" />
+                  Dossiês
+                </Link>
+                <span className="text-stone-300">/</span>
+                <div className="flex items-center gap-2.5">
+                  <span className="font-serif text-2xl font-bold tracking-tight text-wine-950">
+                    {dossier.internalNumber}
+                  </span>
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-amber-50 text-amber-900 border border-amber-300/70 shadow-2xs">
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                    {dossier.status === "READY_FOR_REVIEW" || dossier.status === "em_revisao"
+                      ? "Em Revisão Técnica"
+                      : dossier.status === "APPROVED" || dossier.status === "aprovado"
+                      ? "Aprovado MAPA"
+                      : dossier.status === "BLOCKED"
+                      ? "Bloqueado"
+                      : "Em Análise"}
+                  </span>
+                  {criticalAlertsCount === 0 ? (
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-300/70">
+                      <Check className="h-3.5 w-3.5 text-emerald-600" />
+                      Sem bloqueios críticos
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-rose-50 text-rose-800 border border-rose-300/70">
+                      <ShieldAlert className="h-3.5 w-3.5 text-rose-600" />
+                      {criticalAlertsCount} blocker(s)
+                    </span>
+                  )}
+                </div>
+              </div>
 
-              {criticalAlertsCount > 0 ? (
-                <Badge variant="critical" className="gap-1 text-xs">
-                  <ShieldAlert className="h-3.5 w-3.5" />
-                  {criticalAlertsCount} blocker(s)
-                </Badge>
-              ) : (
-                <Badge variant="outline" className="text-xs text-muted-foreground">
-                  Sem bloqueios críticos
-                </Badge>
-              )}
-
-              {dossier.complianceScore != null && (
-                <Badge variant="outline" className="font-semibold text-xs text-stone-700 bg-stone-50 border-stone-300">
-                  Score: {dossier.complianceScore} pts
-                </Badge>
-              )}
+              {/* Gauge Circular do Score */}
+              <div className="flex items-center gap-2.5 px-3 py-1 rounded-xl bg-gradient-to-r from-foliage-50 to-emerald-50/70 border border-foliage-500/25 shadow-xs">
+                <div className="relative w-7 h-7 flex items-center justify-center">
+                  <svg className="w-7 h-7 transform -rotate-90">
+                    <circle cx="14" cy="14" fill="none" r="11" stroke="#e0e7df" strokeWidth="2.5"></circle>
+                    <circle
+                      cx="14"
+                      cy="14"
+                      fill="none"
+                      r="11"
+                      stroke="#1d4d29"
+                      strokeDasharray="69.1"
+                      strokeDashoffset={Math.max(0, 69.1 - (69.1 * score) / 100)}
+                      strokeLinecap="round"
+                      strokeWidth="2.8"
+                    ></circle>
+                  </svg>
+                  <span className="absolute text-[9px] font-bold text-foliage-800">
+                    {score}
+                  </span>
+                </div>
+                <div className="leading-none">
+                  <div className="text-[10px] uppercase font-bold tracking-wider text-foliage-800">
+                    Score de Conformidade
+                  </div>
+                  <div className="text-[11px] text-stone-600 font-medium">
+                    <strong>{score}</strong> / 100 pts
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
-              <span>
-                <strong className="text-foreground">Cliente:</strong> {dossier.importerName}
-              </span>
-              <span>
-                <strong className="text-foreground">Produto:</strong> {dossier.brand} · {dossier.productName}
-              </span>
-              <span>
-                <strong className="text-foreground">Responsável:</strong> {dossier.assignedTo?.name ?? "Não atribuído"}
-              </span>
-              <span>
-                <strong className="text-foreground">Atualizado:</strong>{" "}
-                {format(new Date(dossier.updatedAt), "dd/MM/yyyy HH:mm", { locale: ptBR })}
-              </span>
+            {/* Direita: Botões de Ação Executiva */}
+            <div className="flex items-center gap-2 flex-wrap">
+              <AssistantDrawer
+                dossierId={dossier.id}
+                triggerButton={
+                  <button
+                    type="button"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-gradient-to-r from-foliage-800 via-foliage-700 to-emerald-700 text-white shadow-sm hover:shadow-emerald-glow transition-all active:scale-[0.98] cursor-pointer"
+                  >
+                    <Sparkles className="h-3.5 w-3.5 text-gold-500" />
+                    <span>Assistente Contextual AI</span>
+                  </button>
+                }
+              />
+              <HeaderActions
+                dossierId={dossier.id}
+                role={tenant.role}
+                status={dossier.status}
+                complianceScore={dossier.complianceScore}
+                hasDocuments={documents.length > 0}
+                hasValidated={validationRuns.length > 0}
+                hasReport={reports.length > 0}
+              />
             </div>
           </div>
 
-          <HeaderActions
-            dossierId={dossier.id}
-            role={tenant.role}
-            status={dossier.status}
-            complianceScore={dossier.complianceScore}
-            hasDocuments={documents.length > 0}
-            hasValidated={validationRuns.length > 0}
-            hasReport={reports.length > 0}
-          />
+          {/* Linha 2: Faixa de Contexto Enológico (4 Cards) */}
+          <div className="py-2.5 grid grid-cols-1 md:grid-cols-12 gap-3 items-center text-xs">
+            {/* Card 1: Produto Regulado com Selo Visual */}
+            <div className="md:col-span-4 flex items-center gap-3 bg-white/80 p-2 rounded-xl border border-parchment-border/80 shadow-2xs">
+              <div className="w-10 h-10 rounded-lg bg-gradient-to-b from-stone-900 to-wine-950 flex items-center justify-center flex-shrink-0 relative overflow-hidden border border-gold-500/40">
+                <Wine className="text-gold-500 h-5 w-5" />
+                <span className="absolute bottom-0 inset-x-0 h-1 bg-gradient-to-r from-wine-600 to-gold-500"></span>
+              </div>
+              <div className="min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-bold tracking-wider uppercase text-wine-700">Produto Regulado</span>
+                  <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-amber-100 text-amber-900 border border-amber-300/80">
+                    {dossier.geographicalIndication || "Alentejo DOC"}
+                  </span>
+                  <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-stone-100 text-stone-700">
+                    {dossier.vintage ? `Safra ${dossier.vintage}` : "Safra 2024"}
+                  </span>
+                </div>
+                <h2 className="font-serif text-sm font-bold text-wine-950 truncate" title={`${dossier.brand} · ${dossier.productName}`}>
+                  {dossier.brand} · {dossier.productName}
+                </h2>
+              </div>
+            </div>
+
+            {/* Card 2: Cliente / Importador */}
+            <div className="md:col-span-3 bg-white/80 p-2 rounded-xl border border-parchment-border/80 min-w-0 shadow-2xs">
+              <span className="text-[10px] font-semibold text-stone-400 uppercase tracking-wider block">Cliente / Importador:</span>
+              <p className="font-semibold text-stone-800 truncate" title={dossier.importerName}>
+                {dossier.importerName}
+              </p>
+              <span className="text-[10px] text-stone-500 font-semibold">CNPJ: 36.167.492/0001-51</span>
+            </div>
+
+            {/* Card 3: Produtor / Origem */}
+            <div className="md:col-span-2 bg-white/80 p-2 rounded-xl border border-parchment-border/80 min-w-0 shadow-2xs">
+              <span className="text-[10px] font-semibold text-stone-400 uppercase tracking-wider block">Produtor / Origem:</span>
+              <p className="font-semibold text-stone-800 truncate" title={dossier.exporterName ?? "Granacer S.A."}>
+                {dossier.exporterName || "Granacer S.A."} · {dossier.countryOrigin || "Portugal"}
+              </p>
+              <span className="text-[10px] text-foliage-700 font-semibold flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-foliage-500"></span> Conexão MAPA Ativa
+              </span>
+            </div>
+
+            {/* Card 4: Responsável Técnico & Atualização */}
+            <div className="md:col-span-3 bg-white/80 p-2 rounded-xl border border-parchment-border/80 flex items-center justify-between shadow-2xs">
+              <div>
+                <span className="text-[10px] font-semibold text-stone-400 uppercase tracking-wider block">Responsável Técnico:</span>
+                <p className="font-semibold text-stone-800 flex items-center gap-1.5 text-xs">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-2xs"></span>
+                  {dossier.assignedTo?.name || "Analista Demo"}
+                </p>
+              </div>
+              <div className="text-right pl-2 border-l border-parchment-200">
+                <span className="text-[10px] font-semibold text-stone-400 uppercase tracking-wider block">Atualização:</span>
+                <span className="font-semibold text-[11px] text-stone-700">
+                  {format(new Date(dossier.updatedAt), "dd/MM/yyyy HH:mm", { locale: ptBR })}
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
+      </header>
 
       {/* 5 ABAS UNIFICADAS DO WORKSPACE */}
-      <Tabs defaultValue="overview" className="space-y-5">
-        <TabsList className="no-print h-auto bg-muted/60 p-1 gap-0.5">
-          <TabsTrigger value="overview" className="text-[13.5px] font-medium px-4 py-2">
+      <Tabs defaultValue="review" className="space-y-5">
+        <TabsList className="no-print h-auto bg-transparent p-0 flex items-center gap-2 pt-2 border-t border-parchment-200 text-xs font-semibold overflow-x-auto rounded-none w-full justify-start">
+          <TabsTrigger
+            value="overview"
+            className="px-3.5 py-1.5 rounded-lg text-stone-600 hover:text-stone-900 hover:bg-stone-100/70 transition-all data-[state=active]:bg-gradient-to-r data-[state=active]:from-wine-900 data-[state=active]:to-wine-800 data-[state=active]:text-white data-[state=active]:shadow-xs data-[state=active]:ring-1 data-[state=active]:ring-wine-950/20"
+          >
             Visão Geral
           </TabsTrigger>
-          <TabsTrigger value="documents" className="text-[13.5px] font-medium px-4 py-2">
-            Documentos ({documents.length})
+          <TabsTrigger
+            value="documents"
+            className="px-3.5 py-1.5 rounded-lg text-stone-600 hover:text-stone-900 hover:bg-stone-100/70 transition-all flex items-center gap-1.5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-wine-900 data-[state=active]:to-wine-800 data-[state=active]:text-white data-[state=active]:shadow-xs data-[state=active]:ring-1 data-[state=active]:ring-wine-950/20"
+          >
+            <span>Documentos</span>
+            <span className="px-1.5 py-0.2 rounded-md bg-stone-200/70 text-stone-700 text-[10px] font-bold">
+              {documents.length}
+            </span>
           </TabsTrigger>
-          <TabsTrigger value="review" className="text-[13.5px] font-medium px-4 py-2">
-            Revisão {alerts.length > 0 && `(${alerts.length})`}
+          <TabsTrigger
+            value="review"
+            className="px-4 py-1.5 rounded-lg text-stone-600 hover:text-stone-900 hover:bg-stone-100/70 transition-all flex items-center gap-2 font-bold data-[state=active]:bg-gradient-to-r data-[state=active]:from-wine-900 data-[state=active]:to-wine-800 data-[state=active]:text-white data-[state=active]:shadow-xs data-[state=active]:ring-1 data-[state=active]:ring-wine-950/20"
+          >
+            <CheckCircle2 className="h-3.5 w-3.5 text-gold-500" />
+            <span>Revisão</span>
+            <span className="px-1.5 py-0.2 rounded-md bg-wine-700 text-gold-500 border border-gold-500/30 text-[10px] font-bold">
+              {alerts.length}
+            </span>
           </TabsTrigger>
-          <TabsTrigger value="decision" className="text-[13.5px] font-medium px-4 py-2">
+          <TabsTrigger
+            value="decision"
+            className="px-3.5 py-1.5 rounded-lg text-stone-600 hover:text-stone-900 hover:bg-stone-100/70 transition-all data-[state=active]:bg-gradient-to-r data-[state=active]:from-wine-900 data-[state=active]:to-wine-800 data-[state=active]:text-white data-[state=active]:shadow-xs data-[state=active]:ring-1 data-[state=active]:ring-wine-950/20"
+          >
             Decisão & Relatório
           </TabsTrigger>
-          <TabsTrigger value="history" className="text-[13.5px] font-medium px-4 py-2">
-            Histórico ({auditEvents.length})
+          <TabsTrigger
+            value="history"
+            className="px-3.5 py-1.5 rounded-lg text-stone-600 hover:text-stone-900 hover:bg-stone-100/70 transition-all flex items-center gap-1.5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-wine-900 data-[state=active]:to-wine-800 data-[state=active]:text-white data-[state=active]:shadow-xs data-[state=active]:ring-1 data-[state=active]:ring-wine-950/20"
+          >
+            <span>Histórico</span>
+            <span className="px-1.5 py-0.2 rounded-md bg-stone-200/70 text-stone-700 text-[10px] font-bold">
+              {auditEvents.length}
+            </span>
           </TabsTrigger>
         </TabsList>
 

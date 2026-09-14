@@ -62,29 +62,36 @@ export function HeaderActions({
   return (
     <div className="flex flex-col items-end gap-1.5">
       <div className="flex flex-wrap items-center justify-end gap-2">
-        <Button
-          variant="outline"
-          size="sm"
+        <button
+          type="button"
+          className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-white/90 border border-stone-300 text-stone-700 hover:bg-stone-50 hover:border-stone-400 transition-all shadow-2xs disabled:opacity-50 cursor-pointer"
           disabled={!hasDocuments || pending !== null}
           onClick={() => run("validate", () => runDossierValidation(dossierId))}
         >
-          <PlayCircle className="h-4 w-4" />
-          {pending === "validate" ? "Executando…" : hasValidated ? "Revalidar" : "Executar validação"}
-        </Button>
+          <PlayCircle className="h-3.5 w-3.5 text-stone-500" />
+          <span>{pending === "validate" ? "Executando…" : hasValidated ? "Revalidar OCR & Regras" : "Executar validação"}</span>
+        </button>
 
-        <Button
-          variant="outline"
-          size="sm"
+        <button
+          type="button"
+          className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-white/90 border border-stone-300 text-stone-700 hover:bg-stone-50 hover:border-stone-400 transition-all shadow-2xs disabled:opacity-50 cursor-pointer"
           disabled={complianceScore == null || pending !== null}
           onClick={() => run("report", () => generateReport(dossierId))}
         >
-          <FileBarChart className="h-4 w-4" /> {hasReport ? "Regerar Relatório" : "Emitir Relatório de Conferência"}
-        </Button>
+          <FileBarChart className="h-3.5 w-3.5 text-stone-500" />
+          <span>{hasReport ? "Regenerar Relatório" : "Emitir Relatório"}</span>
+        </button>
 
         {!isFinal && (
-          <Button variant="outline" size="sm" disabled={pending !== null} onClick={() => run("correction", () => requestCorrection(dossierId))}>
-            <Undo2 className="h-4 w-4" /> Solicitar correção documental
-          </Button>
+          <button
+            type="button"
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-wine-50/80 border border-wine-600/30 text-wine-800 hover:bg-wine-100/90 transition-all shadow-2xs disabled:opacity-50 cursor-pointer"
+            disabled={pending !== null}
+            onClick={() => run("correction", () => requestCorrection(dossierId))}
+          >
+            <Undo2 className="h-3.5 w-3.5 text-wine-700" />
+            <span>Solicitar correção documental</span>
+          </button>
         )}
 
         {canDecide && !isFinal && (
