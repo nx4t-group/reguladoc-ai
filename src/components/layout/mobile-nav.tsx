@@ -30,12 +30,9 @@ export function MobileNav({ role }: { role: Role }) {
       </SheetTrigger>
       <SheetContent side="left" className="w-72 border-r border-stone-800/80 sidebar-wood p-0 text-stone-300">
         <div className="flex h-16 items-center border-b border-stone-800/60 px-5">
-          <div>
-            <div className="flex items-center gap-1.5">
-              <span className="font-serif tracking-wider text-base font-bold text-stone-100">RegulaDoc</span>
-              <span className="text-[9px] uppercase font-bold tracking-widest px-1.5 py-0.2 rounded bg-leaf-700/80 text-emerald-100 border border-leaf-600/60">AI</span>
-            </div>
-            <p className="text-[10px] text-stone-400 font-medium mt-0.5">Vinhos • MAPA / Siscomex</p>
+          <div className="flex items-center gap-2">
+            <span className="font-serif tracking-wider text-lg font-bold text-stone-100">RegulaDoc</span>
+            <span className="text-[10px] uppercase font-bold tracking-widest px-1.5 py-0.5 rounded bg-leaf-700/80 text-emerald-100 border border-leaf-600/60">AI</span>
           </div>
         </div>
         <nav className="flex-1 space-y-4 overflow-y-auto px-3.5 py-5">

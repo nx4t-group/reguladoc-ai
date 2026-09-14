@@ -178,12 +178,36 @@ const columns: ColumnDef<DossierRow>[] = [
   },
 ];
 
-export function DossiersTable({ data, userRole }: { data: DossierRow[]; userRole?: string }) {
+function normalizeFilterKey(key?: string): string {
+  if (!key) return "todos";
+  const k = key.toLowerCase();
+  if (k === "awaiting_docs" || k === "aguardando_documentos" || k === "draft" || k === "pendentes") return "awaiting_docs";
+  if (k === "in_review" || k === "ready_review" || k === "revisao" || k === "em_revisao" || k === "ready_for_review") return "in_review";
+  if (k === "blocked" || k === "bloqueados") return "blocked";
+  if (k === "decision" || k === "ready_approval" || k === "aprovados" || k === "decisao" || k === "ready_for_approval") return "ready_approval";
+  return "todos";
+}
+
+export function DossiersTable({
+  data,
+  userRole,
+  initialFilter,
+}: {
+  data: DossierRow[];
+  userRole?: string;
+  initialFilter?: string;
+}) {
   const router = useRouter();
   const canDelete = userRole === "gestor" || userRole === "admin";
   const [viewMode, setViewMode] = React.useState<"table" | "cards">("cards");
   const [globalFilter, setGlobalFilter] = React.useState("");
-  const [quickFilter, setQuickFilter] = React.useState<string>("todos");
+  const [quickFilter, setQuickFilter] = React.useState<string>(() => normalizeFilterKey(initialFilter));
+
+  React.useEffect(() => {
+    if (initialFilter) {
+      setQuickFilter(normalizeFilterKey(initialFilter));
+    }
+  }, [initialFilter]);
   const [sorting, setSorting] = React.useState<SortingState>([{ id: "updatedAt", desc: true }]);
   const [pagination, setPagination] = React.useState({ pageIndex: 0, pageSize: 10 });
 

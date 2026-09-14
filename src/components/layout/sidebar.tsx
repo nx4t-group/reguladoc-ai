@@ -23,12 +23,11 @@ export function Sidebar({ role }: { role: Role; planLabel?: string }) {
     <aside className="sidebar-wood fixed inset-y-0 left-0 z-40 hidden w-72 flex-col justify-between border-r border-stone-800/80 text-stone-300 select-none lg:flex">
       <div>
         {/* ── MARCA & IDENTIDADE REGULATÓRIA ── */}
-        <div className="px-6 py-5 border-b border-stone-800/60">
+        <div className="px-6 py-5 border-b border-stone-800/60 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="font-serif tracking-wider text-lg font-bold text-stone-100">RegulaDoc</span>
+            <span className="font-serif tracking-wider text-xl font-bold text-stone-100">RegulaDoc</span>
             <span className="text-[10px] uppercase font-bold tracking-widest px-1.5 py-0.5 rounded bg-leaf-700/80 text-emerald-100 border border-leaf-600/60">AI</span>
           </div>
-          <p className="text-[11px] text-stone-400 font-medium tracking-wide mt-1">Vinhos • MAPA / Siscomex</p>
         </div>
 
         {/* ── MENU PRINCIPAL ── */}

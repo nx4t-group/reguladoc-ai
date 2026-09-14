@@ -5,6 +5,7 @@ import "./globals.css";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthSessionProvider } from "@/components/providers/session-provider";
+import { DevToolsGuard } from "@/components/security/dev-tools-guard";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -40,6 +41,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" className={`${geistSans.variable} ${geistMono.variable}`}>
       <body className="font-sans antialiased">
+        <DevToolsGuard />
         <AuthSessionProvider>
           <TooltipProvider delayDuration={200}>
             {children}

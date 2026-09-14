@@ -38,36 +38,37 @@ export function DossierDetail({
       {/* ── HEADER PRINCIPAL: IDENTIDADE VISUAL & CONTEXTO DO DOSSIÊ ── */}
       <header className="glass-panel sticky top-0 z-40 border-b border-parchment-border/90 shadow-sm rounded-2xl p-4 sm:p-5">
         <div className="max-w-[1720px] mx-auto space-y-3">
-          {/* Linha 1: Marca, Identificação do Dossiê, Badges, Score Radial & Botões Executivos */}
-          <div className="flex flex-wrap items-center justify-between gap-4 pb-3 border-b border-parchment-300/60">
-            {/* Esquerda: Marca + Dossiê + Status + Score */}
-            <div className="flex items-center gap-4 flex-wrap">
-              {/* Insígnia da Marca */}
-              <div className="flex items-center gap-2.5 pr-2">
-                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-wine-900 via-wine-800 to-foliage-800 flex items-center justify-center shadow-md ring-1 ring-gold-500/30">
-                  <Wine className="text-gold-500 h-5 w-5" />
+          {/* Top Section: Info & Ações na Esquerda + Compliance Score Imponente na Direita */}
+          <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 pb-3 border-b border-parchment-300/60">
+            {/* Esquerda: Identificação, Badges e Ações Operacionais */}
+            <div className="flex-1 min-w-0 space-y-3">
+              {/* Linha 1: Marca, Identificação do Dossiê e Status */}
+              <div className="flex items-center gap-3 flex-wrap">
+                {/* Insígnia da Marca */}
+                <div className="flex items-center gap-2.5 pr-2">
+                  <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-wine-900 via-wine-800 to-foliage-800 flex items-center justify-center shadow-md ring-1 ring-gold-500/30">
+                    <Wine className="text-gold-500 h-5 w-5" />
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="font-serif font-bold text-lg tracking-wide text-wine-950">RegulaDoc</span>
+                    <span className="text-[10px] font-bold tracking-wider px-1.5 py-0.5 rounded bg-foliage-100 text-foliage-800 uppercase border border-foliage-500/20">
+                      AI
+                    </span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-1.5">
-                  <span className="font-serif font-bold text-lg tracking-wide text-wine-950">RegulaDoc</span>
-                  <span className="text-[10px] font-bold tracking-wider px-1.5 py-0.5 rounded bg-foliage-100 text-foliage-800 uppercase border border-foliage-500/20">
-                    AI
-                  </span>
-                </div>
-              </div>
 
-              <div className="h-6 w-px bg-parchment-300/80 hidden sm:block"></div>
+                <div className="h-6 w-px bg-parchment-300/80 hidden sm:block"></div>
 
-              {/* Link Voltar & Número do Dossiê */}
-              <div className="flex items-center gap-3">
-                <Link
-                  href="/painel/dossiers"
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-foliage-700 hover:text-foliage-900 transition-colors group"
-                >
-                  <ArrowLeft className="h-3.5 w-3.5 group-hover:-translate-x-0.5 transition-transform" />
-                  Dossiês
-                </Link>
-                <span className="text-stone-300">/</span>
-                <div className="flex items-center gap-2.5">
+                {/* Link Voltar & Número do Dossiê */}
+                <div className="flex items-center gap-2.5 flex-wrap">
+                  <Link
+                    href="/painel/dossiers"
+                    className="inline-flex items-center gap-1 text-xs font-semibold text-foliage-700 hover:text-foliage-900 transition-colors group"
+                  >
+                    <ArrowLeft className="h-3.5 w-3.5 group-hover:-translate-x-0.5 transition-transform" />
+                    Dossiês
+                  </Link>
+                  <span className="text-stone-300">/</span>
                   <span className="font-serif text-2xl font-bold tracking-tight text-wine-950">
                     {dossier.internalNumber}
                   </span>
@@ -95,62 +96,85 @@ export function DossierDetail({
                 </div>
               </div>
 
-              {/* Gauge Circular do Score */}
-              <div className="flex items-center gap-2.5 px-3 py-1 rounded-xl bg-gradient-to-r from-foliage-50 to-emerald-50/70 border border-foliage-500/25 shadow-xs">
-                <div className="relative w-7 h-7 flex items-center justify-center">
-                  <svg className="w-7 h-7 transform -rotate-90">
-                    <circle cx="14" cy="14" fill="none" r="11" stroke="#e0e7df" strokeWidth="2.5"></circle>
-                    <circle
-                      cx="14"
-                      cy="14"
-                      fill="none"
-                      r="11"
-                      stroke="#1d4d29"
-                      strokeDasharray="69.1"
-                      strokeDashoffset={Math.max(0, 69.1 - (69.1 * score) / 100)}
-                      strokeLinecap="round"
-                      strokeWidth="2.8"
-                    ></circle>
-                  </svg>
-                  <span className="absolute text-[9px] font-bold text-foliage-800">
-                    {score}
-                  </span>
-                </div>
-                <div className="leading-none">
-                  <div className="text-[10px] uppercase font-bold tracking-wider text-foliage-800">
-                    Score de Conformidade
-                  </div>
-                  <div className="text-[11px] text-stone-600 font-medium">
-                    <strong>{score}</strong> / 100 pts
-                  </div>
-                </div>
+              {/* Linha 2: Botões de Ação Executiva */}
+              <div className="flex items-center gap-2 flex-wrap pt-0.5">
+                <AssistantDrawer
+                  dossierId={dossier.id}
+                  triggerButton={
+                    <button
+                      type="button"
+                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-gradient-to-r from-foliage-800 via-foliage-700 to-emerald-700 text-white shadow-sm hover:shadow-emerald-glow transition-all active:scale-[0.98] cursor-pointer"
+                    >
+                      <Sparkles className="h-3.5 w-3.5 text-gold-500" />
+                      <span>Assistente Contextual AI</span>
+                    </button>
+                  }
+                />
+                <HeaderActions
+                  dossierId={dossier.id}
+                  internalNumber={dossier.internalNumber}
+                  role={tenant.role}
+                  status={dossier.status}
+                  complianceScore={dossier.complianceScore}
+                  hasDocuments={documents.length > 0}
+                  hasValidated={validationRuns.length > 0}
+                  hasReport={reports.length > 0}
+                />
               </div>
             </div>
 
-            {/* Direita: Botões de Ação Executiva */}
-            <div className="flex items-center gap-2 flex-wrap">
-              <AssistantDrawer
-                dossierId={dossier.id}
-                triggerButton={
-                  <button
-                    type="button"
-                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-gradient-to-r from-foliage-800 via-foliage-700 to-emerald-700 text-white shadow-sm hover:shadow-emerald-glow transition-all active:scale-[0.98] cursor-pointer"
-                  >
-                    <Sparkles className="h-3.5 w-3.5 text-gold-500" />
-                    <span>Assistente Contextual AI</span>
-                  </button>
-                }
-              />
-              <HeaderActions
-                dossierId={dossier.id}
-                internalNumber={dossier.internalNumber}
-                role={tenant.role}
-                status={dossier.status}
-                complianceScore={dossier.complianceScore}
-                hasDocuments={documents.length > 0}
-                hasValidated={validationRuns.length > 0}
-                hasReport={reports.length > 0}
-              />
+            {/* Direita: Compliance Score Imponente (Modelo Proposto) */}
+            <div className="bg-white rounded-2xl px-5 py-3.5 border border-stone-200/90 shadow-sm flex flex-col items-center justify-center flex-shrink-0 self-center lg:self-stretch min-w-[190px]">
+              <h4 className="text-xs font-bold tracking-tight text-wine-950 mb-1 font-display">
+                Compliance Score
+              </h4>
+              <div className="relative w-28 h-28 flex items-center justify-center">
+                <svg className="w-28 h-28 transform -rotate-90" viewBox="0 0 120 120">
+                  {/* Círculo de trilha fina */}
+                  <circle
+                    cx="60"
+                    cy="60"
+                    r="46"
+                    fill="none"
+                    stroke="#e2e8f0"
+                    strokeWidth="1.5"
+                  />
+                  {/* Arco de base escura / deduções */}
+                  <circle
+                    cx="60"
+                    cy="60"
+                    r="46"
+                    fill="none"
+                    stroke="#0c2340"
+                    strokeWidth="9"
+                    strokeDasharray="289.02"
+                    strokeDashoffset={289.02 - (289.02 * Math.min(30, Math.max(15, 100 - score))) / 100}
+                    strokeLinecap="round"
+                  />
+                  {/* Arco de score verde */}
+                  <circle
+                    cx="60"
+                    cy="60"
+                    r="46"
+                    fill="none"
+                    stroke="#5ea32a"
+                    strokeWidth="9"
+                    strokeDasharray="289.02"
+                    strokeDashoffset={289.02 - (289.02 * score) / 100}
+                    strokeLinecap="round"
+                    className="transition-all duration-700 ease-out"
+                  />
+                </svg>
+                {/* Conteúdo Central */}
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-center select-none pointer-events-none">
+                  <span className="text-[11px] font-semibold text-stone-500 font-sans tracking-tight">
+                    ({100} - {Math.max(0, 100 - score)})
+                  </span>
+                  <span className="text-3xl font-extrabold text-wine-950 font-sans tracking-tight leading-none mt-0.5">
+                    {score}
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -193,9 +217,6 @@ export function DossierDetail({
               <p className="font-semibold text-stone-800 truncate" title={dossier.exporterName ?? "Granacer S.A."}>
                 {dossier.exporterName || "Granacer S.A."} · {dossier.countryOrigin || "Portugal"}
               </p>
-              <span className="text-[10px] text-foliage-700 font-semibold flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-foliage-500"></span> Conexão MAPA Ativa
-              </span>
             </div>
 
             {/* Card 4: Responsável Técnico & Atualização */}

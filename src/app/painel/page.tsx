@@ -10,7 +10,6 @@ import {
   AlertTriangle,
   CheckCircle2,
   Plus,
-  Filter,
   Paperclip,
   ChevronRight,
 } from "lucide-react";
@@ -181,13 +180,6 @@ export default async function DashboardPage() {
         {/* Botões de Ação Primária */}
         <div className="flex items-center gap-3">
           <Link
-            href="/painel/dossiers"
-            className="px-4 py-2 text-xs font-semibold text-stone-700 bg-white hover:bg-stone-50 border border-stone-300 rounded-lg shadow-sm transition flex items-center gap-2"
-          >
-            <Filter className="w-3.5 h-3.5 text-stone-500" />
-            Filtros Avançados
-          </Link>
-          <Link
             href="/painel/dossiers/new"
             className="px-4 py-2 text-xs font-semibold text-white bg-bordeaux-800 hover:bg-bordeaux-900 rounded-lg shadow-sm hover:shadow transition flex items-center gap-2 border border-bordeaux-700"
           >
@@ -227,7 +219,7 @@ export default async function DashboardPage() {
 
         {/* Card 2: Prontos para revisão */}
         <Link
-          href="/painel/dossiers?filter=ready_review"
+          href="/painel/dossiers?filter=in_review"
           className="card-craft rounded-xl p-5 relative overflow-hidden transition group block"
         >
           <div className="flex items-center justify-between">
@@ -277,7 +269,7 @@ export default async function DashboardPage() {
 
         {/* Card 4: Aguardando decisão */}
         <Link
-          href="/painel/dossiers?filter=decision"
+          href="/painel/dossiers?filter=ready_approval"
           className="card-craft rounded-xl p-5 relative overflow-hidden transition group block"
         >
           <div className="flex items-center justify-between">

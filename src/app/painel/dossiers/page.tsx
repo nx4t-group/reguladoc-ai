@@ -7,8 +7,14 @@ import { prisma } from "@/lib/prisma";
 import { requireTenant } from "@/lib/tenant";
 import { DossiersTable, type DossierRow } from "./dossiers-table";
 
-export default async function DossiersPage() {
+export default async function DossiersPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ filter?: string; status?: string }> | { filter?: string; status?: string };
+}) {
   const tenant = await requireTenant();
+  const resolvedSearchParams = searchParams ? await searchParams : undefined;
+  const initialFilter = resolvedSearchParams?.filter || resolvedSearchParams?.status || "todos";
 
   const dossiers = await prisma.dossier.findMany({
     where: { organizationId: tenant.organizationId, deletedAt: null },
@@ -47,7 +53,7 @@ export default async function DossiersPage() {
           </Button>
         }
       />
-      <DossiersTable data={rows} userRole={tenant.role} />
+      <DossiersTable data={rows} userRole={tenant.role} initialFilter={initialFilter} />
     </div>
   );
 }
