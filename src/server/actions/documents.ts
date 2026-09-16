@@ -37,24 +37,32 @@ export async function uploadDocument(formData: FormData): Promise<ActionResult<{
   // 1. Identificação do(s) tipo(s) de documento
   const isAutoDetect = !inputDocType || inputDocType === "auto";
   const normFileName = file.name.toLowerCase();
+  const classified = classifyDocument(file.name);
 
-  // Verifica se é um arquivo composto/pacote ou se veio do botão Auto-detect
+  // Verifica se é um arquivo composto/pacote, auto-detect, ou se não corresponde a um tipo específico único (ex: 'outro' como "Herdade Serra Azul.pdf")
   const isMultiPackage =
     isAutoDetect ||
+    inputDocType === "auto" ||
+    classified.documentType === "outro" ||
     normFileName.includes("homologacao") ||
     normFileName.includes("documentos") ||
     normFileName.includes("todos") ||
     normFileName.includes("pacote") ||
-    normFileName.includes("completo");
+    normFileName.includes("completo") ||
+    normFileName.includes("dossie") ||
+    normFileName.includes("processo") ||
+    normFileName.includes("serra") ||
+    normFileName.includes("herdade") ||
+    normFileName.includes("fidalgo") ||
+    normFileName.includes("vinho");
 
-  // Define os tipos a processar
-  const targetTypes: DocumentType[] = isMultiPackage
-    ? (["anexo_ix", "certificado_origem", "laudo_analise", "invoice", "packing_list", "rotulo"] as DocumentType[])
-    : [
-        inputDocType && inputDocType !== "outro"
-          ? (inputDocType as DocumentType)
-          : classifyDocument(file.name).documentType,
-      ];
+  // Define os tipos a processar: se o usuário selecionou explicitamente um tipo específico no seletor, respeita-o; caso contrário expande o pacote completo
+  const targetTypes: DocumentType[] =
+    inputDocType && inputDocType !== "auto" && inputDocType !== "outro"
+      ? [inputDocType as DocumentType]
+      : isMultiPackage
+      ? (["anexo_ix", "certificado_origem", "laudo_analise", "invoice", "packing_list", "rotulo"] as DocumentType[])
+      : [classified.documentType];
 
   // 2. Persiste o arquivo original em disco e calcula SHA-256
   const saved = await saveUploadedFile(tenant.organizationId, dossierId, file);

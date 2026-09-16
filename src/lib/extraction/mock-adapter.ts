@@ -99,8 +99,6 @@ function baseFieldsForDocument(documentType: DocumentType, ctx: DossierContext):
         numero_embalagens: common.numero_embalagens,
         unidades_por_embalagem: common.unidades_por_embalagem,
         volume_total_informado: common.volume_total_informado,
-        peso_bruto: "4.250 kg",
-        peso_liquido: "3.600 kg",
         numero_lote: common.numero_lote,
       };
     case "rotulo":
@@ -163,14 +161,16 @@ export class MockExtractionAdapter implements DocumentExtractionAdapter {
       }
     }
 
-    const merged: Record<string, string | undefined> = { ...base, ...fromFile };
+    const hasFromFile = Object.keys(fromFile).length > 0;
+    // Se extraiu campos de um arquivo real, usa estritamente os campos reais do arquivo para manter fidedignidade
+    const merged: Record<string, string | undefined> = hasFromFile ? { ...fromFile } : { ...base };
     for (const [key, value] of Object.entries(input.fieldOverrides ?? {})) {
       merged[key] = value ?? undefined;
     }
 
     return Object.entries(merged)
-      .filter((entry): entry is [string, string] => Boolean(entry[1]))
-      .map(([key, value]) => ({ key, value, confidence: confidenceFor(key) }));
+      .filter((entry): entry is [string, string] => Boolean(entry[1]?.trim()))
+      .map(([key, value]) => ({ key, value: value.trim(), confidence: confidenceFor(key) }));
   }
 }
 

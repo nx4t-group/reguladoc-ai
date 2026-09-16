@@ -29,7 +29,7 @@ const loginSchema = z.object({
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
-const DEMO_ACCOUNTS = [
+const TEST_ACCOUNTS = [
   { email: "admin@demo.com", role: "Admin SaaS" },
   { email: "gestor@demo.com", role: "Gestor da Comissária" },
   { email: "analista@demo.com", role: "Analista Regulatório" },
@@ -263,10 +263,10 @@ export default function LoginPage() {
               </form>
             </Form>
 
-            {/* Demo Credentials Box */}
+            {/* Test Credentials Box */}
             <div className="mt-7 pt-5 border-t border-dashed border-slate-200">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-700">Modo demonstração</span>
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-700">Ambiente de Teste</span>
                 <span className="text-[11px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded font-semibold tracking-tight">
                   demo1234
                 </span>
@@ -276,7 +276,7 @@ export default function LoginPage() {
               </p>
 
               <div className="space-y-2">
-                {DEMO_ACCOUNTS.map((acc) => {
+                {TEST_ACCOUNTS.map((acc) => {
                   const isSelected = activeAccount === acc.email;
                   return (
                     <button

@@ -165,7 +165,7 @@ export default async function DashboardPage() {
             </span>
             {showDemoBadge && (
               <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-amber-100 text-amber-800 border border-amber-300">
-                Demonstrativo
+                Ambiente de Teste
               </span>
             )}
           </div>
@@ -610,7 +610,7 @@ export default async function DashboardPage() {
                           )}
                         </td>
                         <td className="py-3.5 px-4 text-stone-600">
-                          {d.assignedTo?.name ?? "Analista Demo"}
+                          {d.assignedTo?.name === "Analista Demo" ? "Analista Teste" : (d.assignedTo?.name ?? "Analista Teste")}
                         </td>
                         <td className="py-3.5 px-4 text-stone-500 whitespace-nowrap">
                           {formatDistanceToNow(new Date(d.updatedAt), { addSuffix: true, locale: ptBR })}

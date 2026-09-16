@@ -203,8 +203,9 @@ describe("Bateria de Homologação Enterprise — Casos A ao G", () => {
 
     expect(volumeFinding).toBeDefined();
     expect(volumeFinding?.severity).toBe("critica");
-    expect(volumeFinding?.evidence?.calculated).toBe(4500);
-    expect(volumeFinding?.evidence?.informedVolumeLiters).toBe(5000);
+    const evidence = volumeFinding?.evidence as Record<string, unknown> | undefined;
+    expect(evidence?.calculated).toBe(4500);
+    expect(evidence?.informedVolumeLiters).toBe(5000);
   });
 
   // -------------------------------------------------------------------------

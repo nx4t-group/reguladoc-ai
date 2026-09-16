@@ -158,7 +158,7 @@ export function RulesTable({ rules, hasDossierForSimulation }: { rules: RuleRow[
     setSimResult(null);
     simulateRuleAgainstDemoDossier(selected.code)
       .then((result) => setSimResult(result))
-      .catch(() => toast.error("Erro ao simular a regra contra o dossiê de exemplo."))
+      .catch(() => toast.error("Erro ao simular a regra contra o dossiê de teste."))
       .finally(() => setSimLoading(false));
   }
 
@@ -438,13 +438,13 @@ export function RulesTable({ rules, hasDossierForSimulation }: { rules: RuleRow[
               <Separator className="my-4" />
 
               <div>
-                <h4 className="mb-2 text-sm font-medium text-foreground">Simular contra dossiê de exemplo</h4>
+                <h4 className="mb-2 text-sm font-medium text-foreground">Simular contra dossiê de teste</h4>
                 {!hasDossierForSimulation ? (
                   <p className="text-xs text-muted-foreground">Nenhum dossiê disponível nesta organização para simulação.</p>
                 ) : (
                   <>
                     <Button variant="outline" size="sm" disabled={simLoading} onClick={handleSimulate}>
-                      {simLoading ? "Simulando…" : "Simular contra dossiê de exemplo"}
+                      {simLoading ? "Simulando…" : "Simular contra dossiê de teste"}
                     </Button>
                     {simResult && (
                       <div className="mt-3 space-y-2">
@@ -455,7 +455,7 @@ export function RulesTable({ rules, hasDossierForSimulation }: { rules: RuleRow[
                             <p className="text-xs text-muted-foreground">Dossiê simulado: {simResult.dossierInternalNumber}</p>
                             {simResult.findings.length === 0 ? (
                               <p className="text-xs text-muted-foreground">
-                                Nenhum achado desta regra neste dossiê de exemplo.
+                                Nenhum achado desta regra neste dossiê de teste.
                               </p>
                             ) : (
                               simResult.findings.map((finding, idx) => (

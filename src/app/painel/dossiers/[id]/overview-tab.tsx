@@ -194,7 +194,7 @@ export function OverviewTab({
             <span className="text-[11px] font-bold text-stone-500 uppercase tracking-wider block">Responsável Pela Análise</span>
             <div className="flex items-center gap-1.5 mt-1">
               <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-              <p className="text-xs font-bold text-stone-800">{dossier.assignedTo?.name || "Analista Demo"}</p>
+              <p className="text-xs font-bold text-stone-800">{dossier.assignedTo?.name === "Analista Demo" ? "Analista Teste" : (dossier.assignedTo?.name || "Analista Teste")}</p>
             </div>
           </div>
 
@@ -204,7 +204,7 @@ export function OverviewTab({
           {/* Row 9: Audit Trail Elements */}
           <div className="space-y-1">
             <span className="text-[11px] font-bold text-stone-500 uppercase tracking-wider block">Criado Por</span>
-            <p className="text-xs font-medium text-stone-700">{dossier.createdBy?.name || "Analista Demo"}</p>
+            <p className="text-xs font-medium text-stone-700">{dossier.createdBy?.name === "Analista Demo" ? "Analista Teste" : (dossier.createdBy?.name || "Analista Teste")}</p>
           </div>
           <div className="space-y-1">
             <span className="text-[11px] font-bold text-stone-500 uppercase tracking-wider block">Data de Criação</span>

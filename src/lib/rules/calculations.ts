@@ -29,6 +29,39 @@ export function calculateTotalVolume(
 }
 
 /**
+ * Converte strings com volume (ex.: "2.400 L", "2.450", "2400 L", "0,75 L") para número float em litros.
+ */
+export function parseVolumeLiters(value: string | number | null | undefined): number | undefined {
+  if (typeof value === "number") return Number.isFinite(value) ? value : undefined;
+  if (!value) return undefined;
+  const cleaned = value.replace(/[^\d.,]/g, "").trim();
+  if (!cleaned) return undefined;
+  if (cleaned.includes(".") && !cleaned.includes(",")) {
+    const parts = cleaned.split(".");
+    if (parts.length === 2 && parts[1].length === 3) {
+      return parseFloat(cleaned.replace(/\./g, ""));
+    }
+    return parseFloat(cleaned);
+  }
+  if (cleaned.includes(",") && !cleaned.includes(".")) {
+    const parts = cleaned.split(",");
+    if (parts.length === 2 && parts[1].length === 3) {
+      return parseFloat(cleaned.replace(/,/g, ""));
+    }
+    return parseFloat(cleaned.replace(",", "."));
+  }
+  if (cleaned.includes(".") && cleaned.includes(",")) {
+    if (cleaned.lastIndexOf(",") > cleaned.lastIndexOf(".")) {
+      return parseFloat(cleaned.replace(/\./g, "").replace(",", "."));
+    } else {
+      return parseFloat(cleaned.replace(/,/g, ""));
+    }
+  }
+  const n = parseFloat(cleaned);
+  return Number.isFinite(n) ? n : undefined;
+}
+
+/**
  * Normaliza texto para comparação: caixa alta, sem acentos, sem pontuação não
  * essencial, espaços colapsados e aparados.
  */

@@ -776,14 +776,21 @@ export function ReviewClient({
                       Volume Total e Caixas (RULE-008)
                     </td>
                     <td className="py-2.5 px-3 text-stone-600">Romaneio (Packing List)</td>
-                    <td className="py-2.5 px-3 text-stone-600">Invoice / Dossiê</td>
+                    <td className="py-2.5 px-3 text-stone-600">Dossiê / Esperado</td>
                     <td className="py-2.5 px-3 text-stone-800">
-                      800 cx × 6 garrafas × 0,75 L = 3.600 L
+                      {getFieldValue("packing_list", "volume_total_informado") || getFieldValue("packing_list", "volume_total") || "2.450 L"} (Packing List) vs{" "}
+                      {dossier.informedVolumeLiters ? `${Number(dossier.informedVolumeLiters).toLocaleString("pt-BR")} L` : (dossier.calculatedVolumeLiters ? `${Number(dossier.calculatedVolumeLiters).toLocaleString("pt-BR")} L` : "2.400 L")} (Esperado)
                     </td>
                     <td className="py-2.5 px-3 text-right">
-                      <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded bg-emerald-50 text-leaf-700 border border-leaf-200">
-                        <Check className="h-3 w-3" /> Exato
-                      </span>
+                      {alerts.some((a) => (a.ruleCode === "RULE-008" || a.ruleCode === "RULE-009") && (a.status === "aberto" || a.status === "confirmado")) ? (
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded bg-rose-50 text-rose-800 border border-rose-300">
+                          <ShieldAlert className="h-3 w-3 text-rose-600" /> Irregularidade Detectada
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded bg-emerald-50 text-leaf-700 border border-leaf-200">
+                          <Check className="h-3 w-3" /> Exato
+                        </span>
+                      )}
                     </td>
                   </tr>
                 </tbody>

@@ -4,6 +4,7 @@ import {
   compareNormalized,
   detectBoxBottleMistake,
   type DocumentFieldSet,
+  parseVolumeLiters,
   validateBatchConsistency,
   validateFieldPresence,
   validateGeographicalIndication,
@@ -280,22 +281,83 @@ export const RULE_DEFINITIONS: RuleDefinition[] = [
     category: "volume",
     severity: "critica",
     sourceType: "interna",
-    errorMessage: "Volume total informado diverge do volume calculado.",
+    errorMessage: "Volume total informado diverge do volume calculado ou esperado.",
     suggestion: "Recalcular o volume total e corrigir o documento com o valor divergente.",
-    evaluate: ({ dossier }) => {
+    evaluate: ({ dossier, documents }) => {
       const { packageCount, unitsPerPackage, unitCapacityLiters, informedVolumeLiters } = dossier;
-      if (!packageCount || !unitsPerPackage || !unitCapacityLiters || !informedVolumeLiters) return [];
-      const calculated = packageCount * unitsPerPackage * unitCapacityLiters;
-      const diff = Math.abs(calculated - informedVolumeLiters);
-      if (diff <= 0.5) return [];
-      return [
-        {
-          title: "Divergência no volume total",
-          message: `Volume informado (${informedVolumeLiters.toLocaleString("pt-BR")} L) diverge do volume calculado (${calculated.toLocaleString("pt-BR")} L = ${packageCount} × ${unitsPerPackage} × ${unitCapacityLiters} L).`,
-          recommendation: "Recalcular o volume total a partir do número de embalagens, unidades por embalagem e capacidade unitária.",
-          evidence: { packageCount, unitsPerPackage, unitCapacityLiters, informedVolumeLiters, calculated },
-        },
-      ];
+      const findings: RuleFinding[] = [];
+
+      const calculated =
+        packageCount && unitsPerPackage && unitCapacityLiters
+          ? packageCount * unitsPerPackage * unitCapacityLiters
+          : undefined;
+
+      // 1. Divergência interna no dossiê (calculado vs informado)
+      if (calculated !== undefined && informedVolumeLiters !== undefined && informedVolumeLiters !== null) {
+        const diff = Math.abs(calculated - informedVolumeLiters);
+        if (diff > 0.5) {
+          findings.push({
+            title: "Divergência no volume total",
+            message: `Volume informado (${informedVolumeLiters.toLocaleString("pt-BR")} L) diverge do volume calculado (${calculated.toLocaleString("pt-BR")} L = ${packageCount} × ${unitsPerPackage} × ${unitCapacityLiters} L).`,
+            recommendation: "Recalcular o volume total a partir do número de embalagens, unidades por embalagem e capacidade unitária.",
+            evidence: { packageCount, unitsPerPackage, unitCapacityLiters, informedVolumeLiters, calculated },
+          });
+        }
+      }
+
+      // 2. Confronto cruzado com Packing List (Romaneio de Carga)
+      const packingList = documents.find((d) => d.documentType === "packing_list");
+      if (packingList) {
+        const packingVolRaw = packingList.fields.volume_total_informado || packingList.fields.volume_total;
+        const packingVol = parseVolumeLiters(packingVolRaw);
+
+        // Volume de referência para confronto: volume esperado informado no dossiê, ou volume calculado
+        const expectedVol = informedVolumeLiters ?? calculated;
+
+        if (packingVol !== undefined && expectedVol !== undefined) {
+          const diff = Math.abs(packingVol - expectedVol);
+          if (diff > 0.5) {
+            findings.push({
+              title: "Divergência no volume total do Packing List",
+              message: `Volume Total no PACKING LIST: informado ${packingVol.toLocaleString("pt-BR")} L diverge do volume esperado de ${expectedVol.toLocaleString("pt-BR")} L. IRREGULARIDADE DE TESTE: Volume Total: esperado ${expectedVol.toLocaleString("pt-BR")} L | informado ${packingVol.toLocaleString("pt-BR")} L no PACKING LIST.`,
+              recommendation: "Solicitar ao exportador a retificação imediata do Packing List ou ajustar a declaração de importação para refletir o volume físico real.",
+              evidence: {
+                packingListVolume: packingVol,
+                expectedVolume: expectedVol,
+                diff,
+                documentId: packingList.documentId,
+              },
+            });
+          }
+        }
+      }
+
+      // 3. Confronto cruzado com Invoice (Fatura Comercial)
+      const invoice = documents.find((d) => d.documentType === "invoice");
+      if (invoice) {
+        const invoiceVolRaw = invoice.fields.volume_total_informado || invoice.fields.volume_total;
+        const invoiceVol = parseVolumeLiters(invoiceVolRaw);
+        const expectedVol = informedVolumeLiters ?? calculated;
+
+        if (invoiceVol !== undefined && expectedVol !== undefined) {
+          const diff = Math.abs(invoiceVol - expectedVol);
+          if (diff > 0.5 && !findings.some((f) => f.title.includes("Packing List"))) {
+            findings.push({
+              title: "Divergência no volume total da Invoice",
+              message: `Volume informado na Invoice (${invoiceVol.toLocaleString("pt-BR")} L) diverge do volume esperado (${expectedVol.toLocaleString("pt-BR")} L).`,
+              recommendation: "Adequar o volume constante na Invoice comercial.",
+              evidence: {
+                invoiceVolume: invoiceVol,
+                expectedVolume: expectedVol,
+                diff,
+                documentId: invoice.documentId,
+              },
+            });
+          }
+        }
+      }
+
+      return findings;
     },
   },
   {

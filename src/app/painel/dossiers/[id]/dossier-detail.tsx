@@ -233,27 +233,32 @@ export function DossierDetail({
               <p className="text-xs sm:text-sm font-bold text-stone-900 truncate" title={dossier.exporterName ?? dossier.producerName ?? "Granacer - Adm. de Ben..."}>
                 {dossier.exporterName || dossier.producerName || "Granacer - Adm. de Ben..."}
               </p>
-              <div className="flex items-center gap-1.5 text-[11px] font-semibold text-emerald-800 mt-0.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0 shadow-2xs"></span>
-                <span>Conexão MAPA Ativa</span>
-              </div>
             </div>
 
             {/* Separador vertical */}
             <div className="hidden lg:block h-10 w-px bg-stone-200 flex-shrink-0" />
 
             {/* Bloco 4: Responsável Técnico */}
-            <div className="flex items-center justify-between lg:justify-start lg:gap-6 min-w-0 lg:min-w-[170px]">
-              <div>
-                <span className="text-[10px] font-semibold text-stone-400 uppercase tracking-wider block mb-0.5">
-                  RESPONSÁVEL TÉCNICO
-                </span>
-                <p className="text-xs sm:text-sm font-bold text-stone-900 flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0 shadow-2xs"></span>
-                  <span>{dossier.assignedTo?.name || "Analista Demo"}</span>
-                </p>
+            <div className="flex items-center justify-between lg:justify-start lg:gap-4 min-w-0 lg:min-w-[210px]">
+              <div className="flex items-center gap-2.5">
+                <div className="relative w-8 h-8 rounded-full overflow-hidden border border-stone-200 shadow-2xs flex-shrink-0 bg-stone-100">
+                  <img
+                    src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80"
+                    alt="Foto do Responsável Técnico"
+                    className="w-full h-full object-cover"
+                  />
+                  <span className="absolute bottom-0 right-0 w-2 h-2 rounded-full bg-emerald-500 ring-1 ring-white" />
+                </div>
+                <div>
+                  <span className="text-[10px] font-semibold text-stone-400 uppercase tracking-wider block leading-tight">
+                    RESPONSÁVEL TÉCNICO
+                  </span>
+                  <p className="text-xs sm:text-sm font-bold text-stone-900 leading-tight mt-0.5">
+                    {dossier.assignedTo?.name === "Analista Demo" ? "Analista Teste" : (dossier.assignedTo?.name || "Analista Teste")}
+                  </p>
+                </div>
               </div>
-              <div className="text-right lg:text-left text-[10px] text-stone-400 font-medium leading-tight">
+              <div className="text-right lg:text-left text-[10px] text-stone-400 font-medium leading-tight pl-2 border-l border-stone-200">
                 <div>
                   Atualização: <span className="text-stone-700 font-semibold">{format(new Date(dossier.updatedAt), "dd/MM/yyyy", { locale: ptBR })}</span>
                 </div>

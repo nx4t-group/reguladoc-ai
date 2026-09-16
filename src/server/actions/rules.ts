@@ -114,7 +114,7 @@ export interface SimulateRuleResult {
 
 /**
  * Simulação somente-leitura: executa o motor de regras sobre o dossiê de
- * exemplo (DEMO-IMP-0002, com fallback para qualquer dossiê da organização)
+ * teste (DEMO-IMP-0002, com fallback para qualquer dossiê da organização)
  * e devolve apenas os achados da regra informada. Não grava nada no banco.
  */
 export async function simulateRuleAgainstDemoDossier(

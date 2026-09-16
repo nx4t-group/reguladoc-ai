@@ -55,7 +55,7 @@ interface UploadedFile {
   file: File;
 }
 
-const DEMO_PREFILL: FormValues = {
+const TEST_PREFILL: FormValues = {
   internalNumber: "I2400139612",
   importerName: "BARRINHAS Comércio e Importação de Bebidas e Cereais Ltda.",
   exporterName: "Granacer - Administração de Bens, S.A.",
@@ -430,10 +430,10 @@ export function NewDossierForm() {
           <div className="h-px flex-1 bg-border" />
         </div>
 
-        {/* Demo prefill */}
+        {/* Test prefill */}
         <div className="flex justify-end">
-          <Button type="button" variant="outline" size="sm" onClick={() => form.reset(DEMO_PREFILL)}>
-            Preencher com exemplo (Tapada do Fidalgo)
+          <Button type="button" variant="outline" size="sm" onClick={() => form.reset(TEST_PREFILL)}>
+            Preencher com dados de teste
           </Button>
         </div>
 
