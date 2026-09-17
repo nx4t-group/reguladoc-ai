@@ -91,7 +91,7 @@ export function Topbar({
     "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80";
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-stone-200 bg-white px-6 lg:px-8 shadow-xs">
+    <header className="relative z-30 flex h-16 items-center justify-between border-b border-stone-200 bg-white px-6 lg:px-8 shadow-xs">
       <div className="flex items-center gap-3 flex-1 max-w-xl">
         <MobileNav role={role} />
         <Popover open={open} onOpenChange={setOpen}>

@@ -48,6 +48,7 @@ import {
 import { recordFindingAction } from "@/server/actions/alerts";
 import { uploadDocument } from "@/server/actions/documents";
 import { FIELD_LABELS } from "@/lib/extraction/fields";
+import { CountryOriginBadge } from "@/components/country-origin-badge";
 import { safeJsonParse } from "../format";
 
 /**
@@ -517,10 +518,8 @@ export function ReviewClient({
                 </span>
               </div>
               <div>
-                <span className="text-stone-500 block text-[11px]">País de Origem</span>
-                <span className="font-semibold text-stone-800">
-                  {dossier.countryOrigin || "Portugal"}
-                </span>
+                <span className="text-stone-500 block text-[11px] mb-0.5">País de Origem</span>
+                <CountryOriginBadge country={dossier.countryOrigin} showLanguage={false} />
               </div>
             </div>
           </div>

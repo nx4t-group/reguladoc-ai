@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 
 import type { DossierDetailData } from "./types";
+import { CountryOriginBadge } from "@/components/country-origin-badge";
 
 interface DocumentItem {
   id: string;
@@ -91,13 +92,7 @@ export function OverviewTab({
           </div>
           <div className="space-y-1">
             <span className="text-[11px] font-bold text-stone-500 uppercase tracking-wider block">País de Origem</span>
-            <div className="flex items-center gap-2">
-              <span className="w-4 h-3 bg-red-700 inline-flex items-center rounded-xs overflow-hidden shadow-2xs border border-stone-200 flex-shrink-0">
-                <span className="w-1.5 h-full bg-emerald-700"></span>
-              </span>
-              <p className="text-xs font-semibold text-stone-800">{dossier.countryOrigin || "Portugal"}</p>
-              <span className="text-[10px] text-stone-600 bg-stone-100 px-1.5 py-0.2 rounded font-medium">PT / PRT</span>
-            </div>
+            <CountryOriginBadge country={dossier.countryOrigin} />
           </div>
 
           {/* Divider */}
