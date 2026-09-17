@@ -36,6 +36,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             name={tenant.name}
             email={tenant.email}
             role={tenant.role}
+            avatarUrl={tenant.avatarUrl}
             organizationName={tenant.organizationName}
             notifications={notifications}
           />

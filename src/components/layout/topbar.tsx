@@ -37,16 +37,24 @@ interface SearchResult {
   status: string;
 }
 
+const ROLE_AVATARS: Record<string, string> = {
+  gestor: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
+  admin: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
+  analista: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80",
+};
+
 export function Topbar({
   name,
   email,
   role,
+  avatarUrl,
   organizationName,
   notifications,
 }: {
   name: string;
   email: string;
   role: Role;
+  avatarUrl?: string | null;
   organizationName: string;
   notifications: TopbarNotification[];
 }) {
@@ -75,7 +83,14 @@ export function Topbar({
     return () => clearTimeout(timeout);
   }, [query]);
 
-  const initials = name
+  const cleanName = name.replace(/demo/gi, "Teste");
+  const cleanOrgName = organizationName.replace(/demo/gi, "Teste");
+  const photoUrl =
+    avatarUrl ||
+    ROLE_AVATARS[role] ||
+    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80";
+
+  const initials = cleanName
     .split(" ")
     .map((p) => p[0])
     .slice(0, 2)
@@ -172,16 +187,21 @@ export function Topbar({
 
         <div className="h-6 w-px bg-stone-200 hidden sm:block" />
 
-        {/* Perfil */}
+        {/* Perfil com Foto no Cabeçalho */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <div className="flex items-center gap-3 cursor-pointer group">
-              <div className="w-9 h-9 rounded-full bg-bordeaux-900 text-amber-100 font-semibold text-xs flex items-center justify-center border border-bordeaux-700 ring-2 ring-stone-100 shadow-xs">
-                {initials || <UserRound className="h-4 w-4" />}
+              <div className="relative w-9 h-9 rounded-full overflow-hidden border border-stone-200 shadow-xs flex-shrink-0 bg-stone-100 ring-2 ring-stone-100">
+                <img
+                  src={photoUrl}
+                  alt={cleanName}
+                  className="w-full h-full object-cover"
+                />
+                <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-1.5 ring-white" />
               </div>
               <div className="text-left hidden sm:block">
                 <div className="text-sm font-semibold text-stone-800 group-hover:text-bordeaux-800 leading-none">
-                  {name}
+                  {cleanName}
                 </div>
                 <div className="text-[11px] text-stone-500 mt-1 font-medium">
                   {ROLE_LABELS[role]}
@@ -191,9 +211,18 @@ export function Topbar({
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-64 bg-white rounded-xl border-stone-200 shadow-lg p-1.5">
             <DropdownMenuLabel className="px-3 py-2">
-              <p className="font-semibold text-stone-900 text-sm">{name}</p>
-              <p className="text-xs font-normal text-stone-500">{email}</p>
-              <p className="mt-1 text-xs font-medium text-bordeaux-800">{organizationName}</p>
+              <div className="flex items-center gap-2.5 mb-2">
+                <div className="w-10 h-10 rounded-full overflow-hidden border border-stone-200 shadow-xs flex-shrink-0">
+                  <img src={photoUrl} alt={cleanName} className="w-full h-full object-cover" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="font-semibold text-stone-900 text-sm leading-tight truncate">{cleanName}</p>
+                  <p className="text-xs text-stone-500 font-normal truncate">{email}</p>
+                </div>
+              </div>
+              <p className="text-[11px] font-semibold text-bordeaux-800 bg-bordeaux-50 px-2 py-0.5 rounded border border-bordeaux-200/60 inline-block">
+                {cleanOrgName} • {ROLE_LABELS[role]}
+              </p>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild className="cursor-pointer rounded-lg px-3 py-2 text-xs">

@@ -217,14 +217,24 @@ export function ReportTab({
           <section className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-border/70 pt-4">
             <div className="p-3 rounded border border-border/60 bg-muted/10 space-y-1">
               <p className="text-[10px] font-semibold uppercase text-muted-foreground">Analista Responsável</p>
-              <p className="font-semibold text-foreground">{latestReport?.generatedByName ?? dossier.assignedTo?.name ?? "—"}</p>
+              <p className="font-semibold text-foreground">
+                {latestReport?.generatedByName
+                  ? latestReport.generatedByName.replace(/demo/gi, "Teste")
+                  : dossier.assignedTo?.name
+                  ? dossier.assignedTo.name.replace(/demo/gi, "Teste")
+                  : "—"}
+              </p>
               <p className="text-[11px] text-muted-foreground">
                 Data: {latestReport ? format(new Date(latestReport.generatedAt), "dd/MM/yyyy HH:mm", { locale: ptBR }) : "—"}
               </p>
             </div>
             <div className="p-3 rounded border border-border/60 bg-muted/10 space-y-1">
               <p className="text-[10px] font-semibold uppercase text-muted-foreground">Gestor / Supervisor</p>
-              <p className="font-semibold text-foreground">{latestReport?.approvedByName ?? "Pendente de revisão de gestor"}</p>
+              <p className="font-semibold text-foreground">
+                {latestReport?.approvedByName
+                  ? latestReport.approvedByName.replace(/demo/gi, "Teste")
+                  : "Pendente de revisão de gestor"}
+              </p>
               <p className="text-[11px] text-muted-foreground">
                 Data: {latestReport?.approvedAt ? format(new Date(latestReport.approvedAt), "dd/MM/yyyy HH:mm", { locale: ptBR }) : "—"}
               </p>

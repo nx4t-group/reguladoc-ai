@@ -23,7 +23,7 @@ export default async function AuditPage() {
     entityId: e.entityId,
     dossierInternalNumber: e.dossier?.internalNumber ?? null,
     dossierBrand: e.dossier?.brand ?? null,
-    userName: e.user?.name ?? "Sistema / IA",
+    userName: e.user?.name ? e.user.name.replace(/demo/gi, "Teste") : "Sistema / IA",
     userEmail: e.user?.email ?? null,
     ipAddress: e.ipAddress,
     createdAt: e.createdAt.toISOString(),

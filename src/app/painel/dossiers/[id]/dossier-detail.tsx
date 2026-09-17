@@ -254,7 +254,7 @@ export function DossierDetail({
                     RESPONSÁVEL TÉCNICO
                   </span>
                   <p className="text-xs sm:text-sm font-bold text-stone-900 leading-tight mt-0.5">
-                    {dossier.assignedTo?.name === "Analista Demo" ? "Analista Teste" : (dossier.assignedTo?.name || "Analista Teste")}
+                    {dossier.assignedTo?.name ? dossier.assignedTo.name.replace(/demo/gi, "Teste") : "Analista Teste"}
                   </p>
                 </div>
               </div>

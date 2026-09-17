@@ -23,7 +23,7 @@ async function main() {
   // -------------------------------------------------------------------
   const organization = await prisma.organization.create({
     data: {
-      name: "Comissária Brasil Demo",
+      name: "Comissária Brasil Teste",
       cnpj: "12.345.678/0001-90",
       plan: "professional",
     },
@@ -32,9 +32,30 @@ async function main() {
   const passwordHash = await bcrypt.hash("demo1234", 10);
 
   const [admin, gestor, analista] = await Promise.all([
-    prisma.profile.create({ data: { name: "Admin Demo", email: "admin@demo.com", passwordHash } }),
-    prisma.profile.create({ data: { name: "Gestor Demo", email: "gestor@demo.com", passwordHash } }),
-    prisma.profile.create({ data: { name: "Analista Demo", email: "analista@demo.com", passwordHash } }),
+    prisma.profile.create({
+      data: {
+        name: "Admin Teste",
+        email: "admin@demo.com",
+        passwordHash,
+        avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
+      },
+    }),
+    prisma.profile.create({
+      data: {
+        name: "Gestor Teste",
+        email: "gestor@demo.com",
+        passwordHash,
+        avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
+      },
+    }),
+    prisma.profile.create({
+      data: {
+        name: "Analista Teste",
+        email: "analista@demo.com",
+        passwordHash,
+        avatarUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80",
+      },
+    }),
   ]);
 
   await Promise.all([

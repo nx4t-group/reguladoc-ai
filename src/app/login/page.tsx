@@ -30,9 +30,9 @@ const loginSchema = z.object({
 type LoginFormValues = z.infer<typeof loginSchema>;
 
 const TEST_ACCOUNTS = [
-  { email: "admin@demo.com", role: "Admin SaaS" },
-  { email: "gestor@demo.com", role: "Gestor da Comissária" },
-  { email: "analista@demo.com", role: "Analista Regulatório" },
+  { name: "Admin Teste", email: "admin@demo.com", role: "Admin SaaS" },
+  { name: "Gestor Teste", email: "gestor@demo.com", role: "Gestor da Comissária" },
+  { name: "Analista Teste", email: "analista@demo.com", role: "Analista Regulatório" },
 ];
 
 export default function LoginPage() {
@@ -289,15 +289,20 @@ export default function LoginPage() {
                           : "bg-slate-50 hover:bg-emerald-50/70 border-slate-200/80 hover:border-emerald-300/60"
                       }`}
                     >
-                      <div className="flex items-center space-x-2">
+                      <div className="flex items-center space-x-2.5">
                         <span
                           className={`w-2 h-2 rounded-full ${
                             isSelected ? "bg-emerald-500 ring-2 ring-emerald-300" : "bg-slate-400"
                           }`}
                         />
-                        <span className={`text-xs font-medium ${isSelected ? "text-brand-navy font-semibold" : "text-slate-700"}`}>
-                          {acc.email}
-                        </span>
+                        <div>
+                          <span className={`text-xs font-medium block leading-tight ${isSelected ? "text-brand-navy font-semibold" : "text-slate-800"}`}>
+                            {acc.name}
+                          </span>
+                          <span className="text-[10px] text-slate-400 block font-normal">
+                            {acc.email}
+                          </span>
+                        </div>
                       </div>
                       <span className={`text-[11px] font-semibold ${isSelected ? "text-brand-green" : "text-slate-500"}`}>
                         {acc.role}

@@ -22,6 +22,7 @@ export interface TenantContext {
   role: Role;
   name: string;
   email: string;
+  avatarUrl?: string | null;
 }
 
 /** Exige sessão autenticada; redireciona para /login quando ausente. */
@@ -33,10 +34,11 @@ export async function requireTenant(): Promise<TenantContext> {
   return {
     userId: session.user.id,
     organizationId: session.user.organizationId,
-    organizationName: session.user.organizationName,
+    organizationName: (session.user.organizationName ?? "").replace(/demo/gi, "Teste"),
     role: session.user.role,
-    name: session.user.name ?? "",
+    name: (session.user.name ?? "").replace(/demo/gi, "Teste"),
     email: session.user.email ?? "",
+    avatarUrl: session.user.image ?? null,
   };
 }
 
