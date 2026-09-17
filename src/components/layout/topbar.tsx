@@ -4,7 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
-import { Bell, LogOut, Search, Settings, UserRound } from "lucide-react";
+import { Bell, LogOut, Search, Settings } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import {
@@ -89,13 +89,6 @@ export function Topbar({
     avatarUrl ||
     ROLE_AVATARS[role] ||
     "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80";
-
-  const initials = cleanName
-    .split(" ")
-    .map((p) => p[0])
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-stone-200 bg-white px-6 lg:px-8 shadow-xs">
@@ -192,6 +185,7 @@ export function Topbar({
           <DropdownMenuTrigger asChild>
             <div className="flex items-center gap-3 cursor-pointer group">
               <div className="relative w-9 h-9 rounded-full overflow-hidden border border-stone-200 shadow-xs flex-shrink-0 bg-stone-100 ring-2 ring-stone-100">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={photoUrl}
                   alt={cleanName}
@@ -213,6 +207,7 @@ export function Topbar({
             <DropdownMenuLabel className="px-3 py-2">
               <div className="flex items-center gap-2.5 mb-2">
                 <div className="w-10 h-10 rounded-full overflow-hidden border border-stone-200 shadow-xs flex-shrink-0">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={photoUrl} alt={cleanName} className="w-full h-full object-cover" />
                 </div>
                 <div className="min-w-0 flex-1">
