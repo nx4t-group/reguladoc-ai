@@ -1,0 +1,28 @@
+name: Supabase & Vercel Keep-Alive
+
+on:
+  schedule:
+    # Executa a cada 3 dias às 12:00 UTC (09:00 BRT)
+    - cron: '0 12 */3 * *'
+  workflow_dispatch: # Permite disparo manual direto pela interface do GitHub
+
+jobs:
+  ping-keep-alive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Keep-Alive Endpoint
+        run: |
+          echo "Iniciando ping para o endpoint de keep-alive do RegulaDoc AI..."
+          RESPONSE=$(curl -s -w "\nHTTP_STATUS:%{http_code}" "https://reguladoc-ai.vercel.app/api/cron/keep-alive")
+          HTTP_STATUS=$(echo "$RESPONSE" | grep "HTTP_STATUS" | cut -d':' -f2)
+          BODY=$(echo "$RESPONSE" | grep -v "HTTP_STATUS")
+          
+          echo "Status retornado: $HTTP_STATUS"
+          echo "Corpo da resposta: $BODY"
+          
+          if [ "$HTTP_STATUS" -ne 200 ]; then
+            echo "Aviso: O endpoint retornou status $HTTP_STATUS"
+            exit 1
+          fi
+          
+          echo "Sucesso: Supabase consultado e mantido ativo!"
