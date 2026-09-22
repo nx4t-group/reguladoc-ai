@@ -26,11 +26,11 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   }));
 
   return (
-    <div className="min-h-screen craft-bg text-slate-800 antialiased">
+    <div className="min-h-screen craft-bg text-slate-800 antialiased print:bg-white print:bg-none print:min-h-0">
       <div className="no-print contents">
         <Sidebar role={tenant.role} planLabel={PLAN_LABELS[(organization?.plan ?? "starter") as Plan]} />
       </div>
-      <div className="flex min-h-screen flex-col lg:pl-72">
+      <div className="flex min-h-screen flex-col lg:pl-72 print:pl-0 print:min-h-0">
         <div className="no-print contents">
           <Topbar
             name={tenant.name}
@@ -41,8 +41,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             notifications={notifications}
           />
         </div>
-        <main className="flex-1 px-6 py-6 lg:px-10 lg:py-8">
-          <div className="mx-auto w-full max-w-[1600px]">
+        <main className="flex-1 px-6 py-6 lg:px-10 lg:py-8 print:p-0 print:m-0 print:bg-white">
+          <div className="mx-auto w-full max-w-[1600px] print:max-w-none print:p-0">
             {children}
           </div>
         </main>

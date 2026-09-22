@@ -137,7 +137,7 @@ export function ReportTab({
           </div>
 
           {/* 2. DADOS ESSENCIAIS DA CARGA / EMBARQUE (SEM REPETIÇÃO DE DOSSIÊ E IMPORTADOR) */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 p-2.5 rounded-lg bg-stone-50/80 border border-stone-200/70 print:bg-stone-50/50">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 p-2.5 rounded-lg bg-stone-50/80 border border-stone-200/70 print:bg-white print:border-stone-200">
             <div>
               <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wider block">Produto & Marca</span>
               <p className="text-xs font-bold text-stone-900 truncate mt-0.5" title={`${dossier.brand} · ${dossier.productName}`}>
@@ -178,7 +178,7 @@ export function ReportTab({
             <h2 className="text-[10px] font-bold uppercase tracking-wider text-stone-500">
               Parecer Técnico de Conferência
             </h2>
-            <div className="p-2.5 rounded-md bg-stone-50/60 border border-stone-200/60 text-xs text-stone-800 leading-relaxed print:p-2">
+            <div className="p-2.5 rounded-md bg-stone-50/60 border border-stone-200/60 text-xs text-stone-800 leading-relaxed print:bg-white print:border-stone-200 print:p-2">
               {latestReport?.summary ??
                 `Conferência documental realizada com base no cruzamento automatizado dos 6 documentos exigidos (Anexo IX, Certificado de Origem, Laudo de Análise, Invoice, Packing List e Conhecimento de Embarque BL) frente ao motor normativo do MAPA. Todos os dados críticos de rastreabilidade, parâmetros enológicos e identificação de rotulagem foram validados. Conclusão: ${recomendacao}.`}
             </div>
@@ -189,7 +189,7 @@ export function ReportTab({
             <h2 className="text-[10px] font-bold uppercase tracking-wider text-stone-500">
               Quadro Regulatório & Normas Aplicáveis
             </h2>
-            <div className="p-2.5 rounded-md bg-stone-50/40 border border-stone-200/60 text-[11px] text-stone-700 space-y-1 print:p-2">
+            <div className="p-2.5 rounded-md bg-stone-50/40 border border-stone-200/60 text-[11px] text-stone-700 space-y-1 print:bg-white print:border-stone-200 print:p-2">
               <p>
                 <strong className="text-stone-900 font-semibold">Fundamento Normativo:</strong> Instrução Normativa MAPA nº 67/2018,
                 Decreto Federal nº 8.198/2014, Anexo IX (Acordo Mercosul / Vitivinícola) e Portarias de PIQ vigentes.
@@ -222,7 +222,7 @@ export function ReportTab({
             ) : (
               <div className="space-y-1.5 max-h-40 overflow-hidden print:max-h-none">
                 {relevantAlerts.slice(0, 3).map((a) => (
-                  <div key={a.id} className="rounded-md border border-stone-200/80 p-2 space-y-0.5 bg-white">
+                  <div key={a.id} className="rounded-md border border-stone-200/80 p-2 space-y-0.5 bg-white print:border-stone-200">
                     <div className="flex items-start justify-between gap-2">
                       <div>
                         <span className="font-bold text-stone-900 text-xs">{a.title}</span>
@@ -234,7 +234,7 @@ export function ReportTab({
                     </div>
                     <p className="text-[11px] text-stone-600 leading-tight">{a.message}</p>
                     {a.reviewComment && (
-                      <p className="text-[10px] bg-stone-100 p-1 rounded text-stone-800">
+                      <p className="text-[10px] bg-stone-100 p-1 rounded text-stone-800 print:bg-white print:border print:border-stone-200">
                         <strong>Tratamento:</strong> {a.reviewComment}
                       </p>
                     )}
@@ -246,7 +246,7 @@ export function ReportTab({
 
           {/* 6. SIGNATÁRIOS & RESPONSABILIDADE TÉCNICA */}
           <div className="grid grid-cols-2 gap-3 pt-1 border-t border-stone-200">
-            <div className="p-2 rounded border border-stone-200/60 bg-stone-50/40">
+            <div className="p-2 rounded border border-stone-200/60 bg-stone-50/40 print:bg-white print:border-stone-200">
               <span className="text-[9px] font-bold uppercase tracking-wider text-stone-400 block">Analista Responsável</span>
               <p className="font-bold text-stone-900 text-xs mt-0.5">
                 {latestReport?.generatedByName
@@ -261,7 +261,7 @@ export function ReportTab({
               </div>
             </div>
 
-            <div className="p-2 rounded border border-stone-200/60 bg-stone-50/40">
+            <div className="p-2 rounded border border-stone-200/60 bg-stone-50/40 print:bg-white print:border-stone-200">
               <span className="text-[9px] font-bold uppercase tracking-wider text-stone-400 block">Gestor / Supervisor</span>
               <p className="font-bold text-stone-900 text-xs mt-0.5">
                 {latestReport?.approvedByName
@@ -276,7 +276,7 @@ export function ReportTab({
           </div>
 
           {/* 7. AVISO REGULATÓRIO OBRIGATÓRIO (RODAPÉ COMPACTO) */}
-          <div className="rounded border border-amber-200/70 bg-amber-50/50 p-2 text-[10px] text-amber-900 flex items-center gap-1.5 print:p-1.5">
+          <div className="rounded border border-amber-200/70 bg-amber-50/50 p-2 text-[10px] text-amber-900 flex items-center gap-1.5 print:bg-white print:border-stone-300 print:text-stone-700 print:p-1.5">
             <Scale className="h-3.5 w-3.5 shrink-0 text-amber-700" />
             <p className="leading-tight">
               <strong>Aviso Regulatório Obrigatório:</strong> Esta análise constitui ferramenta de apoio à conferência documental pré-embarque e não substitui a avaliação técnica do profissional responsável nem a decisão dos órgãos anuentes competentes (MAPA / Receita Federal).

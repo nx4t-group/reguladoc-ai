@@ -37,7 +37,7 @@ export function DossierDetail({
   const score = dossier.complianceScore ?? 85;
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5 print:space-y-0 print:p-0 print:m-0 print:bg-white">
       {/* ── HEADER PRINCIPAL: IDENTIDADE VISUAL & CONTEXTO DO DOSSIÊ ── */}
       <header className="no-print glass-panel relative z-10 border-b border-parchment-border/90 shadow-sm rounded-2xl p-4 sm:p-5">
         <div className="max-w-[1720px] mx-auto space-y-3">
