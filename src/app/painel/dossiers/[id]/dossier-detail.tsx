@@ -39,7 +39,7 @@ export function DossierDetail({
   return (
     <div className="space-y-5">
       {/* ── HEADER PRINCIPAL: IDENTIDADE VISUAL & CONTEXTO DO DOSSIÊ ── */}
-      <header className="glass-panel relative z-10 border-b border-parchment-border/90 shadow-sm rounded-2xl p-4 sm:p-5">
+      <header className="no-print glass-panel relative z-10 border-b border-parchment-border/90 shadow-sm rounded-2xl p-4 sm:p-5">
         <div className="max-w-[1720px] mx-auto space-y-3">
           {/* Top Section: Info & Ações na Esquerda + Compliance Score Imponente na Direita */}
           <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 pb-3 border-b border-parchment-300/60">
